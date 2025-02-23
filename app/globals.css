@@ -42,6 +42,12 @@ main {
   margin: auto;
 }
 
+@media (max-width: 1280px) {
+  main {
+    padding: 0 2rem;
+  }
+}
+
 .dark {
   --background: hsl(222.2 84% 4.9%);
   --foreground: hsl(210 40% 98%);
