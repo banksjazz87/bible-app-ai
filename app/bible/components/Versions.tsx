@@ -12,6 +12,7 @@ import {
 
 export default function Versions() {
     const [bibleVersions, setBibleVersions] = useState<BibleVersion[]>([]);
+    const [selectedVersion, setSelectedVersion] = useState<string>('');
     const searchParams = useSearchParams();
 
     useEffect((): void => {
@@ -27,22 +28,33 @@ export default function Versions() {
     }, []);
 
 
+    const changeHandler = (value: string): void => {
+        setSelectedVersion(value);
+    }
+
+
+
     return (
-			<Select>
-				<SelectTrigger>
+			<Select onValueChange={changeHandler}>
+				<SelectTrigger
+					className="rounded-none border-slate-600"
+				>
 					<SelectValue placeholder="Select a version" />
 				</SelectTrigger>
-            <SelectContent>
-                {bibleVersions.length > 1 &&
-                    bibleVersions.map((x: BibleVersion, y: number) => {
-
-                        if (x.language.code === "eng") {
-                            return (
-                                <SelectItem key={`version_option_${y}`} value={x.id}>{x.version}</SelectItem>
-                            );
-                        }
-                    })
-                }
+				<SelectContent>
+					{bibleVersions.length > 1 &&
+						bibleVersions.map((x: BibleVersion, y: number) => {
+							if (x.language.code === "eng") {
+								return (
+									<SelectItem
+										key={`version_option_${y}`}
+										value={x.id}
+									>
+										{x.version}
+									</SelectItem>
+								);
+							}
+						})}
 				</SelectContent>
 			</Select>
 		);

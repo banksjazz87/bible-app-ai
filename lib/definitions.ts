@@ -21,3 +21,15 @@ export type BibleVersion = {
 	localVersionName: string;
 	localVersionAbbreviation: string;
 };
+
+
+export type BookAndChapters = {
+    book: string;
+    chapters: number;
+};
+
+
+export type BooksProps = {
+    books: BookAndChapters[];
+    changeHandler: Function;
+};
