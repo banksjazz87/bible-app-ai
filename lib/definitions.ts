@@ -1,35 +1,34 @@
 //Contains all of the definitions used in the app
 
-export type BibleVersion = {
-	id: string;
-	version: string;
-	description: string;
-	scope: string;
-	language: {
-		name: string;
-		code: string;
-		level: string;
-	};
-	country: {
-		name: string;
-		code: string;
-	};
-	numeralSystem: string;
-	script: string;
-	archivist: string;
-	copyright: string;
-	localVersionName: string;
-	localVersionAbbreviation: string;
-};
-
-
 export type BookAndChapters = {
     book: string;
     chapters: number;
 };
 
+export type BibleVersions = {
+    value: string;
+    title: string;
+};
 
 export type BooksProps = {
     books: BookAndChapters[];
     changeHandler: Function;
+    sectionTitle: string;
+};
+
+
+export type VersionsProps = {
+    versions: BibleVersions[];
+    sectionTitle: string;
+};
+
+export type SelectFields = {
+    value: string;
+    text: string;
+}
+
+export type OptionsProps = {
+    changeHandler: Function;
+    sectionTitle: string;
+    options: SelectFields[];
 };

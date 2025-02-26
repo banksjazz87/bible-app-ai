@@ -1,36 +1,45 @@
-'use client'
+"use client";
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import Versions from "@/app/bible/components/Versions";
 import Books from "@/app/bible/components/Books";
-import { oldTestamentBooks, newTestamentBooks } from '@/lib/bibleData';
+import Options from "../ui/Options";
+import { oldTestamentBooks, newTestamentBooks, EnglishBibleVersions } from "@/lib/bibleData";
 
 export default function Bible() {
-    const searchParams = useSearchParams();
+	const searchParams = useSearchParams();
 
-    
-    return (
-        <div>
-            <h1>This is the bible page</h1>
-
-            <main>
-                <form>
-                    <Versions />
-                    <p>Old Testament</p>
-                    <Books
-                        books={oldTestamentBooks}
-                        changeHandler={(value: string): void => console.log(value)}
+	return (
+		<div className="mt-6">
+			<main>
+				<form className="grid grid-flow-col grid-rows-1 gap-4">
+                    <Versions versions={EnglishBibleVersions}
+                        sectionTitle="Select a Bible Version"
                     />
 
-                    <p>New Testament</p>
-                    <Books
-                        books={newTestamentBooks}
+                    <Options
                         changeHandler={(value: string): void => console.log(value)}
+                        sectionTitle="Old or New Testament?"
+                        options={[
+                            { value: "old", text: "Old Testament" },
+                            { value: "new", text: "New Testament" }
+                        ]}
                     />
-                </form>
-            </main>
-        </div>
 
-    )
+					<Books
+						books={oldTestamentBooks}
+						changeHandler={(value: string): void => console.log(value)}
+						sectionTitle="Old Testament"
+					/>
+
+					<Books
+						books={newTestamentBooks}
+						changeHandler={(value: string): void => console.log(value)}
+						sectionTitle="New Testament"
+					/>
+				</form>
+			</main>
+		</div>
+	);
 }

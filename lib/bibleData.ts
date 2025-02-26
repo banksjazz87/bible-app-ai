@@ -1,5 +1,32 @@
 //This file will contain all of the bible data that doesn't need to be pulled from an API or database.
-import { BookAndChapters } from "@/lib/definitions";
+import { BookAndChapters, BibleVersions } from "@/lib/definitions";
+
+export const EnglishBibleVersions: BibleVersions[] = [
+	{ value: "en-asv", title: "American Standard Version of the Holy Bible" },
+	{ value: "en-US-asvbt", title: "American Standard Version Byzantine Text with Apocrypha" },
+	{ value: "en-bsb", title: "Berean Study Bible" },
+	{ value: "en-engbrent", title: "Brenton English Septuagint" },
+	{ value: "en-US-lxxup", title: "Brenton English Septuagint (Updated Spelling and Formatting)" },
+	{ value: "en-dra", title: "Douay-Rheims American 1899" },
+	{ value: "en-US-emtv", title: "English Majority Text Version" },
+	{ value: "en-fbv", title: "Free Bible Version" },
+	{ value: "en-gnv", title: "Geneva Bible" },
+	{ value: "en-ojps", title: "JPS TaNaKH 1917" },
+	{ value: "en-kjv", title: "King James Version of the Holy Bible" },
+	{ value: "en-lsv", title: "Literal Standard Version" },
+	{ value: "en-rv", title: "Revised Version" },
+	{ value: "en-oke", title: "Targum Onkelos Etheridge" },
+	{ value: "en-tcent", title: "Text-Critical English New Testament" },
+	{ value: "en-t4t", title: "The Holy Bible: A Translation for Translators" },
+	{ value: "en-US-f35", title: "The English New Testament According to Family 35" },
+	{ value: "en-US-kjvcpb", title: "The Cambridge Paragraph Bible of the Authorized English Version" },
+	{ value: "en-web", title: "World English Bible" },
+	{ value: "en-webbe", title: "World English Bible British Edition" },
+	{ value: "en-webus", title: "World English Bible, American English Edition, without Strong's numbers" },
+	{ value: "en-wmb", title: "World Messianic Bible" },
+	{ value: "en-wmbbe", title: "World Messianic Bible British Edition" },
+];
+
 
 export const oldTestamentBooks: BookAndChapters[] = [
 	{ book: "Genesis", chapters: 50 },
