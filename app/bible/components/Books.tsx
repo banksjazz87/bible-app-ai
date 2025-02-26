@@ -15,7 +15,7 @@ export default function Books({ books, changeHandler, sectionTitle }: BooksProps
 					{books.map((x: BookAndChapters, y: number) => (
 						<SelectItem
 							key={`book_option_${y}`}
-							value={x.book.toLowerCase()}
+                            value={x.book.toLowerCase()}
 						>
 							{x.book}
 						</SelectItem>

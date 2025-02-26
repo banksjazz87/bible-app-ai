@@ -9,7 +9,7 @@ export default function Options({ changeHandler, sectionTitle, options }: Option
 	return (
 		<div className="d-flex flex-col justify-start">
 			<p className="pb-2">{sectionTitle}</p>
-			<Select onValueChange={changeHandler()}>
+			<Select onValueChange={(value) => changeHandler(value)}>
 				<SelectTrigger className="rounded-none border-slate-600">
 					<SelectValue placeholder="Select a version" />
 				</SelectTrigger>
