@@ -14,12 +14,14 @@ export type BooksProps = {
     books: BookAndChapters[];
     changeHandler: Function;
     sectionTitle: string;
+    optionsID: string;
 };
 
 
 export type VersionsProps = {
     versions: BibleVersions[];
     sectionTitle: string;
+    optionsID: string;
 };
 
 export type SelectFields = {
@@ -31,4 +33,6 @@ export type OptionsProps = {
     changeHandler: Function;
     sectionTitle: string;
     options: SelectFields[];
+    optionsID: string;
+    placeholderText: string;
 };

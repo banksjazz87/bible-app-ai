@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+
 import { useState, useEffect } from "react";
 import Versions from "@/app/bible/components/Versions";
 import Books from "@/app/bible/components/Books";
@@ -10,16 +10,16 @@ import { oldTestamentBooks, newTestamentBooks, EnglishBibleVersions } from "@/li
 
 export default function Bible() {
     const [testament, setTestament] = useState<string>('');
-    const searchParams = useSearchParams();
 
 
 	return (
 		<div className="mt-6">
 			<main>
-				<form className="grid grid-flow-col grid-rows-1 gap-4">
+				<form className="grid grid-flow-col grid-columns-3 gap-4">
 					<Versions
 						versions={EnglishBibleVersions}
 						sectionTitle="Select a Bible Version"
+						optionsID="bible-version"
 					/>
 
 					<Options
@@ -29,6 +29,8 @@ export default function Bible() {
 							{ value: "old", text: "Old Testament" },
 							{ value: "new", text: "New Testament" },
 						]}
+						optionsID={testament}
+						placeholderText="Select Testament"
 					/>
 
 					{testament === "old" && (
@@ -43,7 +45,8 @@ export default function Bible() {
                                 
                                 console.log(value, items);
                             }}
-							sectionTitle="Old Testament"
+							sectionTitle="Old Testament Books"
+							optionsID="book"
 						/>
 					)}
 
@@ -51,7 +54,8 @@ export default function Bible() {
 						<Books
 							books={newTestamentBooks}
 							changeHandler={(value: string): void => console.log(value)}
-							sectionTitle="New Testament"
+							sectionTitle="New Testament Books"
+							optionsID="book"
 						/>
 					)}
 
