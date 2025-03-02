@@ -14,7 +14,7 @@ export default function Home() {
         </p>
         <Link
           href='/bible'
-          className='bg-zinc-900 hover:bg-zinc-800 py-3 px-6 flex flex-row justify-center rounded-md'
+          className='bg-zinc-900 hover:bg-zinc-800 py-3 px-6 flex flex-row justify-center rounded-md min-w-40'
         >
           <p className="font-mono text-3x font-semibold text-white">Get Started</p>
         </Link>

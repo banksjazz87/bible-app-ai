@@ -32,7 +32,7 @@ export default function Options({ changeHandler, sectionTitle, optionsID, option
 			<p className="pb-2">{sectionTitle}</p>
 			<Select onValueChange={(value) => {
 				changeHandler(value);
-				router.push(path + '?' + queryHandler(value));
+				// router.push(path + '?' + queryHandler(value));
 			}
 			}>
 				<SelectTrigger className="rounded-none border-slate-600">
