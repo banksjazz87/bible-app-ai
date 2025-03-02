@@ -21,19 +21,23 @@ export default function Books({ books, sectionTitle, changeHandler, optionsID }:
 	return (
 		<div className="d-flex flex-col gap-1 justify-start align-middle">
 			<p className="pb-2">{sectionTitle}</p>
-			<Select onValueChange={(value): void => {
-				router.push(pathname + '?' + queryHandler(value));
-				changeHandler(value);
-
-			}}>
+			<Select
+				onValueChange={(value): void => {
+					router.push(pathname + "?" + queryHandler(value));
+					changeHandler(value);
+				}}
+			>
 				<SelectTrigger className="rounded-none border-slate-600">
-					<SelectValue placeholder="Select a version" />
+					<SelectValue
+						id="testing"
+						placeholder="Select a version"
+					/>
 				</SelectTrigger>
-				<SelectContent>
+				<SelectContent >
 					{books.map((x: BookAndChapters, y: number) => (
 						<SelectItem
 							key={`book_option_${y}`}
-                            value={x.book.toLowerCase()}
+							value={x.book.toLowerCase()}
 						>
 							{x.book}
 						</SelectItem>

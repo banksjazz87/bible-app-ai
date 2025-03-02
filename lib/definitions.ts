@@ -7,7 +7,7 @@ export type BookAndChapters = {
 
 export type BibleVersions = {
     value: string;
-    title: string;
+    text: string;
 };
 
 export type BooksProps = {
@@ -22,6 +22,7 @@ export type VersionsProps = {
     versions: BibleVersions[];
     sectionTitle: string;
     optionsID: string;
+    changeHandler: Function;
 };
 
 export type SelectFields = {
