@@ -6,7 +6,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCallback } from "react";
 
-export default function Books({ books, sectionTitle, changeHandler, optionsID }: BooksProps) {
+export default function Books({ books, sectionTitle, changeHandler, optionsID, placeholder, selectedValue }: BooksProps) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -29,17 +29,16 @@ export default function Books({ books, sectionTitle, changeHandler, optionsID }:
 			>
 				<SelectTrigger className="rounded-none border-slate-600">
 					<SelectValue
-						id="testing"
-						placeholder="Select a version"
+						placeholder={selectedValue.length > 0 ? selectedValue : placeholder}
 					/>
 				</SelectTrigger>
 				<SelectContent >
 					{books.map((x: BookAndChapters, y: number) => (
 						<SelectItem
 							key={`book_option_${y}`}
-							value={x.book.toLowerCase()}
+							value={x.value}
 						>
-							{x.book}
+							{x.text}
 						</SelectItem>
 					))}
 				</SelectContent>

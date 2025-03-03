@@ -1,34 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Options from "../ui/Options";
-import { BookAndChapters, SelectFields } from "@/lib/definitions";
-import { oldTestamentBooks, newTestamentBooks, EnglishBibleVersions } from "@/lib/bibleData";
+import { BookAndChapters, SelectFields, BibleForm, Verses, ChapterResponse } from "@/lib/definitions";
+import { TestamentOptions, OldTestamentBooks, NewTestamentBooks, EnglishBibleVersions } from '@/lib/bibleData';
 
-type BibleForm = {
-	version: string;
-	testament: string;
-	book: string;
-	chapter: number;
-	verse: string;
-};
-export default function Bible() {
-	const [testament, setTestament] = useState<string>("");
+export default function Bible(): JSX.Element {
+	const pathName = usePathname();
+	const searchParams = useSearchParams();
+
 	const [bibleForm, setBibleForm] = useState<BibleForm>({
 		version: "",
 		testament: "",
 		book: "",
-		chapter: -1,
-		verse: "",
+		chapter: "",
+		startVerse: "",
+		endVerse: "",
 	});
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
+	const [verses, setVerses] = useState<SelectFields[]>([
+		{
+			text: "1",
+			value: "1",
+		},
+	]);
 
 	//Get the chapters according to the book and testament that are currently selected.
 	const getChapters = (testament: BookAndChapters[], book: string) => {
 		const numberOfChapters: BookAndChapters[] = testament.filter((x: BookAndChapters, y: number) => {
-			if (x.book.toLowerCase() === book) {
+			if (x.value === book) {
 				return x;
 			}
 		});
@@ -56,13 +58,74 @@ export default function Bible() {
 
 		if (book.length > 0 && testament.length > 0) {
 			if (testament === "old") {
-				getChapters(oldTestamentBooks, book);
+				getChapters(OldTestamentBooks, book);
 			} else {
-				getChapters(newTestamentBooks, book);
+				getChapters(NewTestamentBooks, book);
 			}
 		}
 	}, [bibleForm]);
 
+
+	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
+	useEffect((): void => {
+		if (bibleForm.chapter.length > 0) {
+			const verses = async(): Promise<any> =>  await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${bibleForm.version}/books/${bibleForm.book.toLowerCase()}/chapters/${bibleForm.chapter}.json`);
+
+			verses()
+				.then((data: Response): Promise<ChapterResponse> => {
+					return data.json();
+				})
+				.then((final: ChapterResponse): void => {
+					const convertedOptionData: SelectFields[] = final.data.map((x: Verses, y: number): SelectFields => {
+						let newObj = {
+							text: x.verse,
+							value: x.verse,
+						};
+
+						return newObj;
+					});
+					setVerses(convertedOptionData);
+				})
+				.catch((error) => {
+					console.warn("The following error occurred ", error);
+				});
+		}
+	}, [bibleForm.chapter]);
+
+
+	const returnSearchParamValues = (key: string, selectValues: SelectFields[]): string => {
+		if (searchParams.has(key)) {
+			const paramValue = (searchParams.get(key) as string).toString();
+			const getTextValue: SelectFields[] = selectValues.filter((x: SelectFields): SelectFields | undefined => {
+				if (paramValue === x.value) {
+					return x;
+				}
+			});
+
+			if (getTextValue.length > 0) {
+				return getTextValue[0].text;
+			} else {
+				return '';
+			}
+		} else {
+			return '';
+		}
+	}
+
+	useEffect((): void => {
+		setBibleForm({
+			...bibleForm,
+			version: returnSearchParamValues("bible-version", EnglishBibleVersions),
+			testament: returnSearchParamValues("testament", TestamentOptions),
+			book: bibleForm.testament === 'Old' ? returnSearchParamValues("book", OldTestamentBooks) : returnSearchParamValues("book", NewTestamentBooks),
+			chapter: returnSearchParamValues("chapter", viableChapters),
+			startVerse: returnSearchParamValues("startVerse", verses),
+			endVerse: returnSearchParamValues("endVerse", verses.slice(Number(bibleForm.startVerse) -1 )),
+		});
+	}, []);
+
+
+	//Change handler for our select elements
 	const selectChangeHandler = (key: string, value: string): void => {
 		setBibleForm({
 			...bibleForm,
@@ -72,13 +135,13 @@ export default function Bible() {
 	};
 
 	//Get the data for the selected book, this will be used to populate the chapters needed.
-	const bookFilter = (books: BookAndChapters[], value: string): BookAndChapters[] => {
+	const bookFilter = (books: BookAndChapters[], value: string): string => {
 		const book = books.filter((x: BookAndChapters, y: number): BookAndChapters | undefined => {
-			if (x.book.toLowerCase() === value) {
+			if (x.value === value) {
 				return x;
 			}
 		});
-		return book;
+		return book[0].value;
 	};
 
 	return (
@@ -92,56 +155,76 @@ export default function Bible() {
 							optionsID="bible-version"
 							changeHandler={(value: string): void => selectChangeHandler("version", value)}
 							placeholderText="Select a Bible Version"
+							selectedValue={bibleForm.version}
 						/>
 
 						<Options
 							changeHandler={(value: string): void => selectChangeHandler("testament", value)}
 							sectionTitle="Old or New Testament?"
-							options={[
-								{ value: "old", text: "Old Testament" },
-								{ value: "new", text: "New Testament" },
-							]}
-							optionsID={testament}
+							options={TestamentOptions}
+							optionsID={"testament"}
 							placeholderText="Select Testament"
+							selectedValue={bibleForm.testament}
 						/>
 
 						{bibleForm.testament === "old" && (
 							<Books
-								books={oldTestamentBooks}
+								books={OldTestamentBooks}
 								changeHandler={(value: string): void => {
-									const bookMatch = bookFilter(oldTestamentBooks, value);
+									const bookMatch = bookFilter(OldTestamentBooks, value);
 									if (bookMatch.length > 0) {
-										selectChangeHandler("book", bookMatch[0].book);
+										selectChangeHandler("book", bookMatch);
 									}
 								}}
 								sectionTitle="Old Testament Books"
 								optionsID="book"
+								placeholder="Book"
+								selectedValue={bibleForm.book}
 							/>
 						)}
 
 						{bibleForm.testament === "new" && (
 							<Books
-								books={newTestamentBooks}
+								books={NewTestamentBooks}
 								changeHandler={(value: string): void => {
-									const bookMatch = bookFilter(newTestamentBooks, value);
+									const bookMatch = bookFilter(NewTestamentBooks, value);
 									if (bookMatch) {
-										selectChangeHandler("book", bookMatch[0].book);
+										selectChangeHandler("book", bookMatch);
 									}
 								}}
 								sectionTitle="New Testament Books"
 								optionsID="book"
+								placeholder="Book"
+								selectedValue={bibleForm.book}
 							/>
 						)}
 
-						{viableChapters.length > 1 && (
-							<Options
-								changeHandler={(value: string): void => selectChangeHandler("chapter", value)}
-								sectionTitle="Select Chapter"
-								options={viableChapters}
-								optionsID={testament}
-								placeholderText="Select Chapter"
-							/>
-						)}
+						<Options
+							changeHandler={(value: string): void => selectChangeHandler("chapter", value)}
+							sectionTitle="Select Chapter"
+							options={viableChapters}
+							optionsID={"chapter"}
+							placeholderText="Select Chapter"
+							selectedValue={bibleForm.chapter}
+						/>
+
+						<Options
+							changeHandler={(value: string): void => selectChangeHandler("startVerse", value)}
+							sectionTitle="Starting Verse"
+							options={verses}
+							optionsID={"startVerse"}
+							placeholderText="Select Starting Verse"
+							selectedValue={bibleForm.startVerse}
+						/>
+
+						<Options
+							changeHandler={(value: string): void => selectChangeHandler("endVerse", value)}
+							sectionTitle="Ending Verse"
+							options={verses.slice(Number(bibleForm.startVerse) - 1)}
+							optionsID={"endVerse"}
+							placeholderText="Select Ending Verse"
+							selectedValue={bibleForm.endVerse}
+						/>
 					</div>
 					<input
 						type="submit"

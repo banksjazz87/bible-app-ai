@@ -1,8 +1,10 @@
 //Contains all of the definitions used in the app
 
 export type BookAndChapters = {
-    book: string;
+    text: string;
     chapters: number;
+    value: string;
+
 };
 
 export type BibleVersions = {
@@ -15,6 +17,8 @@ export type BooksProps = {
     changeHandler: Function;
     sectionTitle: string;
     optionsID: string;
+    placeholder: string;
+    selectedValue: string;
 };
 
 
@@ -36,4 +40,24 @@ export type OptionsProps = {
     options: SelectFields[];
     optionsID: string;
     placeholderText: string;
+    selectedValue: string;
+};
+
+export type BibleForm = {
+    version: string;
+    testament: string;
+    book: string;
+    chapter: string;
+    startVerse: string;
+    endVerse: string;
+};
+
+export type Verses = {
+    book: string;
+    chapter: string;
+    verse: string;
+};
+
+export type ChapterResponse = {
+    data: Verses[];
 };

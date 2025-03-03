@@ -7,8 +7,7 @@ import { SelectFields, OptionsProps } from "@/lib/definitions";
 
 
 
-export default function Options({ changeHandler, sectionTitle, optionsID, options, placeholderText }: OptionsProps): JSX.Element {
-	const [selectedOption, setSelectedOption] = useState<string>(placeholderText)
+export default function Options({ changeHandler, sectionTitle, optionsID, options, placeholderText, selectedValue }: OptionsProps): JSX.Element {
 	const path = usePathname();
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -19,24 +18,17 @@ export default function Options({ changeHandler, sectionTitle, optionsID, option
 		return params.toString();
 	}, [searchParams]);
 
-	useEffect((): void => {
-		if (searchParams.has(optionsID)) {
-			const selectedValue = searchParams.get(optionsID);
-			setSelectedOption(selectedValue as string);
-		}
-	}, [searchParams]);
-
 
 	return (
 		<div className="d-flex flex-col justify-start">
 			<p className="pb-2">{sectionTitle}</p>
 			<Select onValueChange={(value) => {
 				changeHandler(value);
-				// router.push(path + '?' + queryHandler(value));
+				router.push(path + '?' + queryHandler(value));
 			}
 			}>
 				<SelectTrigger className="rounded-none border-slate-600">
-					<SelectValue placeholder={selectedOption}  />
+					<SelectValue placeholder={selectedValue.length > 0 ? selectedValue : placeholderText} />
 				</SelectTrigger>
 				<SelectContent>
 					{options.map((x: SelectFields, y: number) => (
