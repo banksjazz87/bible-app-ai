@@ -33,7 +33,7 @@ export const EnglishBibleVersions: SelectFields[] = [
 ];
 
 
-export const OldTestamentBooks: BookAndChapters[] = [
+export const BooksOfTheBible: BookAndChapters[] = [
 	{ text: "Genesis", chapters: 50, value: "genesis" },
 	{ text: "Exodus", chapters: 40, value: "exodus" },
 	{ text: "Leviticus", chapters: 27, value: "leviticus" },
@@ -73,9 +73,7 @@ export const OldTestamentBooks: BookAndChapters[] = [
 	{ text: "Haggai", chapters: 2, value: "haggai" },
 	{ text: "Zechariah", chapters: 14, value: "zechariah" },
 	{ text: "Malachi", chapters: 4, value: "malachi" },
-];
-
-export const NewTestamentBooks: BookAndChapters[] = [
+	{ text: "--NEW TESTAMENT--", chapters: -1, value: "---" },
 	{ text: "Matthew", chapters: 28, value: "matthew" },
 	{ text: "Mark", chapters: 16, value: "mark" },
 	{ text: "Luke", chapters: 24, value: "luke" },

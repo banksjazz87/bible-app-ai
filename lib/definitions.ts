@@ -45,7 +45,6 @@ export type OptionsProps = {
 
 export type BibleFormData = {
     version: string;
-    testament: string;
     book: string;
     chapter: string;
     startVerse: string;
