@@ -43,7 +43,7 @@ export type OptionsProps = {
     selectedValue: string;
 };
 
-export type BibleForm = {
+export type BibleFormData = {
     version: string;
     testament: string;
     book: string;
@@ -56,8 +56,10 @@ export type Verses = {
     book: string;
     chapter: string;
     verse: string;
+    text: string;
 };
 
 export type ChapterResponse = {
     data: Verses[];
 };
+
