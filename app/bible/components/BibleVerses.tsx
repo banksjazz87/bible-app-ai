@@ -13,12 +13,6 @@ export default function BibleVerses({ versesArray, startVerse, endVerse }: Bible
 	const numOfEnd: number = Number(endVerse);
 	const neededVerses: Verses[] = versesArray.slice(numOfStart, versesArray.length - numOfEnd);
 
-	// return neededVerses.map((x: Verses, y: number): JSX.Element =>
-	//    (
-	//             <p key={`verse_item_${y}`}>{`${x.verse}. ${x.text} `}</p>
-	//     )
-	// );
-
 	return (
 		<div>
 			{neededVerses.map(

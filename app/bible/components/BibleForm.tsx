@@ -1,22 +1,28 @@
 "use client";
 
-import { useState, useEffect, JSX, FormEvent } from "react";
+import { useState, useEffect, JSX, FormEvent, useActionState } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
 import { BookAndChapters, SelectFields, BibleFormData, Verses, ChapterResponse } from "@/lib/definitions";
-import { TestamentOptions, BooksOfTheBible, EnglishBibleVersions } from "@/lib/bibleData";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { BooksOfTheBible, EnglishBibleVersions } from "@/lib/bibleData";
+import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { bibleFormSubmit } from "@/lib/actions";
 
 type BibleFormProps = {
-	submitHandler: Function;
+	// submitHandler: Function;
 	updateNeededChapter: Function;
 };
 
-export default function BibleForm({ submitHandler, updateNeededChapter }: BibleFormProps): JSX.Element {
+const initialState = {
+    message: ''
+}
+
+export default function BibleForm({ updateNeededChapter }: BibleFormProps): JSX.Element {
 	const searchParams = useSearchParams();
-	const form = useForm();
+    const form = useForm();
+    const [state, formAction, pending] = useActionState(bibleFormSubmit, initialState)
 
 	const [bibleForm, setBibleForm] = useState<BibleFormData>({
 		version: "",
@@ -154,15 +160,15 @@ export default function BibleForm({ submitHandler, updateNeededChapter }: BibleF
 		<div className="mt-6">
 			<main>
 				<Form {...form}>
-					<form onSubmit={(e) => submitHandler(e)}>
+					<form action={formAction}>
 						<div className="grid grid-flow-col grid-columns-3 gap-4">
 							<Options
 								options={EnglishBibleVersions}
 								sectionTitle="Select a Bible Version"
-								optionsID="bible-version"
+								optionsID="version"
 								changeHandler={(value: string): void => selectChangeHandler("version", value)}
 								placeholderText="Select a Bible Version"
-								selectedValue={getSelectTextValue("bible-version", EnglishBibleVersions)}
+								selectedValue={getSelectTextValue("version", EnglishBibleVersions)}
 							/>
 
 							<Books
@@ -212,6 +218,9 @@ export default function BibleForm({ submitHandler, updateNeededChapter }: BibleF
 							className="bg-zinc-900 hover:bg-zinc-800 py-2 px-6 min-w-40 justify-center rounded-md text-white hover:cursor-pointer my-4"
 						/>
 					</form>
+
+					<p aria-live="polite">{state?.message}</p>
+					<button disabled={pending}>Sign up</button>
 				</Form>
 			</main>
 		</div>
