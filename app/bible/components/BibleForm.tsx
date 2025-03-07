@@ -8,21 +8,18 @@ import { BookAndChapters, SelectFields, BibleFormData, Verses, ChapterResponse }
 import { BooksOfTheBible, EnglishBibleVersions } from "@/lib/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { bibleFormSubmit } from "@/lib/actions";
+import { Button } from "@/components/ui/button";
+
 
 type BibleFormProps = {
-	// submitHandler: Function;
+	submitHandler: Function;
 	updateNeededChapter: Function;
 };
 
-const initialState = {
-    message: ''
-}
 
-export default function BibleForm({ updateNeededChapter }: BibleFormProps): JSX.Element {
+export default function BibleForm({ updateNeededChapter, submitHandler }: BibleFormProps): JSX.Element {
 	const searchParams = useSearchParams();
     const form = useForm();
-    const [state, formAction, pending] = useActionState(bibleFormSubmit, initialState)
 
 	const [bibleForm, setBibleForm] = useState<BibleFormData>({
 		version: "",
@@ -37,7 +34,8 @@ export default function BibleForm({ updateNeededChapter }: BibleFormProps): JSX.
 			text: "1",
 			value: "1",
 		},
-	]);
+    ]);
+    const [initLoad, setInitLoad] = useState<boolean>(true);
 
 	//Get the chapters according to the book and testament that are currently selected.
 	const getChapters = (bible: BookAndChapters[], book: string) => {
@@ -70,34 +68,45 @@ export default function BibleForm({ updateNeededChapter }: BibleFormProps): JSX.
 		if (book.length > 0) {
 			getChapters(BooksOfTheBible, book);
 		}
-	}, [bibleForm]);
+    }, [bibleForm]);
+    
+    const retrieveAndSetBibleVerses = async (version: string, book: string, chapter: string): Promise<any> => {
+        const bookToLower = book.toLowerCase();
+        try {
+            const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
+            const verseJSON: ChapterResponse = await verses.json();
 
-	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
-	useEffect((): void => {
-		if (bibleForm.chapter.length > 0) {
-			const verses = async (): Promise<any> => await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${bibleForm.version}/books/${bibleForm.book.toLowerCase()}/chapters/${bibleForm.chapter}.json`);
-
-			verses()
-				.then((data: Response): Promise<ChapterResponse> => {
-					return data.json();
-				})
-				.then((final: ChapterResponse): void => {
-					const convertedOptionData: SelectFields[] = final.data.map((x: Verses, y: number): SelectFields => {
+            const convertedOptionData: SelectFields[] = verseJSON.data.map((x: Verses, y: number): SelectFields => {
 						let newObj = {
 							text: x.verse,
 							value: x.verse,
 						};
 
 						return newObj;
-					});
+            });
+            
+            console.log('THIS ', convertedOptionData);
 					setVerses(convertedOptionData);
-					updateNeededChapter(final);
-				})
-				.catch((error) => {
-					console.warn("The following error occurred ", error);
-				});
-		}
-	}, [bibleForm.chapter]);
+					updateNeededChapter(verseJSON.data);
+        } catch (e: any) {
+            console.warn("The following error occurred ", e);
+        }
+    }
+
+	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
+    useEffect((): void => {
+        const allDataPresent = bibleForm.chapter.length > 0 && bibleForm.book.length > 0 && bibleForm.version.length > 0;
+
+		if (allDataPresent && initLoad) {
+            retrieveAndSetBibleVerses(bibleForm.version, bibleForm.book, bibleForm.chapter);
+            setInitLoad(false);
+        } else if (!initLoad && allDataPresent) {
+            retrieveAndSetBibleVerses(bibleForm.version, bibleForm.book, bibleForm.chapter);	
+        } else {
+            setInitLoad(false);
+        }
+    }, [bibleForm.chapter, initLoad]);
+    
 
 	const returnSearchParamValues = (key: string): string => {
 		if (searchParams.has(key)) {
@@ -159,8 +168,8 @@ export default function BibleForm({ updateNeededChapter }: BibleFormProps): JSX.
 	return (
 		<div className="mt-6">
 			<main>
-				<Form {...form}>
-					<form action={formAction}>
+				<Form {...form} >
+					<form onSubmit={(e) => submitHandler(e, bibleForm)} method={'/bible'}>
 						<div className="grid grid-flow-col grid-columns-3 gap-4">
 							<Options
 								options={EnglishBibleVersions}
@@ -200,7 +209,7 @@ export default function BibleForm({ updateNeededChapter }: BibleFormProps): JSX.
 								options={verses}
 								optionsID={"startVerse"}
 								placeholderText="Select Starting Verse"
-								selectedValue={getSelectTextValue("startVerse", verses)}
+								selectedValue={bibleForm.startVerse}
 							/>
 
 							<Options
@@ -209,18 +218,16 @@ export default function BibleForm({ updateNeededChapter }: BibleFormProps): JSX.
 								options={verses.slice(Number(bibleForm.startVerse) - 1)}
 								optionsID={"endVerse"}
 								placeholderText="Select Ending Verse"
-								selectedValue={getSelectTextValue("endVerse", verses.slice(Number(bibleForm.startVerse) - 1))}
+                                selectedValue={bibleForm.endVerse}
 							/>
 						</div>
 						<input
 							type="submit"
 							value="Submit"
 							className="bg-zinc-900 hover:bg-zinc-800 py-2 px-6 min-w-40 justify-center rounded-md text-white hover:cursor-pointer my-4"
-						/>
+                        />
+                        
 					</form>
-
-					<p aria-live="polite">{state?.message}</p>
-					<button disabled={pending}>Sign up</button>
 				</Form>
 			</main>
 		</div>

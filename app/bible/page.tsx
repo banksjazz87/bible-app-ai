@@ -4,7 +4,7 @@ import { useState, useEffect, JSX, FormEvent } from "react";
 import BibleForm from "./components/BibleForm";
 import { BibleFormData, Verses } from "@/lib/definitions";
 import BibleVerses from "./components/BibleVerses";
-import { bibleFormSubmit } from "@/lib/actions";
+import { Button } from "@/components/ui/button";
 
 export default function Bible(): JSX.Element {
 	const [currentChapterText, setCurrentChapterText] = useState<Verses[]>([]);
@@ -17,26 +17,44 @@ export default function Bible(): JSX.Element {
 		endVerse: ""
 	});
 
-	const formHandler = () => {
-
-		// setShowChapterText(true);
-		console.log('HEREEEE', bibleData);
+	const formHandler = (e: FormEvent<HTMLFormElement>, formData: BibleFormData) => {
+		e.preventDefault();
+		console.log('HEREEE ', formData);
+		setShowChapterText(true);
+		setBibleData({
+			...bibleData,
+			version: formData.version,
+			book: formData.book,
+			chapter: formData.chapter,
+			startVerse: formData.startVerse,
+			endVerse: formData.endVerse
+		});
 	};
 
 	return (
 		<div className="mt-6">
 			<main>
 				<BibleForm
-					// submitHandler={formHandler}
+					submitHandler={formHandler}
 					updateNeededChapter={(data: Verses[]) => setCurrentChapterText(data)}
 				/>
 
 				{showChapterText && (
-					<BibleVerses
-						versesArray={currentChapterText}
-						startVerse={bibleData.startVerse}
-						endVerse={bibleData.endVerse}
-					/>
+					<section className="flex flex-col gap-5 my-10">
+						<div>
+							<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
+							<Button
+								className="hover:cursor-pointer"
+							>
+								Read Full Chapter
+							</Button>
+						</div>
+						<BibleVerses
+							versesArray={currentChapterText}
+							startVerse={bibleData.startVerse}
+							endVerse={bibleData.endVerse}
+						/>
+					</section>
 				)}
 			</main>
 		</div>
