@@ -51,6 +51,11 @@ export type BibleFormData = {
     endVerse: string;
 };
 
+export type BibleFormProps = {
+	submitHandler: Function;
+	updateNeededChapter: Function;
+};
+
 export type Verses = {
     book: string;
     chapter: string;

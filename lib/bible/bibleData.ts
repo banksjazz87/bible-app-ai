@@ -102,3 +102,11 @@ export const BooksOfTheBible: BookAndChapters[] = [
 	{ text: "Jude", chapters: 1, value: "jude" },
 	{ text: "Revelation", chapters: 22, value: "revelation" },
 ];
+
+export const defaultBibleFormData = {
+	version: "",
+	book: "",
+	chapter: "",
+	startVerse: "",
+	endVerse: "",
+};
