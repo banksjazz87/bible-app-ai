@@ -4,8 +4,8 @@ import { useState, useEffect, JSX, FormEvent, useActionState } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
-import { BookAndChapters, SelectFields, BibleFormData, Verses, ChapterResponse, BibleFormProps } from "@/lib/definitions";
-import { BooksOfTheBible, EnglishBibleVersions, defaultBibleFormData } from "@/lib/bible/bibleData";
+import { SelectFields, BibleFormData, Verses, ChapterResponse, BibleFormProps } from "@/lib/definitions";
+import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	const form = useForm();
 
 	//Use stat definitions
-	const [bibleForm, setBibleForm] = useState<BibleFormData>(defaultBibleFormData);
+	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
 

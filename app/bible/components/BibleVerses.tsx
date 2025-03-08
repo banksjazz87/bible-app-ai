@@ -9,23 +9,33 @@ type BibleVersesProps = {
 };
 
 export default function BibleVerses({ versesArray, startVerse, endVerse }: BibleVersesProps) {
-	const numOfStart: number = Number(startVerse);
+	const numOfStart: number = Number(startVerse) - 1;
 	const numOfEnd: number = Number(endVerse);
-    const neededVerses: Verses[] = versesArray.slice(numOfStart, versesArray.length - numOfEnd);
-    
-    const verseConstruct = neededVerses.map((x: Verses, y: number) => {
-        if (y = 0) {
-            return `${x.verse}. ${x.text}`;
-        } else {
-            return ` ${x.verse}. ${x.text}`;
-        }
-    });
+	const neededVerses: Verses[] = versesArray.slice(numOfStart, numOfEnd);
 
-    const selectedVerses = verseConstruct.join();
+	const verseConstruct = neededVerses.map((x: Verses, y: number) => {
+		if (y === 0) {
+			return (
+				<span key={`bible_verse_${y}`}>
+					<strong>{`${x.verse}.`}</strong>
+					{` ${x.text}`}
+				</span>
+			);
+		} else {
+			return (
+				<span key={`bible_verse_${y}`}>
+					<strong>{`  ${x.verse}.`}</strong>
+					{` ${x.text}`}
+				</span>
+			);
+		}
+	});
+
+	// const selectedVerses: string = verseConstruct.join("");
 
 	return (
-        <>
-            <p>{selectedVerses}</p>
+		<>
+			<p>{verseConstruct}</p>
 		</>
 	);
 }

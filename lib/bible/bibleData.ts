@@ -103,7 +103,7 @@ export const BooksOfTheBible: BookAndChapters[] = [
 	{ text: "Revelation", chapters: 22, value: "revelation" },
 ];
 
-export const defaultBibleFormData = {
+export const DefaultBibleFormData = {
 	version: "",
 	book: "",
 	chapter: "",
