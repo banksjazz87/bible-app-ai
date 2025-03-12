@@ -25,11 +25,11 @@ export function getChapters(bible: BookAndChapters[], book: string, updateChapte
 	}
 }
 
-export async function retrieveAndSetBibleVerses(version: string, book: string, chapter: string): Promise<ChapterResponse | undefined> {
+export async function retrieveBibleChapter(version: string, book: string, chapter: string): Promise<ChapterResponse | undefined> {
 	const bookToLower = book.toLowerCase();
 	try {
 		const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
-		const verseJSON: ChapterResponse = await verses.json();
+        const verseJSON: ChapterResponse = await verses.json();
 		return verseJSON;
 	} catch (e: any) {
 		console.warn("The following error occurred ", e);
