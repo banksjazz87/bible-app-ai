@@ -8,6 +8,7 @@ import BibleVerses from "./components/BibleVerses";
 import { Button } from "@/components/ui/button";
 import { DefaultBibleFormData } from "@/lib/bible/bibleData";
 import OpenAI from "openai";
+import AIOptions from "@/app/bible/components/AIOptions";
 
 export default function Bible(): JSX.Element {
 	return (
@@ -23,26 +24,25 @@ function PageContent() {
 	const [showChapterText, setShowChapterText] = useState<boolean>(false);
 	const [bibleData, setBibleData] = useState<BibleFormData>(DefaultBibleFormData);
 
-	const client = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
+	// const client = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
-	const completion = async () =>
-		await client.chat.completions.create({
-			model: "gpt-4o-mini",
-			store: true,
-			messages: [
-				{
-					role: "user",
-					content: "Write a one-sentence bedtime story about a unicorn.",
-				},
-			],
-		});
+	// const completion = async () =>
+	// 	await client.chat.completions.create({
+	// 		model: "gpt-4o-mini",
+	// 		store: true,
+	// 		messages: [
+	// 			{
+	// 				role: "user",
+	// 				content: "Write a one-sentence bedtime story about a unicorn.",
+	// 			},
+	// 		],
+	// 	});
 
-	// console.log(completion.choices[0].message.content);
-	completion()
-		.then((data: any): void => {
-			console.log("Here", data);
-		})
-		.catch((e: any): void => console.warn(e));
+	// completion()
+	// 	.then((data: any): void => {
+	// 		console.log("Here", data);
+	// 	})
+	// 	.catch((e: any): void => console.warn(e));
 
 	useEffect((): void => {
 		console.log("Firing");
@@ -87,40 +87,45 @@ function PageContent() {
 		});
 	};
 	return (
-		<div className="mt-6">
-			<main>
+		<main className="grid grid-cols-3 py-10 gap-10">
+			<section
+				id="options_sidebar"
+				className="col-span-1 flex flex-col gap-4"
+			>
 				<BibleForm
 					submitHandler={formHandler}
 					updateNeededChapter={(data: Verses[]) => setCurrentChapterText(data)}
 				/>
 
-				{showChapterText && (
-					<section className="flex flex-col gap-5 my-10">
-						<div>
-							<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
+				<AIOptions selectedBibleData={bibleData} />
+			</section>
 
-							<Button
-								className="hover:cursor-pointer my-3"
-								onClick={(): void =>
-									setBibleData({
-										...bibleData,
-										startVerse: "1",
-										endVerse: currentChapterText.length.toString(),
-									})
-								}
-							>
-								Read Full Chapter
-							</Button>
-						</div>
+			{showChapterText && (
+				<section className="flex flex-col gap-5 my-10 col-span-2">
+					<div>
+						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
 
-						<BibleVerses
-							versesArray={currentChapterText}
-							startVerse={bibleData.startVerse}
-							endVerse={bibleData.endVerse}
-						/>
-					</section>
-				)}
-			</main>
-		</div>
+						<Button
+							className="hover:cursor-pointer my-3"
+							onClick={(): void =>
+								setBibleData({
+									...bibleData,
+									startVerse: "1",
+									endVerse: currentChapterText.length.toString(),
+								})
+							}
+						>
+							Read Full Chapter
+						</Button>
+					</div>
+
+					<BibleVerses
+						versesArray={currentChapterText}
+						startVerse={bibleData.startVerse}
+						endVerse={bibleData.endVerse}
+					/>
+				</section>
+			)}
+		</main>
 	);
 }
