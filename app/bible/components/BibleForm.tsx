@@ -122,7 +122,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 								changeHandler={(value: string): void => selectChangeHandler("chapter", value)}
 								sectionTitle="Select Chapter"
 								options={viableChapters}
-								optionsID={"chapter"}
+								optionsID="chapter"
 								placeholderText="Select Chapter"
 								selectedValue={getSelectTextValue("chapter", viableChapters, returnSearchParamValues)}
 							/>
@@ -131,7 +131,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 								changeHandler={(value: string): void => selectChangeHandler("startVerse", value)}
 								sectionTitle="Starting Verse"
 								options={verses}
-								optionsID={"startVerse"}
+								optionsID="startVerse"
 								placeholderText="Select Starting Verse"
 								selectedValue={bibleForm.startVerse}
 							/>
@@ -140,7 +140,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 								changeHandler={(value: string): void => selectChangeHandler("endVerse", value)}
 								sectionTitle="Ending Verse"
 								options={verses.slice(Number(bibleForm.startVerse) - 1)}
-								optionsID={"endVerse"}
+								optionsID="endVerse"
 								placeholderText="Select Ending Verse"
 								selectedValue={bibleForm.endVerse}
 							/>

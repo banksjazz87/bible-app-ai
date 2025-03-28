@@ -10,6 +10,27 @@ import { DefaultBibleFormData } from "@/lib/bible/bibleData";
 import OpenAI from "openai";
 import AIOptions from "@/app/bible/components/AIOptions";
 
+type LLMReqObject = {
+	heading: string;
+	output: string;
+}
+
+
+const initLLMReqAndOutput = [
+	{
+		heading: "What is this about?",
+		output: ""
+	},
+	{
+		heading: "Suggested Sermon",
+		output: ""
+	},
+	{
+		heading: "Discussion Questions",
+		output: ""
+	}
+];
+
 export default function Bible(): JSX.Element {
 	return (
 		<Suspense>
@@ -23,26 +44,9 @@ function PageContent() {
 	const [currentChapterText, setCurrentChapterText] = useState<Verses[]>([]);
 	const [showChapterText, setShowChapterText] = useState<boolean>(false);
 	const [bibleData, setBibleData] = useState<BibleFormData>(DefaultBibleFormData);
+	const [LLMOutput, setLLMOutput] = useState<string>('');
 
-	// const client = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
-
-	// const completion = async () =>
-	// 	await client.chat.completions.create({
-	// 		model: "gpt-4o-mini",
-	// 		store: true,
-	// 		messages: [
-	// 			{
-	// 				role: "user",
-	// 				content: "Write a one-sentence bedtime story about a unicorn.",
-	// 			},
-	// 		],
-	// 	});
-
-	// completion()
-	// 	.then((data: any): void => {
-	// 		console.log("Here", data);
-	// 	})
-	// 	.catch((e: any): void => console.warn(e));
+	const [LLMReqAndOutput, setLLMReqAndOutPut] = useState<LLMReqObject[]>(initLLMReqAndOutput)
 
 	useEffect((): void => {
 		console.log("Firing");
@@ -86,18 +90,28 @@ function PageContent() {
 			endVerse: formData.endVerse,
 		});
 	};
+
+	const updateLLMOutputData = (output: string, index: number): void => {
+		const copyOfData = LLMReqAndOutput.slice();
+		copyOfData[index]['output'] = output;
+		setLLMReqAndOutPut(copyOfData);
+	}
+
 	return (
-		<main className="grid grid-cols-3 py-10 gap-10">
+		<main className="grid grid-cols-3 py-10 gap-10 relative">
 			<section
 				id="options_sidebar"
-				className="col-span-1 flex flex-col gap-4"
+				className="sticky top-10 col-span-1 flex flex-col gap-4"
 			>
 				<BibleForm
 					submitHandler={formHandler}
 					updateNeededChapter={(data: Verses[]) => setCurrentChapterText(data)}
 				/>
 
-				<AIOptions selectedBibleData={bibleData} />
+				<AIOptions
+					selectedBibleData={bibleData}
+					updateOutput={(output: string, index: number): void => updateLLMOutputData(output, index)}
+				/>
 			</section>
 
 			{showChapterText && (
@@ -124,6 +138,21 @@ function PageContent() {
 						startVerse={bibleData.startVerse}
 						endVerse={bibleData.endVerse}
 					/>
+					<div className="col-span-2 flex flex-col gap-5">
+						{LLMReqAndOutput.map((x: LLMReqObject, y: number) => {
+							if (x.output.length > 0) {
+								return (
+									<article key={`LLM_output_${y}`}>
+										<h2 className="uppercase font-extrabold text-3xl my-5">{x.heading}</h2>
+										<div
+											dangerouslySetInnerHTML={{ __html: x.output }}
+											className="flex flex-col gap-5"
+										></div>
+									</article>
+								);
+							}
+						})}
+					</div>
 				</section>
 			)}
 		</main>

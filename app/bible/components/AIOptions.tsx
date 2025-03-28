@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { BibleFormData } from "@/lib/definitions";
 import OpenAI from "openai";
+import { remark } from "remark";
+import html from "remark-html";
 
 type AIOptionsProps = {
-	selectedBibleData: BibleFormData;
+    selectedBibleData: BibleFormData;
+    updateOutput: Function;
 };
 
-export default function AIOptions({ selectedBibleData }: AIOptionsProps) {
+export default function AIOptions({ selectedBibleData, updateOutput }: AIOptionsProps) {
     const {
         book,
         chapter,
@@ -42,15 +45,25 @@ export default function AIOptions({ selectedBibleData }: AIOptionsProps) {
 			}
 		}
 		return true;
-	};
+    };
+    
+    const processMarkdown = async (markdown: string): Promise<string> => {
+        const result = await remark().use(html).process(markdown);
+        return result.toString();
+    }
 
-	const clickHandler = (prompt: string): void => {
+	const clickHandler = (prompt: string, index: number): void => {
 		if (!dataIsPresent()) {
 			alert("Please search before using this.");
         } else {
             completion(prompt)
                 .then((data: any): void => {
-                    console.log(data.choices[0].message.content);
+                    const output = data.choices[0].message.content;
+                    processMarkdown(output)
+                        .then((final: string) => {
+                            updateOutput(final, index);
+                        })
+                        .catch((e: any) => console.warn('The following error occurred while processing the markdown: ', e));
                 })
                 .catch((e: any): void => console.warn(e));
         }
@@ -61,19 +74,19 @@ export default function AIOptions({ selectedBibleData }: AIOptionsProps) {
 			<h2 className="font-bold text-xl">Would you like some assistance?</h2>
 			<Button
 				variant="outline"
-				onClick={() => clickHandler(definePrompt)}
+				onClick={() => clickHandler(definePrompt,  0)}
 			>
 				What is this about?
 			</Button>
 			<Button
 				variant="outline"
-				onClick={() => clickHandler(createSermonPrompt)}
+				onClick={() => clickHandler(createSermonPrompt, 1)}
 			>
 				Create a sermon.
 			</Button>
 			<Button
 				variant="outline"
-				onClick={() => clickHandler(discussionPrompt)}
+				onClick={() => clickHandler(discussionPrompt, 2)}
 			>
 				Create discussion questions.
 			</Button>

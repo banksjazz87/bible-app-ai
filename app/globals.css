@@ -42,6 +42,11 @@ main {
   margin: auto;
 }
 
+li {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
 @media (max-width: 1280px) {
   main {
     padding: 0 2rem;

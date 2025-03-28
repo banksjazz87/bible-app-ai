@@ -42,7 +42,7 @@ export default function Books({ books, sectionTitle, changeHandler, optionsID, p
 							<SelectContent>
 								{books.map((x: BookAndChapters, y: number) => (
 									<SelectItem
-										key={`book_option_${y}`}
+										key={`${optionsID}_${y}`}
 										value={x.value}
 									>
 										{x.text}
