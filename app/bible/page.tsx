@@ -3,17 +3,13 @@
 import { useState, useEffect, JSX, FormEvent, Suspense } from "react";
 import BibleForm from "./components/BibleForm";
 import { useSearchParams } from "next/navigation";
-import { BibleFormData, Verses } from "@/lib/definitions";
+import { BibleFormData, Verses, LLMReqObject } from "@/lib/definitions";
 import BibleVerses from "./components/BibleVerses";
 import { Button } from "@/components/ui/button";
 import { DefaultBibleFormData } from "@/lib/bible/bibleData";
-import OpenAI from "openai";
 import AIOptions from "@/app/bible/components/AIOptions";
+import AIOutput from "@/app/bible/components/AIOutput";
 
-type LLMReqObject = {
-	heading: string;
-	output: string;
-}
 
 
 const initLLMReqAndOutput = [
@@ -138,21 +134,7 @@ function PageContent() {
 						startVerse={bibleData.startVerse}
 						endVerse={bibleData.endVerse}
 					/>
-					<div className="col-span-2 flex flex-col gap-5">
-						{LLMReqAndOutput.map((x: LLMReqObject, y: number) => {
-							if (x.output.length > 0) {
-								return (
-									<article key={`LLM_output_${y}`}>
-										<h2 className="uppercase font-extrabold text-3xl my-5">{x.heading}</h2>
-										<div
-											dangerouslySetInnerHTML={{ __html: x.output }}
-											className="flex flex-col gap-5"
-										></div>
-									</article>
-								);
-							}
-						})}
-					</div>
+					<AIOutput LLMData={LLMReqAndOutput} />
 				</section>
 			)}
 		</main>

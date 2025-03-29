@@ -67,3 +67,8 @@ export type ChapterResponse = {
     data: Verses[];
 };
 
+export type LLMReqObject = {
+	heading: string;
+	output: string;
+}
+
