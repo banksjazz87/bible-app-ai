@@ -8,9 +8,11 @@ import html from "remark-html";
 type AIOptionsProps = {
     selectedBibleData: BibleFormData;
     updateOutput: Function;
+    startLoading: Function;
+    stopLoading: Function;
 };
 
-export default function AIOptions({ selectedBibleData, updateOutput }: AIOptionsProps) {
+export default function AIOptions({ selectedBibleData, updateOutput, startLoading, stopLoading }: AIOptionsProps) {
     const {
         book,
         chapter,
@@ -56,6 +58,7 @@ export default function AIOptions({ selectedBibleData, updateOutput }: AIOptions
 		if (!dataIsPresent()) {
 			alert("Please search before using this.");
         } else {
+            startLoading();
             completion(prompt)
                 .then((data: any): void => {
                     const output = data.choices[0].message.content;
@@ -63,9 +66,14 @@ export default function AIOptions({ selectedBibleData, updateOutput }: AIOptions
                         .then((final: string) => {
                             updateOutput(final, index);
                         })
-                        .catch((e: any) => console.warn('The following error occurred while processing the markdown: ', e));
+                        .catch((e: any) => {
+                            console.warn('The following error occurred while processing the markdown: ', e);
+                        });
                 })
-                .catch((e: any): void => console.warn(e));
+                .catch((e: any): void => {
+                    console.warn(e);
+                })
+                .finally(() => stopLoading());
         }
 	};
 

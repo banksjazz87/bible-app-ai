@@ -4,18 +4,31 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type AIOutputProps = {
 	LLMData: LLMReqObject[];
+	isLoading: boolean;
 };
 
-export default function AIOutput({ LLMData }: AIOutputProps) {
-	return (
-		<Suspense fallback={<AIOutputSkeleton/>}>
-			<AIOutputSection LLMData={LLMData} />
-			<AIOutputSkeleton />
-		</Suspense>
-	);
+export default function AIOutput({ LLMData, isLoading }: AIOutputProps) {
+	if (isLoading) {
+		return (
+			<Suspense fallback={<AIOutputSkeleton />}>
+				<AIOutputSection
+					LLMData={LLMData}
+					isLoading={isLoading}
+				/>
+				<AIOutputSkeleton />
+			</Suspense>
+		);
+	} else {
+		return (
+			<AIOutputSection
+				LLMData={LLMData}
+				isLoading={isLoading}
+			/>
+		);
+	}
 }
 
-function AIOutputSection({ LLMData }: AIOutputProps) {
+function AIOutputSection({ LLMData, isLoading }: AIOutputProps) {
 	return (
 		<section className="col-span-2 flex flex-col gap-5">
 			{LLMData.map((x: LLMReqObject, y: number): JSX.Element | undefined => {

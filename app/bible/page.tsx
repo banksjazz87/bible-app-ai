@@ -42,10 +42,10 @@ function PageContent() {
 	const [bibleData, setBibleData] = useState<BibleFormData>(DefaultBibleFormData);
 	const [LLMOutput, setLLMOutput] = useState<string>('');
 
-	const [LLMReqAndOutput, setLLMReqAndOutPut] = useState<LLMReqObject[]>(initLLMReqAndOutput)
+	const [LLMReqAndOutput, setLLMReqAndOutPut] = useState<LLMReqObject[]>(initLLMReqAndOutput);
+	const [LLMisLoading, setLLMisLoading] = useState<boolean>(false);
 
 	useEffect((): void => {
-		console.log("Firing");
 		const version = searchParams.get("version") as string;
 		const book = searchParams.get("book") as string;
 		const chapter = searchParams.get("chapter") as string;
@@ -107,6 +107,8 @@ function PageContent() {
 				<AIOptions
 					selectedBibleData={bibleData}
 					updateOutput={(output: string, index: number): void => updateLLMOutputData(output, index)}
+					startLoading={(): void => setLLMisLoading(true)}
+					stopLoading={(): void => setLLMisLoading(false)}
 				/>
 			</section>
 
@@ -134,7 +136,7 @@ function PageContent() {
 						startVerse={bibleData.startVerse}
 						endVerse={bibleData.endVerse}
 					/>
-					<AIOutput LLMData={LLMReqAndOutput} />
+					<AIOutput LLMData={LLMReqAndOutput} isLoading={LLMisLoading} />
 				</section>
 			)}
 		</main>
