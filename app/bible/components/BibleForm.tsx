@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, JSX, FormEvent, useActionState, Suspense } from "react";
+import { useState, useEffect, JSX, FormEvent, useActionState } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
@@ -86,73 +86,71 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 
 	return (
 		<div className="border-slate-800 border rounded-md p-5">
-			<Suspense fallback={<p>Loading...</p>}>
-				<Form {...form}>
-					<form
-						id="bible-form"
-						onSubmit={(e: FormEvent<HTMLFormElement>): void => submitHandler(e, bibleForm)}
-						method={"/bible"}
-					>
-						<div className="flex flex-col gap-4">
-							<h2 className="font-bold text-xl">Select your options:</h2>
-							<Options
-								options={EnglishBibleVersions}
-								sectionTitle="Select a Bible Version"
-								optionsID="version"
-								changeHandler={(value: string): void => selectChangeHandler("version", value)}
-								placeholderText="Select a Bible Version"
-								selectedValue={getSelectTextValue("version", EnglishBibleVersions, returnSearchParamValues)}
-							/>
-
-							<Books
-								books={BooksOfTheBible}
-								changeHandler={(value: string): void => {
-									const bookMatch = bookFilter(BooksOfTheBible, value);
-									if (bookMatch.length > 0) {
-										selectChangeHandler("book", bookMatch);
-									}
-								}}
-								sectionTitle="Book"
-								optionsID="book"
-								placeholder="Book"
-								selectedValue={getSelectTextValue("book", BooksOfTheBible, returnSearchParamValues)}
-							/>
-
-							<Options
-								changeHandler={(value: string): void => selectChangeHandler("chapter", value)}
-								sectionTitle="Select Chapter"
-								options={viableChapters}
-								optionsID="chapter"
-								placeholderText="Select Chapter"
-								selectedValue={getSelectTextValue("chapter", viableChapters, returnSearchParamValues)}
-							/>
-
-							<Options
-								changeHandler={(value: string): void => selectChangeHandler("startVerse", value)}
-								sectionTitle="Starting Verse"
-								options={verses}
-								optionsID="startVerse"
-								placeholderText="Select Starting Verse"
-								selectedValue={bibleForm.startVerse}
-							/>
-
-							<Options
-								changeHandler={(value: string): void => selectChangeHandler("endVerse", value)}
-								sectionTitle="Ending Verse"
-								options={verses.slice(Number(bibleForm.startVerse) - 1)}
-								optionsID="endVerse"
-								placeholderText="Select Ending Verse"
-								selectedValue={bibleForm.endVerse}
-							/>
-						</div>
-						<input
-							type="submit"
-							value="Submit"
-							className="bg-zinc-900 hover:bg-zinc-800 py-2 px-6 min-w-40 inline-block w-auto justify-center rounded-md text-white hover:cursor-pointer my-4"
+			<Form {...form}>
+				<form
+					id="bible-form"
+					onSubmit={(e: FormEvent<HTMLFormElement>): void => submitHandler(e, bibleForm)}
+					method={"/bible"}
+				>
+					<div className="flex flex-col gap-4">
+						<h2 className="font-bold text-xl">Select your options:</h2>
+						<Options
+							options={EnglishBibleVersions}
+							sectionTitle="Select a Bible Version"
+							optionsID="version"
+							changeHandler={(value: string): void => selectChangeHandler("version", value)}
+							placeholderText="Select a Bible Version"
+							selectedValue={getSelectTextValue("version", EnglishBibleVersions, returnSearchParamValues)}
 						/>
-					</form>
-				</Form>
-			</Suspense>
+
+						<Books
+							books={BooksOfTheBible}
+							changeHandler={(value: string): void => {
+								const bookMatch = bookFilter(BooksOfTheBible, value);
+								if (bookMatch.length > 0) {
+									selectChangeHandler("book", bookMatch);
+								}
+							}}
+							sectionTitle="Book"
+							optionsID="book"
+							placeholder="Book"
+							selectedValue={getSelectTextValue("book", BooksOfTheBible, returnSearchParamValues)}
+						/>
+
+						<Options
+							changeHandler={(value: string): void => selectChangeHandler("chapter", value)}
+							sectionTitle="Select Chapter"
+							options={viableChapters}
+							optionsID="chapter"
+							placeholderText="Select Chapter"
+							selectedValue={getSelectTextValue("chapter", viableChapters, returnSearchParamValues)}
+						/>
+
+						<Options
+							changeHandler={(value: string): void => selectChangeHandler("startVerse", value)}
+							sectionTitle="Starting Verse"
+							options={verses}
+							optionsID="startVerse"
+							placeholderText="Select Starting Verse"
+							selectedValue={bibleForm.startVerse}
+						/>
+
+						<Options
+							changeHandler={(value: string): void => selectChangeHandler("endVerse", value)}
+							sectionTitle="Ending Verse"
+							options={verses.slice(Number(bibleForm.startVerse) - 1)}
+							optionsID="endVerse"
+							placeholderText="Select Ending Verse"
+							selectedValue={bibleForm.endVerse}
+						/>
+					</div>
+					<input
+						type="submit"
+						value="Submit"
+						className="bg-zinc-900 hover:bg-zinc-800 py-2 px-6 min-w-40 inline-block w-auto justify-center rounded-md text-white hover:cursor-pointer my-4"
+					/>
+				</form>
+			</Form>
 		</div>
 	);
 }

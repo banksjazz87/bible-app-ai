@@ -29,7 +29,7 @@ const initLLMReqAndOutput = [
 
 export default function Bible(): JSX.Element {
 	return (
-		<Suspense>
+		<Suspense fallback={<p>...loading</p>}>
 			<PageContent />
 		</Suspense>
 	);

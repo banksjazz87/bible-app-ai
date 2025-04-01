@@ -1,5 +1,6 @@
 //Methods used to access bible data.
 import { BookAndChapters, ChapterResponse, Verses, SelectFields } from "@/lib/definitions";
+import { unique } from "next/dist/build/utils";
 
 //Get the chapters according to the book and testament that are currently selected.
 export function getChapters(bible: BookAndChapters[], book: string, updateChapters: Function) {
@@ -44,8 +45,27 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: Fun
 		};
 		return newObj;
 	});
-	updateVerses(convertedOptionData);
-	updateChapter(verseJSON);
+
+	//Adding a check here for duplicate verses, a few of the API responses contain duplicate verses.
+	let uniqueVerses = [{text: '', value: ''}];
+	for (let i = 0; i < convertedOptionData.length; i++) {
+		if (convertedOptionData[i].value === "1" && i > 0) {
+			break;
+		}
+		uniqueVerses[i] = convertedOptionData[i];
+	}
+
+	//Get unique verseJSON values.
+	let uniqueVerseJSON: Verses[] = [{ book: '', chapter: '', verse: '', text: '' }];
+	for (let i = 0; i < verseJSON.length; i++) {
+		if (verseJSON[i].verse === "1" && i > 0) {
+			break;
+		}
+		uniqueVerseJSON[i] = verseJSON[i];
+	}
+
+	updateVerses(uniqueVerses);
+	updateChapter(uniqueVerseJSON);
 }
 
 export function bookFilter(books: BookAndChapters[], value: string): string {
