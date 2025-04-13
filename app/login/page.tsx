@@ -3,8 +3,23 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { login, signup } from "./actions";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
 
 const supabase = createClient();
+const loginFormSchema = z.object({
+    email: z.string().email({ message: "Please provide a valid email." }),
+    password: z.string().min(12, { message: "Password must be 12 or more characters." }).max(20, { message: "Password must be fewer than 20 characters." })
+});
 
 export default function Login() {
 	const [notes, setNotes] = useState([]);
@@ -38,7 +53,7 @@ export default function Login() {
 					required
 				/>
 				<button formAction={login}>Log in</button>
-				<button formAction={signup}>Sign up</button>
+                <button formAction={signup}>Sign up</button>
 			</form>
 		</main>
 	);
