@@ -11,14 +11,25 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage,
+    FormMessage
 } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+
+
 
 const supabase = createClient();
 
+const loginFormSchema = z.object({
+	email: z.string().email({ message: "Please provide a valid email." }),
+	password: z.string().min(12, { message: "Password must be 12 or more characters." }).max(20, { message: "Password must be fewer than 20 characters" }),
+});
+
 
 export default function Login() {
-	const [notes, setNotes] = useState([]);
+    const [notes, setNotes] = useState([]);
 
 	useEffect(() => {
 		getNotes();
@@ -28,6 +39,18 @@ export default function Login() {
 		const data = await supabase.from("notes").select();
 
 		console.log("HERE ", data);
+    }
+
+    const form = useForm<z.infer<typeof loginFormSchema>>({
+        resolver: zodResolver(loginFormSchema),
+        defaultValues: {
+            email: '',
+            password: ''
+        }
+    });
+
+    function onSubmit(values: z.infer<typeof loginFormSchema>) {
+        console.log(values);
     }
     
 
@@ -41,7 +64,7 @@ export default function Login() {
 		<main>
 			<h1>This will be the login page</h1>
 
-			<form>
+			{/* <form>
 				<label htmlFor="email">Email:</label>
 				<input
 					id="email"
@@ -56,14 +79,55 @@ export default function Login() {
 					type="password"
 					required
 				/>
-                <button
-                    type="submit"
-                    formAction={login}
+				<button
+					type="submit"
+					formAction={loginAction}
 				>
 					Log in
 				</button>
 				<button formAction={signup}>Sign up</button>
-			</form>
+			</form> */}
+
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className="space-y-8"
+				>
+					<FormField
+						control={form.control}
+						name="email"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Email</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="shadcn"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage className="text-red-700" />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="password"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Password</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="shadcn"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage className="text-red-700" />
+							</FormItem>
+						)}
+					/>
+					<Button type="submit">Submit</Button>
+				</form>
+			</Form>
 		</main>
 	);
 }

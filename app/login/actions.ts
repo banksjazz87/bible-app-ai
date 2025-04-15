@@ -1,13 +1,15 @@
-"use server"
+"use server";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 
-export async function login(formData: FormData) {
+type LoginFormState = {
+    error?: string;
+}
+
+export async function login(prevState: LoginFormState, formData: FormData) {
     const supabase = await createClient();
     
     const loginFormSchema = z.object({
@@ -28,13 +30,16 @@ export async function login(formData: FormData) {
     });
 
     if (!validData.success) {
-        redirect("/error");
+        return {
+            error: validData.error.format()
+        };
     }
 
     const { error } = await supabase.auth.signInWithPassword(data);
-	if (error) {
-		redirect("/error");
-	}
+    if (error) {
+        return { error: error.message };
+    }
+    
 
 	revalidatePath("/", "layout");
 	redirect("/");
