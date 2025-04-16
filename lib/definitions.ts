@@ -72,3 +72,8 @@ export type LLMReqObject = {
 	output: string;
 }
 
+export type LoginForm = {
+    email: string;
+    password: string;
+}
+

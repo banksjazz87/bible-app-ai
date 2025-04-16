@@ -51,6 +51,7 @@ export default function Login() {
 
     function onSubmit(values: z.infer<typeof loginFormSchema>) {
         console.log(values);
+        login(values).then((data) => console.log("Res here ", data));
     }
     
 
@@ -61,37 +62,14 @@ export default function Login() {
     //         console.log(response);
 	// 	}
 	return (
-		<main>
-			<h1>This will be the login page</h1>
-
-			{/* <form>
-				<label htmlFor="email">Email:</label>
-				<input
-					id="email"
-					name="email"
-					type="email"
-					required
-				/>
-				<label htmlFor="password">Password:</label>
-				<input
-					id="password"
-					name="password"
-					type="password"
-					required
-				/>
-				<button
-					type="submit"
-					formAction={loginAction}
-				>
-					Log in
-				</button>
-				<button formAction={signup}>Sign up</button>
-			</form> */}
-
-			<Form {...form}>
+		<main className="flex flex-col justify-center align-middle h-100 mx-auto">
+			
+			<Form
+				{...form}
+			>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
-					className="space-y-8"
+					className="space-y-8 w-100 mx-auto"
 				>
 					<FormField
 						control={form.control}
@@ -101,8 +79,10 @@ export default function Login() {
 								<FormLabel>Email</FormLabel>
 								<FormControl>
 									<Input
-										placeholder="shadcn"
-										{...field}
+                                        placeholder="Email"
+                                        type="email"
+									    {...field}
+										className="border-slate-600 rounded-none"
 									/>
 								</FormControl>
 								<FormMessage className="text-red-700" />
@@ -117,8 +97,10 @@ export default function Login() {
 								<FormLabel>Password</FormLabel>
 								<FormControl>
 									<Input
-										placeholder="shadcn"
+                                        placeholder="Password"
+                                        type="password"
 										{...field}
+										className="border-slate-600 rounded-none"
 									/>
 								</FormControl>
 								<FormMessage className="text-red-700" />
