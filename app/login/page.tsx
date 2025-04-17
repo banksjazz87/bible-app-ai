@@ -55,22 +55,15 @@ export default function Login() {
     }
     
 
-    // async function loginHandler(e: React.FormEvent<HTMLFormElement>) {
-	// 		e.preventDefault();
-	// 		const formData = new FormData(e.currentTarget);
-	// 		const response = await login(formData);
-    //         console.log(response);
-	// 	}
 	return (
-		<main className="flex flex-col justify-center align-middle h-100 mx-auto">
-			
-			<Form
-				{...form}
-			>
+		<main className="flex flex-col justify-center align-middle min-h-dvh mx-auto">
+			<div className="border-1 border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
+			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="space-y-8 w-100 mx-auto"
 				>
+					<h2 className="font-bold text-xl">Login Form</h2>
 					<FormField
 						control={form.control}
 						name="email"
@@ -79,9 +72,9 @@ export default function Login() {
 								<FormLabel>Email</FormLabel>
 								<FormControl>
 									<Input
-                                        placeholder="Email"
-                                        type="email"
-									    {...field}
+										placeholder="Email"
+										type="email"
+										{...field}
 										className="border-slate-600 rounded-none"
 									/>
 								</FormControl>
@@ -97,8 +90,8 @@ export default function Login() {
 								<FormLabel>Password</FormLabel>
 								<FormControl>
 									<Input
-                                        placeholder="Password"
-                                        type="password"
+										placeholder="Password"
+										type="password"
 										{...field}
 										className="border-slate-600 rounded-none"
 									/>
@@ -110,6 +103,7 @@ export default function Login() {
 					<Button type="submit">Submit</Button>
 				</form>
 			</Form>
+			</div>
 		</main>
 	);
 }
