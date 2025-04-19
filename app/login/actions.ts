@@ -5,42 +5,24 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { z } from "zod";
 import { LoginForm } from "@/lib/definitions";
-
-type LoginFormState = {
-    error?: string;
-}
+import { APIResponse } from "@/lib/definitions";
 
 
-
-export async function login(formData: LoginForm) {
+export async function login(formData: LoginForm): Promise<APIResponse> {
     const supabase = await createClient();
     
     const { error } = await supabase.auth.signInWithPassword(formData);
     if (error) {
-        return { error: error.message };
+		return {
+			status: 404,
+			message: error.message
+		};
     }
 
-    return { success: "This Worked and the user is verified."}
-
-}
-
-
-export async function signup(formData: FormData) {
-	const supabase = await createClient();
-
-	// type-casting here for convenience
-	// in practice, you should validate your inputs
-	const data = {
-		email: formData.get("email") as string,
-		password: formData.get("password") as string,
-	};
-
-	const { error } = await supabase.auth.signUp(data);
-
-	if (error) {
-		redirect("/error");
+	revalidatePath('/');
+	return {
+		status: 200,
+		message: "The user is verified."
 	}
-
-	revalidatePath("/", "layout");
-	redirect("/");
 }
+

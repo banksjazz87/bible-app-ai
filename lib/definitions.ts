@@ -77,3 +77,7 @@ export type LoginForm = {
     password: string;
 }
 
+export type APIResponse = {
+    status: number;
+    message: string;
+}
