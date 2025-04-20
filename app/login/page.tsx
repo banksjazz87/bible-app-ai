@@ -5,12 +5,12 @@ import HyperLink from "@/app/ui/HyperLink";
 import { login } from "./actions";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { APIResponse } from "@/lib/definitions";
+import Alert from "@/app/ui/Alert";
 
 const loginFormSchema = z.object({
 	email: z.string().email({ message: "Please provide a valid email." }),
@@ -19,16 +19,15 @@ const loginFormSchema = z.object({
 
 export default function Login(): JSX.Element {
 
-	const [errorMessage, setErrorMessage] = useState<string>('');
+	const [alertMessage, setAlertMessage] = useState<string>('');
 	const [response, setResponse] = useState<number | null>(null);
-	const [showError, setShowError] = useState<boolean>(false);
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertTitle, setAlertTitle] = useState<string>('');
 
 	useEffect((): void => {
-		console.log(response);
 		if (response !== null && response !== 200) {
-			setShowError(true);
+			setShowAlert(true);
 		}
-
 	}, [response]);
 
 	
@@ -42,28 +41,30 @@ export default function Login(): JSX.Element {
 
 	function onSubmit(values: z.infer<typeof loginFormSchema>) {
 		login(values).then((data: APIResponse) => {
-			console.log('here ', data);
 			setResponse(data.status);
-			setErrorMessage(data.message);
+			setAlertMessage(data.message);
+			setAlertTitle('Error')
 		});
+	}
+
+
+	function modalCloseHandler(): void {
+		setShowAlert(false);
+		setResponse(null);
 	}
 
 	return (
 		<main className="flex flex-col justify-center align-middle min-h-dvh mx-auto">
-			
-				<AlertDialog open={showError} onOpenChange={setShowError}>
-					<AlertDialogContent>
-						<AlertDialogHeader>
-							<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-							<AlertDialogDescription>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</AlertDialogDescription>
-						</AlertDialogHeader>
-						<AlertDialogFooter>
-							<AlertDialogCancel onClick={() => setShowError(false)}>Cancel</AlertDialogCancel>
-							<AlertDialogAction onClick={() => setShowError(false)}>Try Again</AlertDialogAction>
-						</AlertDialogFooter>
-					</AlertDialogContent>
-				</AlertDialog>
-		
+			<Alert
+				isOpen={showAlert}
+				openHandler={setShowAlert}
+				title={alertTitle}
+				description={alertMessage}
+				confirmText={"Okay"}
+				cancelText={"Cancel"}
+				cancelHandler={(): void => modalCloseHandler()}
+				confirmHandler={(): void => modalCloseHandler()}
+			/>
 			<div className="border-1 border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
 				<h2 className="font-bold text-xl">Login Form</h2>
 				<Form {...form}>
