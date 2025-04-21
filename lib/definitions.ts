@@ -81,3 +81,20 @@ export type APIResponse = {
     status: number;
     message: string;
 }
+
+export type AlertProps = {
+	isOpen: boolean;
+	openHandler: (isOpen: boolean) => void;
+	title: string;
+	description: string;
+	confirmText?: string;
+	cancelText?: string;
+	cancelHandler: () => void;
+	confirmHandler: () => void;
+};
+
+export type LoginFormProps = {
+    responseHandler: (statusCode: number | null) => void;
+    alertMessageHandler: (message: string) => void;
+    alertTitleHandler: (title: string) => void;
+}
