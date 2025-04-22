@@ -28,7 +28,7 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 	});
 
 	function onSubmit(values: z.infer<typeof loginFormSchema>) {
-        login(values).then((data: APIResponse) => {
+        login(values).then((data: APIResponse): void => {
 			responseHandler(data.status);
 			alertMessageHandler(data.message);
 			alertTitleHandler("Error");
