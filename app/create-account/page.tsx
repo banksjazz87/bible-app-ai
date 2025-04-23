@@ -12,15 +12,26 @@ export default function CreateAccount(): JSX.Element {
 	const [alertTitle, setAlertTitle] = useState<string>("");
 
 	useEffect((): void => {
-			if (response !== null && response !== 200) {
+			if (response !== null) {
 				setShowAlert(true);
-			} else if (response !== null && response === 200) {
-				redirect('/bible');
-			}
+			} 
 		}, [response]);
 
+	function modalCloseHandler(): void {
+		console.log('This has fired');
+		setShowAlert(false);
+		setResponse(null);
+	}
 	return (
 		<main className="flex flex-col justify-center align-middle min-h-dvh mx-auto">
+			<Alert
+				isOpen={showAlert}
+				openHandler={setShowAlert}
+				title={alertTitle}
+				description={alertMessage}
+				cancelHandler={(): void => modalCloseHandler()}
+				confirmHandler={(): void => modalCloseHandler()}
+			/>
 			<CreateAccountForm
 				responseHandler={setResponse}
 				alertMessageHandler={setAlertMessage}

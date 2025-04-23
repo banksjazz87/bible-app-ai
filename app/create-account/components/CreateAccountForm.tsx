@@ -34,10 +34,13 @@ export default function CreateAccountForm({responseHandler, alertMessageHandler,
 	});
 
 	function onSubmit(values: z.infer<typeof createAccountFormSchema>) {
-		console.log(values);
 		signup(values).then((data: APIResponse): void => {
+
+			console.log(data);
 			responseHandler(data.status);
-			alert
+			const alertTitle: string = data.status === 200 ? "Success" : "Error Creating Account";
+			alertTitleHandler(alertTitle);
+			alertMessageHandler(data.message);
 		});
 	}
 
