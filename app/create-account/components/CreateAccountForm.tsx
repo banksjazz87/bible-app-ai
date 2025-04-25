@@ -41,6 +41,7 @@ export default function CreateAccountForm({responseHandler, alertMessageHandler,
 			const alertTitle: string = data.status === 200 ? "Success" : "Error Creating Account";
 			alertTitleHandler(alertTitle);
 			alertMessageHandler(data.message);
+
 		});
 	}
 

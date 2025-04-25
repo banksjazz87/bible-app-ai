@@ -18,10 +18,10 @@ export default function CreateAccount(): JSX.Element {
 		}, [response]);
 
 	function modalCloseHandler(): void {
-		console.log('This has fired');
 		setShowAlert(false);
 		setResponse(null);
 	}
+	
 	return (
 		<main className="flex flex-col justify-center align-middle min-h-dvh mx-auto">
 			<Alert

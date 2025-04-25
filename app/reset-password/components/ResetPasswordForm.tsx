@@ -25,10 +25,11 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 	});
 
 	function onSubmit(values: z.infer<typeof resetSchema>) {
-		resetPassword(values).then((data: APIResponse): void => {
+        resetPassword(values).then((data: APIResponse): void => {
+            const alertTitle: string = data.status === 200 ? "Success" : "Error Resetting account Account";
 			responseHandler(data.status);
 			alertMessageHandler(data.message);
-			alertTitleHandler("Error");
+			alertTitleHandler(alertTitle);
 		});
 	}
 
