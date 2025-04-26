@@ -2,7 +2,7 @@
 
 import { JSX, useEffect,  useState } from "react";
 import Alert from "@/app/ui/Alert";
-import LoginForm from "@/app/login/components/LoginForm";
+import LoginForm from "@/app/account/login/components/LoginForm";
 import { redirect } from 'next/navigation';
 
 

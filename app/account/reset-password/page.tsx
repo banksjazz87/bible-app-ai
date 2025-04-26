@@ -1,5 +1,8 @@
+"use client";
+
+
 import { JSX, useEffect, useState } from "react";
-import ResetPasswordForm from "@/app/reset-password/components/ResetPasswordForm";
+import ResetPasswordForm from "@/app/account/reset-password/components/ResetPasswordForm";
 import Alert from "@/app/ui/Alert";
 
 export default function page(): JSX.Element {

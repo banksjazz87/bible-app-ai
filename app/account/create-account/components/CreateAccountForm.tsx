@@ -3,7 +3,7 @@
 import { JSX } from "react";
 import Link from "next/link";
 import HyperLink from "@/app/ui/HyperLink";
-import { signup } from "@/app/create-account/actions";
+import { signup } from "@/app/account/create-account/actions";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";

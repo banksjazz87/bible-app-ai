@@ -8,14 +8,17 @@ type ResetPassword = {
     email: string;
 }
 
-export async function resetPassword(formData: ResetPassword): Promise<APIResponse> {
+export async function requestResetPassword(formData: ResetPassword): Promise<APIResponse> {
     const supabase = await createClient();
     
-    const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {redirectTo: '/update-password'});
-    if (error) {
+    // const { error } = await supabase.auth.resetPasswordForEmail(formData.email, { redirectTo: '/update-password' });
+    const response = await supabase.auth.resetPasswordForEmail(formData.email, { redirectTo: "/update-password" });
+
+    console.log(response);
+    if (response.error) {
         return {
             status: 404,
-            message: error.message
+            message: response.error.message
         };
     }
 
@@ -25,4 +28,5 @@ export async function resetPassword(formData: ResetPassword): Promise<APIRespons
         message: "The password request has been sent."
     }
 }
+
 

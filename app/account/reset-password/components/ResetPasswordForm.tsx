@@ -2,7 +2,7 @@
 
 import { JSX } from "react";
 import HyperLink from "@/app/ui/HyperLink";
-import { login } from "@/app/login/actions";
+import { requestResetPassword } from "../actions";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -12,27 +12,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { APIResponse, LoginFormProps } from "@/lib/definitions";
 
 //Define our Form schema
-const loginFormSchema = z.object({
+const resetSchema = z.object({
 	email: z.string().email({ message: "Please provide a valid email." }),
-	password: z.string().min(12, { message: "Password must be 12 or more characters." }).max(20, { message: "Password must be fewer than 20 characters" }),
 });
 
 export default function LoginForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
-
-	const form = useForm<z.infer<typeof loginFormSchema>>({
-		resolver: zodResolver(loginFormSchema),
+	const form = useForm<z.infer<typeof resetSchema>>({
+		resolver: zodResolver(resetSchema),
 		defaultValues: {
-			email: "",
-			password: "",
+			email: ""
 		},
 	});
 
-	function onSubmit(values: z.infer<typeof loginFormSchema>) {
-        login(values).then((data: APIResponse): void => {
-			responseHandler(data.status);
-			alertMessageHandler(data.message);
-			alertTitleHandler("Error");
-		});
+	function onSubmit(values: z.infer<typeof resetSchema>) {
+        requestResetPassword(values).then((data: APIResponse): void => {
+					const alertTitle: string = data.status === 200 ? "Success" : "Error Resetting account Account";
+					responseHandler(data.status);
+					alertMessageHandler(data.message);
+					alertTitleHandler(alertTitle);
+				});
 	}
 
 	return (
@@ -61,34 +59,17 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 							</FormItem>
 						)}
 					/>
-					<FormField
-						control={form.control}
-						name="password"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Password</FormLabel>
-								<FormControl>
-									<Input
-										placeholder="Password"
-										type="password"
-										{...field}
-										className="border-slate-600 rounded-none"
-									/>
-								</FormControl>
-								<FormMessage className="text-red-700" />
-							</FormItem>
-						)}
-					/>
+					
 					<Button type="submit">Submit</Button>
 				</form>
 			</Form>
 			<div className="flex flex-col gap-1 mt-4">
 				<HyperLink
-					hrefValue="/request-new-password"
-					text="Forgot Username or Password?"
+					hrefValue="/account/login"
+					text="Back to Login"
 				/>
 				<HyperLink
-					hrefValue="/create-account"
+					hrefValue="/account/create-account"
 					text="Create Account"
 				/>
 			</div>

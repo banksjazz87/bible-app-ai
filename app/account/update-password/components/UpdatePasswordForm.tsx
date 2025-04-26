@@ -13,20 +13,22 @@ import { APIResponse, LoginFormProps } from "@/lib/definitions";
 
 //Define our Form schema
 const resetSchema = z.object({
-	email: z.string().email({ message: "Please provide a valid email." }),
+	password: z.string().min(12, { message: "Password must be 12 or more characters." }).max(20, { message: "Password must be fewer than 20 characters" }),
+	verifiedPassword: z.string(),
 });
 
-export default function LoginForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
+export default function UpdatePasswordForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
 	const form = useForm<z.infer<typeof resetSchema>>({
 		resolver: zodResolver(resetSchema),
 		defaultValues: {
-			email: ""
+            password: "",
+            verifiedPassword: ''
 		},
 	});
 
 	function onSubmit(values: z.infer<typeof resetSchema>) {
-        resetPassword(values).then((data: APIResponse): void => {
-            const alertTitle: string = data.status === 200 ? "Success" : "Error Resetting account Account";
+		resetPassword(values).then((data: APIResponse): void => {
+			const alertTitle: string = data.status === 200 ? "Success" : "Error Resetting account Account";
 			responseHandler(data.status);
 			alertMessageHandler(data.message);
 			alertTitleHandler(alertTitle);
@@ -43,14 +45,14 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 				>
 					<FormField
 						control={form.control}
-						name="email"
+						name="password"
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Email</FormLabel>
 								<FormControl>
 									<Input
-										placeholder="Email"
-										type="email"
+										placeholder="Password"
+										type="password"
 										{...field}
 										className="border-slate-600 rounded-none"
 									/>
@@ -59,17 +61,36 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 							</FormItem>
 						)}
 					/>
-					
+
+					<FormField
+						control={form.control}
+						name="verifiedPassword"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Email</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="Verify Password"
+										type="password"
+										{...field}
+										className="border-slate-600 rounded-none"
+									/>
+								</FormControl>
+								<FormMessage className="text-red-700" />
+							</FormItem>
+						)}
+					/>
+
 					<Button type="submit">Submit</Button>
 				</form>
 			</Form>
 			<div className="flex flex-col gap-1 mt-4">
 				<HyperLink
-					hrefValue="/login"
+					hrefValue="/account/login"
 					text="Back to Login"
 				/>
 				<HyperLink
-					hrefValue="/create-account"
+					hrefValue="/account/create-account"
 					text="Create Account"
 				/>
 			</div>

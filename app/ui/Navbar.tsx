@@ -22,11 +22,11 @@ export default function NavBar() {
 		},
 		{
 			title: "Login",
-			hrefValue: "/login",
+			hrefValue: "/account/login",
 		},
 		{
 			title: "Logout",
-			hrefValue: "/logout",
+			hrefValue: "/account/logout",
 		},
 	];
 
