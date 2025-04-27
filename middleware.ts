@@ -1,8 +1,27 @@
-import { type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { updateSession } from "./utils/supabase/middleware";
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 export async function middleware(request: NextRequest) {
+	if (request.nextUrl.pathname === "/account/logout") {
+		const supabase = await createClient();
+
+		const { error } = await supabase.auth.signOut();
+
+		if (error) {
+			return {
+				status: 404,
+				message: error.message,
+			};
+		}
+
+		return NextResponse.redirect(new URL("/", request.url));
+	}
+
 	return await updateSession(request);
+
 }
 
 export const config = {
@@ -17,3 +36,4 @@ export const config = {
 		"/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
 	],
 };
+
