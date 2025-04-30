@@ -112,7 +112,7 @@ export default function CreateAccountForm({responseHandler, alertMessageHandler,
 			</Form>
 			<div className="flex flex-col gap-1 mt-4">
 				<HyperLink
-					hrefValue="/request-new-password"
+					hrefValue="/account/reset-password"
 					text="Forgot Username or Password?"
 				/>
 			</div>

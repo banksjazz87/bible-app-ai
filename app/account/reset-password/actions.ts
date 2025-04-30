@@ -25,7 +25,7 @@ export async function requestResetPassword(formData: ResetPassword): Promise<API
     revalidatePath('/');
     return {
         status: 200,
-        message: "The password request has been sent."
+        message: "Please follow the link in your email to finish resetting your password."
     }
 }
 

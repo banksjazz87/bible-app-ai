@@ -28,16 +28,16 @@ export default function UpdatePasswordForm({ responseHandler, alertMessageHandle
 
 	function onSubmit(values: z.infer<typeof resetSchema>) {
 		resetPassword(values).then((data: APIResponse): void => {
-			const alertTitle: string = data.status === 200 ? "Success" : "Error Resetting account Account";
-			responseHandler(data.status);
-			alertMessageHandler(data.message);
-			alertTitleHandler(alertTitle);
+            const alertTitle: string = data.status === 200 ? "Success" : "Error Resetting account Account";
+            responseHandler(data.status);
+            alertTitleHandler(alertTitle);
+            alertMessageHandler(data.message);
 		});
 	}
 
 	return (
 		<div className="border-1 border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
-			<h2 className="font-bold text-xl">Login Form</h2>
+			<h2 className="font-bold text-xl pb-6">Login Form</h2>
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
@@ -48,7 +48,7 @@ export default function UpdatePasswordForm({ responseHandler, alertMessageHandle
 						name="password"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Email</FormLabel>
+								<FormLabel>New Password</FormLabel>
 								<FormControl>
 									<Input
 										placeholder="Password"
@@ -67,7 +67,7 @@ export default function UpdatePasswordForm({ responseHandler, alertMessageHandle
 						name="verifiedPassword"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Email</FormLabel>
+								<FormLabel>Validate New Password</FormLabel>
 								<FormControl>
 									<Input
 										placeholder="Verify Password"

@@ -38,11 +38,11 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 
 	return (
 		<div className="border-1 border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
-			<h2 className="font-bold text-xl">Login Form</h2>
+			<h2 className="font-bold text-xl pb-6">Login Form</h2>
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
-					className="space-y-8 w-100 mx-auto"
+					className="space-y-5 w-100 mx-auto"
 				>
 					<FormField
 						control={form.control}
