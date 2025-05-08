@@ -117,18 +117,31 @@ function PageContent() {
 					<div>
 						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
 
-						<Button
-							className="hover:cursor-pointer my-3"
-							onClick={(): void =>
-								setBibleData({
-									...bibleData,
-									startVerse: "1",
-									endVerse: currentChapterText.length.toString(),
-								})
-							}
-						>
-							Read Full Chapter
-						</Button>
+						<div className="flex flex-row flex-start gap-2">
+							<Button
+								className="hover:cursor-pointer my-3"
+								onClick={(): void =>
+									setBibleData({
+										...bibleData,
+										startVerse: "1",
+										endVerse: currentChapterText.length.toString(),
+									})
+								}
+							>
+								Read Full Chapter
+							</Button>
+							<Button
+								className="hover:cursor-pointer my-3"
+								onClick={(): void => alert('This will trigger the save function')}
+							>
+								Save
+							</Button>
+							<Button
+								className="hover:cursor-pointer my-3"
+								onClick={(): void => alert('This will trigger the download function')}>
+								Download
+							</Button>
+						</div>
 					</div>
 
 					<BibleVerses
@@ -136,7 +149,10 @@ function PageContent() {
 						startVerse={bibleData.startVerse}
 						endVerse={bibleData.endVerse}
 					/>
-					<AIOutput LLMData={LLMReqAndOutput} isLoading={LLMisLoading} />
+					<AIOutput
+						LLMData={LLMReqAndOutput}
+						isLoading={LLMisLoading}
+					/>
 				</section>
 			)}
 		</main>
