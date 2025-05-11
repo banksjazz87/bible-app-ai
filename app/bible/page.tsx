@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { DefaultBibleFormData } from "@/lib/bible/bibleData";
 import AIOptions from "@/app/bible/components/AIOptions";
 import AIOutput from "@/app/bible/components/AIOutput";
+import SaveModalForm from "./components/SaveModalForm";
 
 
 
@@ -44,6 +45,8 @@ function PageContent() {
 
 	const [LLMReqAndOutput, setLLMReqAndOutPut] = useState<LLMReqObject[]>(initLLMReqAndOutput);
 	const [LLMisLoading, setLLMisLoading] = useState<boolean>(false);
+
+	const [showSaveForm, setShowSaveForm] = useState<boolean>(false);
 
 	useEffect((): void => {
 		const version = searchParams.get("version") as string;
@@ -104,12 +107,14 @@ function PageContent() {
 					updateNeededChapter={(data: Verses[]) => setCurrentChapterText(data)}
 				/>
 
-				<AIOptions
-					selectedBibleData={bibleData}
-					updateOutput={(output: string, index: number): void => updateLLMOutputData(output, index)}
-					startLoading={(): void => setLLMisLoading(true)}
-					stopLoading={(): void => setLLMisLoading(false)}
-				/>
+				{showChapterText && (
+					<AIOptions
+						selectedBibleData={bibleData}
+						updateOutput={(output: string, index: number): void => updateLLMOutputData(output, index)}
+						startLoading={(): void => setLLMisLoading(true)}
+						stopLoading={(): void => setLLMisLoading(false)}
+					/>
+				)}
 			</section>
 
 			{showChapterText && (
@@ -132,13 +137,14 @@ function PageContent() {
 							</Button>
 							<Button
 								className="hover:cursor-pointer my-3"
-								onClick={(): void => alert('This will trigger the save function')}
+								onClick={(): void => setShowSaveForm(true)}
 							>
 								Save
 							</Button>
 							<Button
 								className="hover:cursor-pointer my-3"
-								onClick={(): void => alert('This will trigger the download function')}>
+								onClick={(): void => alert("This will trigger the download function")}
+							>
 								Download
 							</Button>
 						</div>
@@ -155,6 +161,17 @@ function PageContent() {
 					/>
 				</section>
 			)}
+
+			<SaveModalForm
+				isOpen={showSaveForm}
+				openHandler={setShowSaveForm}
+				cancelHandler={(): void => setShowSaveForm(false)}
+				confirmHandler={(): void => setShowSaveForm(false)}
+				currentData={{
+						bibleData: bibleData,
+						LLMOutput: LLMReqAndOutput
+				}}
+			/>
 		</main>
 	);
 }
