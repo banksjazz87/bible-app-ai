@@ -98,3 +98,8 @@ export type LoginFormProps = {
     alertMessageHandler: (message: string) => void;
     alertTitleHandler: (title: string) => void;
 }
+
+export type SaveSermonData = {
+	bibleData: BibleFormData;
+	LLMOutput: LLMReqObject[];
+}; 
