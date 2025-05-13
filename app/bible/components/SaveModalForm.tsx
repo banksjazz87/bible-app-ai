@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SaveSermonData } from "@/lib/definitions";
+import { saveSermonData } from "@/app/bible/actions";
 
 
 type SaveModalFormProps = {
@@ -33,8 +34,8 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 	});
 
 	function onSubmit(values: z.infer<typeof saveFormSchema>) {
-		console.log(`The name of this project will be ${values.projectTitle}`);
-		console.log(`The current sermon data is ${currentData.LLMOutput}`);
+		saveSermonData()
+			.then(data => console.log('Here ', data));
 	}
 
 	return (
