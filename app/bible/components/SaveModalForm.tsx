@@ -34,7 +34,7 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 	});
 
 	function onSubmit(values: z.infer<typeof saveFormSchema>) {
-		saveSermonData()
+		saveSermonData(values.projectTitle)
 			.then(data => console.log('Here ', data));
 	}
 
