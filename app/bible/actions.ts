@@ -4,14 +4,37 @@ import { UserResponse, SupabaseClient, PostgrestSingleResponse } from "@supabase
 import { createClient } from "@/utils/supabase/server";
 import { APIResponse } from "@/lib/definitions";
 
+type ChatThread = {
+    thread_name: string;
+    bible_version: string;
+    book: string;
+    chapter: string;
+    start_verse: string;
+    end_verse: string;
+    llm_notes: string;
+    user_notes: string;
+    user_id: string;
+}
+
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
-
-// export async function updateUserTable(userId: string, supabase: SupabaseClient) {
-//     const { error } = await supabase
-//         .from('chat_threads')
-//         .update({thread})
-// }
+export async function createNewChat(userId: string, supabase: SupabaseClient, newChatObj: ChatThread): Promise<APIResponse> {
+    const insert = await supabase
+        .from('chat_threads')
+        .insert(newChatObj);
+    
+    if (insert.status === 201) {
+        return {
+            status: 201,
+            message: `The thread has been created.`
+        }
+    } else {
+        return {
+            status: insert.status,
+            message: `The following error occurred while creating the thread: ${insert.error}`
+        }
+    }
+}
 
 export async function chatExists(userId: string, supabase: SupabaseClient, threadName: string): Promise<Boolean> {
     const chatData = await supabase
@@ -29,21 +52,24 @@ export async function chatExists(userId: string, supabase: SupabaseClient, threa
     }
 }
 
-export async function saveSermonData(threadName: string): Promise<APIResponse> {
+export async function saveSermonData(threadName: string, chatObj: ChatThread): Promise<APIResponse> {
     const supabase = await createClient();
     const user: UserResponse = await supabase.auth.getUser();
-
     if (user.error) {
         return {
             status: 500,
             message: "The user is not currently logged in."
         }
-    } else {
-        chatExists(user.data.user.id, supabase, threadName)
-            .then((data) => console.log(data));
+    } 
+    
+    const chat = await chatExists(user.data.user.id, supabase, threadName);
+    if (chat) {
         return {
-            status: 300,
-            message: `The user has been found and here are the details: ${user.data.user.id}`
+            status: 500,
+            message: "This chat thread already exists for this user."
         }
     }
+
+    const createChat: APIResponse = await createNewChat(threadName, supabase, chatObj);
+    return createChat;
 }

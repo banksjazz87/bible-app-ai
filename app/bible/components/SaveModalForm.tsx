@@ -9,7 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SaveSermonData } from "@/lib/definitions";
+import { SaveSermonData, ChatThread } from "@/lib/definitions";
 import { saveSermonData } from "@/app/bible/actions";
 
 
@@ -34,7 +34,27 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 	});
 
 	function onSubmit(values: z.infer<typeof saveFormSchema>) {
-		saveSermonData(values.projectTitle)
+		const {
+			version,
+			book,
+			chapter,
+			startVerse,
+			endVerse,
+
+		} = currentData.bibleData;
+
+		const newChatData: ChatThread = {
+			thread_name: values.projectTitle,
+			bible_version: version,
+			book: book,
+			chapter: chapter.toString(),
+			start_verse: startVerse.toString(),
+			end_verse: endVerse.toString(),
+			llm_notes: currentData.LLMOutput,
+			user_notes: 'Testing user notes',
+			user_id: '1'
+		}
+		saveSermonData(values.projectTitle, newChatData)
 			.then(data => console.log('Here ', data));
 	}
 

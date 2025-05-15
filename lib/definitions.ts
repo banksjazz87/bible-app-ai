@@ -103,3 +103,15 @@ export type SaveSermonData = {
 	bibleData: BibleFormData;
 	LLMOutput: LLMReqObject[];
 }; 
+
+export type ChatThread = {
+	thread_name: string;
+	bible_version: string;
+	book: string;
+	chapter: string;
+	start_verse: string;
+	end_verse: string;
+	llm_notes: string;
+	user_notes: string;
+	user_id: string;
+};
