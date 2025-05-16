@@ -41,7 +41,6 @@ function PageContent() {
 	const [currentChapterText, setCurrentChapterText] = useState<Verses[]>([]);
 	const [showChapterText, setShowChapterText] = useState<boolean>(false);
 	const [bibleData, setBibleData] = useState<BibleFormData>(DefaultBibleFormData);
-	const [LLMOutput, setLLMOutput] = useState<string>('');
 
 	const [LLMReqAndOutput, setLLMReqAndOutPut] = useState<LLMReqObject[]>(initLLMReqAndOutput);
 	const [LLMisLoading, setLLMisLoading] = useState<boolean>(false);

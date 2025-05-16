@@ -111,7 +111,7 @@ export type ChatThread = {
 	chapter: string;
 	start_verse: string;
 	end_verse: string;
-	llm_notes: string;
+	llm_notes: LLMReqObject[];
 	user_notes: string;
 	user_id: string;
 };

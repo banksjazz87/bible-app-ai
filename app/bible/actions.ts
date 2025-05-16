@@ -2,7 +2,7 @@
 import postgres from 'postgres';
 import { UserResponse, SupabaseClient, PostgrestSingleResponse } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
-import { APIResponse } from "@/lib/definitions";
+import { APIResponse, LLMReqObject } from "@/lib/definitions";
 
 type ChatThread = {
     thread_name: string;
@@ -11,7 +11,7 @@ type ChatThread = {
     chapter: string;
     start_verse: string;
     end_verse: string;
-    llm_notes: string;
+    llm_notes: LLMReqObject[];
     user_notes: string;
     user_id: string;
 }
