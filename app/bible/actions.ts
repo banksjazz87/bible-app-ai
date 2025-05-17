@@ -19,6 +19,8 @@ type ChatThread = {
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 export async function createNewChat(userId: string, supabase: SupabaseClient, newChatObj: ChatThread): Promise<APIResponse> {
+    //Add our user id here
+    newChatObj.user_id = userId;
     const insert = await supabase
         .from('chat_threads')
         .insert(newChatObj);
@@ -30,7 +32,7 @@ export async function createNewChat(userId: string, supabase: SupabaseClient, ne
         }
     } else {
         return {
-            status: insert.status,
+            status: 500,
             message: `The following error occurred while creating the thread: ${insert.error}`
         }
     }
@@ -70,6 +72,6 @@ export async function saveSermonData(threadName: string, chatObj: ChatThread): P
         }
     }
 
-    const createChat: APIResponse = await createNewChat(threadName, supabase, chatObj);
+    const createChat: APIResponse = await createNewChat(user.data.user.id, supabase, chatObj);
     return createChat;
 }

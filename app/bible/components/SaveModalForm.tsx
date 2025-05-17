@@ -55,7 +55,15 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 			user_id: '1'
 		}
 		saveSermonData(values.projectTitle, newChatData)
-			.then(data => console.log('Here ', data));
+			.then(data => {
+				console.log('HEREEEEE ', data);
+				if (data.status === 500) {
+					alert('The user isn\'t currently logged in!');
+				} else {
+					alert('The data has been saved.');
+					cancelHandler();
+				}
+			});
 	}
 
 	return (
