@@ -2,7 +2,7 @@
 
 import { JSX } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
-
+import { AlertDialog } from "@radix-ui/react-alert-dialog";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SaveSermonData, ChatThread } from "@/lib/definitions";
-import { saveSermonData } from "@/app/bible/actions";
+import {saveSermonData} from "@/app/bible/actions";
 
 
 type SaveModalFormProps = {
@@ -54,11 +54,12 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 			user_notes: 'Testing user notes',
 			user_id: '1'
 		}
+
 		saveSermonData(values.projectTitle, newChatData)
 			.then(data => {
 				console.log('HEREEEEE ', data);
 				if (data.status === 500) {
-					alert('The user isn\'t currently logged in!');
+					alert(data.message);
 				} else {
 					alert('The data has been saved.');
 					cancelHandler();
