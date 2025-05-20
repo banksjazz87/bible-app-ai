@@ -44,7 +44,7 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 		} = currentData.bibleData;
 
 		const newChatData: ChatThread = {
-			thread_name: values.projectTitle,
+			thread_name: values.projectTitle.trim(),
 			bible_version: version,
 			book: book,
 			chapter: chapter.toString(),
@@ -59,7 +59,7 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 			.then(data => {
 				console.log('HEREEEEE ', data);
 				if (data.status === 500) {
-					alert(data.message);
+					alert(`The following error has occurred: ${data.message}`);
 				} else {
 					alert('The data has been saved.');
 					cancelHandler();

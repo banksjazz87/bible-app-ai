@@ -10,6 +10,7 @@ import { DefaultBibleFormData } from "@/lib/bible/bibleData";
 import AIOptions from "@/app/bible/components/AIOptions";
 import AIOutput from "@/app/bible/components/AIOutput";
 import SaveModalForm from "./components/SaveModalForm";
+import { clear } from "node:console";
 
 
 
@@ -41,11 +42,12 @@ function PageContent() {
 	const [currentChapterText, setCurrentChapterText] = useState<Verses[]>([]);
 	const [showChapterText, setShowChapterText] = useState<boolean>(false);
 	const [bibleData, setBibleData] = useState<BibleFormData>(DefaultBibleFormData);
-
-	const [LLMReqAndOutput, setLLMReqAndOutPut] = useState<LLMReqObject[]>(initLLMReqAndOutput);
+	const [LLMReqAndOutput, setLLMReqAndOutput] = useState<LLMReqObject[]>(initLLMReqAndOutput);
 	const [LLMisLoading, setLLMisLoading] = useState<boolean>(false);
-
 	const [showSaveForm, setShowSaveForm] = useState<boolean>(false);
+
+	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
+	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
 
 	useEffect((): void => {
 		const version = searchParams.get("version") as string;
@@ -76,8 +78,22 @@ function PageContent() {
 		}
 	}, []);
 
+	const resetLLMData = (): void => {
+		const clearedData = LLMReqAndOutput.map((x: LLMReqObject, y: number) => {
+			const currentObj = {
+				heading: x.heading,
+				output: ''
+			};
+
+			return currentObj;
+		});
+
+		setLLMReqAndOutput(clearedData);
+	}
+
 	const formHandler = (e: FormEvent<HTMLFormElement>, formData: BibleFormData) => {
 		e.preventDefault();
+		resetLLMData();
 		setShowChapterText(true);
 		setBibleData({
 			...bibleData,
@@ -87,12 +103,13 @@ function PageContent() {
 			startVerse: formData.startVerse,
 			endVerse: formData.endVerse,
 		});
+
 	};
 
 	const updateLLMOutputData = (output: string, index: number): void => {
 		const copyOfData = LLMReqAndOutput.slice();
 		copyOfData[index]['output'] = output;
-		setLLMReqAndOutPut(copyOfData);
+		setLLMReqAndOutput(copyOfData);
 	}
 
 	return (
