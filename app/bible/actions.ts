@@ -1,5 +1,4 @@
 "use server";
-import postgres from "postgres";
 import { UserResponse, SupabaseClient, PostgrestSingleResponse } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
 import { APIResponse, LLMReqObject, ChatThread } from "@/lib/definitions";
@@ -8,13 +7,24 @@ class CreateChatThread {
 	threadName: string;
 	chatObj: ChatThread;
 
+	/**
+	 * 
+	 * @param threadName string This is the project name that will be stored.
+	 * @param chatObj ChatThread the chat data.
+	 * Constructor function to set out initial values.
+	 */
 	constructor(threadName: string, chatObj: ChatThread) {
 		this.threadName = threadName;
 		this.chatObj = chatObj;
 	}
 
-	
-
+	/**
+	 * 
+	 * @param userId string 
+	 * @param supabase SupabaseClient
+	 * @returns boolean
+	 * @description checks if the currently passed thread name already exists in the database, along with the passed userId.
+	 */
 	async chatExists(userId: string, supabase: SupabaseClient): Promise<Boolean> {
 		const chatData = await supabase.from("chat_threads").select().match({
 			user_Id: userId,
@@ -28,6 +38,14 @@ class CreateChatThread {
 		}
 	}
 
+
+	/**
+	 * 
+	 * @param userId string
+	 * @param supabase SupabaseClient
+	 * @returns Promise<APIResponse>
+	 * @description Creates and stores a new chat
+	 */
 	async createNewChat(userId: string, supabase: SupabaseClient): Promise<APIResponse> {
 		//Add our user id here
 		this.chatObj.user_id = userId;
@@ -46,6 +64,12 @@ class CreateChatThread {
 		}
 	}
 
+
+	/**
+	 * 
+	 * @returns Promise<APIResponse>
+	 * @description Main function that's called to save the sermon data, runs checks and verifies that the chat can be stored before storing it.
+	 */
 	async saveSermonData(): Promise<APIResponse> {
 		const supabase = await createClient();
 		const user: UserResponse = await supabase.auth.getUser();
@@ -69,7 +93,14 @@ class CreateChatThread {
 	}
 }
 
-export async function saveSermonData(title: string, data: ChatThread) {
+
+/**
+ * 
+ * @param title string title of the chat thread.
+ * @param data ChatThread the chat data
+ * @returns Promise<APIResponse> instantiates the class and executes the main function.
+ */
+export async function saveSermonData(title: string, data: ChatThread): Promise<APIResponse> {
     const createThread = new CreateChatThread(title, data);
     return await createThread.saveSermonData();
 }
