@@ -27,8 +27,8 @@ class CreateChatThread {
 	 */
 	async chatExists(userId: string, supabase: SupabaseClient): Promise<Boolean> {
 		const chatData = await supabase.from("chat_threads").select().match({
-			user_Id: userId,
-			threadName: this.threadName,
+			user_id: userId,
+			thread_name: this.threadName,
 		});
 
 		if (chatData.data) {
