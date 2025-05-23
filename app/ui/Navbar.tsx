@@ -1,8 +1,10 @@
-'use client'
-
+"use client";
+import { useState, useEffect, JSX } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import next from "@/public/next.svg";
+import UserAvatar from "./UserAvatar";
+import { getUserDetails } from "@/lib/actions";
 
 type MenuItem = {
 	title: string;
@@ -10,7 +12,16 @@ type MenuItem = {
 	icon?: string;
 };
 
-export default function NavBar() {
+
+export default function NavBar(): JSX.Element {
+	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+	useEffect((): void => {
+		getUserDetails()
+			.then((data) =>
+				console.log(`USER DATA HERE ${data}`));
+	});
+
 	const navItems: MenuItem[] = [
 		{
 			title: "Home",
@@ -30,7 +41,16 @@ export default function NavBar() {
 		},
 	];
 
-	
+	const loggedInMenu: MenuItem[] = [
+		{
+			title: "Home",
+			hrefValue: "/",
+		},
+		{
+			title: "Bible",
+			hrefValue: "/bible",
+		},
+	];
 
 	return (
 		<header className="flex flex-row justify-between align-middle shadow-sm py-5 px-3 shadow-gray-400">
@@ -44,15 +64,33 @@ export default function NavBar() {
 			</Link>
 
 			<nav className="flex flex-row gap-4 justify-center align-middle">
-				{navItems.map((x: MenuItem, y: number) => (
-					<Link
-						className="text-sm font-medium hover:text-neutral-500"
-						key={`menu_item_${y}`}
-						href={x.hrefValue}
-					>
-						{x.title}
-					</Link>
-				))}
+				{!isLoggedIn &&
+					navItems.map((x: MenuItem, y: number) => (
+						<Link
+							className="text-sm font-medium hover:text-neutral-500"
+							key={`menu_item_${y}`}
+							href={x.hrefValue}
+						>
+							{x.title}
+						</Link>
+					))}
+				{isLoggedIn && (
+					<>
+						<Link
+							className="text-sm font-medium hover:text-neutral-500"
+							href={"/"}
+						>
+							Home
+						</Link>
+						<Link
+							className="text-sm font-medium hover:text-neutral-500"
+							href={"/bible"}
+						>
+							Bible
+						</Link>
+						<UserAvatar/>
+					</>
+				)}
 			</nav>
 		</header>
 	);
