@@ -19,7 +19,7 @@ export default function NavBar(): JSX.Element {
 	useEffect((): void => {
 		getUserDetails()
 			.then((data) =>
-				console.log(`USER DATA HERE ${data}`));
+				console.log(`USER DATA HERE ${data.message}`));
 	});
 
 	const navItems: MenuItem[] = [
