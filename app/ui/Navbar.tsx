@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, JSX } from "react";
+import { useState, useEffect, JSX, useContext } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import next from "@/public/next.svg";
@@ -18,9 +18,15 @@ export default function NavBar(): JSX.Element {
 
 	useEffect((): void => {
 		getUserDetails()
-			.then((data) =>
-				console.log(`USER DATA HERE ${data.message}`));
-	});
+			.then((data) => {
+				if (data.status === 200) {
+					setIsLoggedIn(true);
+				} else {
+					setIsLoggedIn(false);
+				}
+			}
+		);
+	}, []);
 
 	const navItems: MenuItem[] = [
 		{
