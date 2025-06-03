@@ -4,7 +4,6 @@ import { JSX, useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function UserAvatar(): JSX.Element {
-	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
 	return (
 		<div>

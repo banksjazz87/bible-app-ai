@@ -69,7 +69,7 @@ export default function NavBar(): JSX.Element {
 				/>
 			</Link>
 
-			<nav className="flex flex-row gap-4 justify-center align-middle">
+			<nav className="flex flex-row gap-4 justify-center align-middle items-center">
 				{!isLoggedIn &&
 					navItems.map((x: MenuItem, y: number) => (
 						<Link
