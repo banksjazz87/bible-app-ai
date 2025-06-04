@@ -19,4 +19,5 @@ export async function GET(request: Request){
     cookieStore.getAll().forEach((cookie) => cookieStore.delete(cookie.name));
     revalidatePath('/');
     redirect('/');
+    
 }

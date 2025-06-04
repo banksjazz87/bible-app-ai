@@ -5,6 +5,7 @@ import Image from "next/image";
 import next from "@/public/next.svg";
 import UserAvatar from "./UserAvatar";
 import { getUserDetails } from "@/lib/actions";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type MenuItem = {
 	title: string;
@@ -59,7 +60,7 @@ export default function NavBar(): JSX.Element {
 	];
 
 	return (
-		<header className="flex flex-row justify-between align-middle shadow-sm py-5 px-3 shadow-gray-400">
+		<header className="flex flex-row justify-between align-middle shadow-sm py-5 px-6 shadow-gray-400">
 			<Link href="/">
 				<Image
 					src={next}
@@ -94,7 +95,23 @@ export default function NavBar(): JSX.Element {
 						>
 							Bible
 						</Link>
-						<UserAvatar/>
+						<DropdownMenu>
+							<DropdownMenuTrigger>
+								<UserAvatar />
+							</DropdownMenuTrigger>
+							<DropdownMenuContent>
+								<DropdownMenuLabel>My Account</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem>Profile</DropdownMenuItem>
+								<DropdownMenuItem>Billing</DropdownMenuItem>
+								<DropdownMenuItem>Subscription</DropdownMenuItem>
+								<DropdownMenuItem>
+									<Link href="/account/logout/">
+										Logout
+									</Link>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
 					</>
 				)}
 			</nav>

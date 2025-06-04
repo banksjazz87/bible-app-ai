@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { APIResponse, LoginFormProps } from "@/lib/definitions";
+import { useRouter } from "next/navigation";
 
 
 //Define our Form schema
@@ -19,8 +20,7 @@ const loginFormSchema = z.object({
 });
 
 export default function LoginForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
-
-	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof loginFormSchema>>({
 		resolver: zodResolver(loginFormSchema),
@@ -32,9 +32,8 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 
 	function onSubmit(values: z.infer<typeof loginFormSchema>) {
 		login(values).then((data: APIResponse): void => {
-			console.log('STATUS ', data.status);
 			if (data.status && data.status === 200) {
-				setIsLoggedIn(true);
+				router.refresh();
 			}
 
 			responseHandler(data.status);
