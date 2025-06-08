@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../../store';
 
 export interface LoggedInState {
@@ -15,10 +15,13 @@ export const loginSlice = createSlice({
     reducers: {
         updateLoginStatus: state => {
             state.value = !state.value;
+        },
+        initializeLoginState: (state, action: PayloadAction<boolean>) => {
+            state.value = action.payload;
         }
     }
 });
 
-export const { updateLoginStatus } = loginSlice.actions;
+export const { updateLoginStatus, initializeLoginState } = loginSlice.actions;
 export const selectLoggedInStatus = (state: RootState) => state.isLoggedIn.value;
 export default loginSlice.reducer;

@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, useRef } from "react";
 import HyperLink from "@/app/ui/HyperLink";
 import { login } from "@/app/account/login/actions";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { APIResponse, LoginFormProps } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
+import { useAppSelector, useAppDispatch, useAppStore } from "@/app/store/hooks";
+import { initializeLoginState, updateLoginStatus } from "@/app/store/features/account/loginSlice";
 
 
 //Define our Form schema
@@ -21,6 +23,15 @@ const loginFormSchema = z.object({
 
 export default function LoginForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
 	const router = useRouter();
+	const store = useAppStore();
+	const initialized = useRef(false);
+
+	if (!initialized.current) {
+		store.dispatch(initializeLoginState(false));
+	}
+
+	const loginStatus = useAppSelector(state => state.isLoggedIn);
+	const dispatch = useAppDispatch();
 
 	const form = useForm<z.infer<typeof loginFormSchema>>({
 		resolver: zodResolver(loginFormSchema),
@@ -33,7 +44,8 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 	function onSubmit(values: z.infer<typeof loginFormSchema>) {
 		login(values).then((data: APIResponse): void => {
 			if (data.status && data.status === 200) {
-				router.refresh();
+				// router.refresh();
+				dispatch(updateLoginStatus());
 			}
 
 			responseHandler(data.status);
