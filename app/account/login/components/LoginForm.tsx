@@ -12,7 +12,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { APIResponse, LoginFormProps } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/app/store/hooks";
-import { initializeLoginState, updateLoginStatus } from "@/app/store/features/account/loginSlice";
+import { initializeLoginState, updateLoginStatus, setLoginState } from "@/app/store/features/account/loginSlice";
+import { revalidatePath } from "next/cache";
 
 
 //Define our Form schema
@@ -45,7 +46,8 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 		login(values).then((data: APIResponse): void => {
 			if (data.status && data.status === 200) {
 				// router.refresh();
-				dispatch(updateLoginStatus());
+				dispatch(setLoginState(true));
+				revalidatePath('/');
 			}
 
 			responseHandler(data.status);

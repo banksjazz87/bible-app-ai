@@ -1,11 +1,13 @@
 "use client";
-import { useState, useEffect, JSX, useContext } from "react";
+import { useState, useEffect, JSX, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import next from "@/public/next.svg";
 import UserAvatar from "./UserAvatar";
 import { getUserDetails } from "@/lib/actions";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { setLoginState } from "@/app/store/features/account/loginSlice";
+import { useAppSelector, useAppDispatch, useAppStore } from "@/app/store/hooks";
 
 type MenuItem = {
 	title: string;
@@ -15,19 +17,34 @@ type MenuItem = {
 
 
 export default function NavBar(): JSX.Element {
-	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+	// const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+	const store = useAppStore();
+	const initialized = useRef(false);
+	
+	if (!initialized.current) {
+		store.dispatch(setLoginState(false));
+	}
+	
+	const isLoggedIn = useAppSelector(state => state.isLoggedIn);
+	const dispatch = useAppDispatch();
 
 	useEffect((): void => {
-		getUserDetails()
-			.then((data) => {
+		if (initialized.current) {
+			getUserDetails().then((data) => {
 				if (data.status === 200) {
-					setIsLoggedIn(true);
-				} else {
-					setIsLoggedIn(false);
+					dispatch(setLoginState(true));
 				}
-			}
-		);
-	}, []);
+			});
+
+		}
+	}, [initialized]);
+
+
+	const logoutFunction = async () => {
+		const logoutUser = await fetch('/account/logout/');
+
+	}
 
 	const navItems: MenuItem[] = [
 		{
