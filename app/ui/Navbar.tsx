@@ -8,6 +8,7 @@ import { getUserDetails } from "@/lib/actions";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { setLoginState } from "@/app/store/features/account/loginSlice";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/app/store/hooks";
+import { APIResponse } from "@/lib/definitions";
 
 type MenuItem = {
 	title: string;
@@ -26,23 +27,32 @@ export default function NavBar(): JSX.Element {
 		store.dispatch(setLoginState(false));
 	}
 	
-	const isLoggedIn = useAppSelector(state => state.isLoggedIn);
+	const isLoggedIn = useAppSelector(state => state.isLoggedIn.value);
 	const dispatch = useAppDispatch();
+
 
 	useEffect((): void => {
 		if (initialized.current) {
+			const userDetails = getUserDetails();
 			getUserDetails().then((data) => {
 				if (data.status === 200) {
+					console.log('Details ', userDetails);
 					dispatch(setLoginState(true));
 				}
 			});
-
 		}
 	}, [initialized]);
 
 
 	const logoutFunction = async () => {
 		const logoutUser = await fetch('/account/logout/');
+		const jsonData: APIResponse = await logoutUser.json();
+
+		if (jsonData.status === 200) {
+			dispatch(setLoginState(false));
+		} else {
+			console.warn(`The following error has occurred: ${jsonData.message}`);
+		}
 
 	}
 
@@ -97,7 +107,8 @@ export default function NavBar(): JSX.Element {
 						>
 							{x.title}
 						</Link>
-					))}
+					))
+				}
 				{isLoggedIn && (
 					<>
 						<Link
@@ -123,9 +134,9 @@ export default function NavBar(): JSX.Element {
 								<DropdownMenuItem>Billing</DropdownMenuItem>
 								<DropdownMenuItem>Subscription</DropdownMenuItem>
 								<DropdownMenuItem>
-									<Link href="/account/logout/">
+									<button type="button" onClick={() => logoutFunction()}>
 										Logout
-									</Link>
+									</button>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
