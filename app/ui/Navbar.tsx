@@ -4,11 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import next from "@/public/next.svg";
 import UserAvatar from "./UserAvatar";
-import { getUserDetails } from "@/lib/actions";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { setLoginState } from "@/app/store/features/account/loginSlice";
-import { useAppSelector, useAppDispatch, useAppStore } from "@/app/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/app/store/hooks";
 import { APIResponse } from "@/lib/definitions";
+import { useRouter } from "next/navigation";
 
 type MenuItem = {
 	title: string;
@@ -20,7 +20,7 @@ type MenuItem = {
 export default function NavBar(): JSX.Element {
 	const isLoggedIn = useAppSelector(state => state.isLoggedIn.value);
 	const dispatch = useAppDispatch();
-
+	const router = useRouter();
 
 	const logoutFunction = async () => {
 		const logoutUser = await fetch('/account/logout/');
@@ -28,6 +28,7 @@ export default function NavBar(): JSX.Element {
 
 		if (jsonData.status === 200) {
 			dispatch(setLoginState(false));
+			router.replace('/');
 		} else {
 			console.warn(`The following error has occurred: ${jsonData.message}`);
 		}
@@ -46,23 +47,9 @@ export default function NavBar(): JSX.Element {
 		{
 			title: "Login",
 			hrefValue: "/account/login",
-		},
-		{
-			title: "Logout",
-			hrefValue: "/account/logout",
-		},
+		}
 	];
 
-	const loggedInMenu: MenuItem[] = [
-		{
-			title: "Home",
-			hrefValue: "/",
-		},
-		{
-			title: "Bible",
-			hrefValue: "/bible",
-		},
-	];
 
 	return (
 		<header className="flex flex-row justify-between align-middle shadow-sm py-5 px-6 shadow-gray-400">
@@ -106,9 +93,17 @@ export default function NavBar(): JSX.Element {
 								<UserAvatar />
 							</DropdownMenuTrigger>
 							<DropdownMenuContent>
-								<DropdownMenuLabel>My Account</DropdownMenuLabel>
+								<DropdownMenuLabel>
+									<Link href={"/account/profile"}>
+										My Account
+									</Link>
+								</DropdownMenuLabel>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem>Profile</DropdownMenuItem>
+								<DropdownMenuItem>
+									<Link href="/account/profile">
+										Profile
+									</Link>
+								</DropdownMenuItem>
 								<DropdownMenuItem>Billing</DropdownMenuItem>
 								<DropdownMenuItem>Subscription</DropdownMenuItem>
 								<DropdownMenuItem>
