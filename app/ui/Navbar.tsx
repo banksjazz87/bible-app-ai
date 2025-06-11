@@ -18,30 +18,8 @@ type MenuItem = {
 
 
 export default function NavBar(): JSX.Element {
-	// const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-	const store = useAppStore();
-	const initialized = useRef(false);
-	
-	if (!initialized.current) {
-		store.dispatch(setLoginState(false));
-	}
-	
 	const isLoggedIn = useAppSelector(state => state.isLoggedIn.value);
 	const dispatch = useAppDispatch();
-
-
-	useEffect((): void => {
-		if (initialized.current) {
-			const userDetails = getUserDetails();
-			getUserDetails().then((data) => {
-				if (data.status === 200) {
-					console.log('Details ', userDetails);
-					dispatch(setLoginState(true));
-				}
-			});
-		}
-	}, [initialized]);
 
 
 	const logoutFunction = async () => {

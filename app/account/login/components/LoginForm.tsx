@@ -23,14 +23,14 @@ const loginFormSchema = z.object({
 
 export default function LoginForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
 	const router = useRouter();
-	const store = useAppStore();
-	const initialized = useRef(false);
+	// const store = useAppStore();
+	// const initialized = useRef(false);
 
-	if (!initialized.current) {
-		store.dispatch(initializeLoginState(false));
-	}
+	// if (!initialized.current) {
+	// 	store.dispatch(initializeLoginState(false));
+	// }
 
-	const loginStatus = useAppSelector(state => state.isLoggedIn);
+	// const loginStatus = useAppSelector(state => state.isLoggedIn);
 	const dispatch = useAppDispatch();
 
 	const form = useForm<z.infer<typeof loginFormSchema>>({
