@@ -22,6 +22,15 @@ export default function NavBar(): JSX.Element {
 	const dispatch = useAppDispatch();
 	const router = useRouter();
 
+	//Check the cookies, if the array of cookie values is greater than zero, we'll update the redux store to true.
+	useEffect(() => {
+		const cookies = document.cookie;
+		const arrayOfCookies = cookies.split('; ');
+		if (arrayOfCookies.length > 0) {
+			dispatch(setLoginState(true));
+		}
+	}, []);
+
 	const logoutFunction = async () => {
 		const logoutUser = await fetch('/account/logout/');
 		const jsonData: APIResponse = await logoutUser.json();
