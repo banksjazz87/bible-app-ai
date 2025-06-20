@@ -26,7 +26,9 @@ export default function NavBar(): JSX.Element {
 	useEffect(() => {
 		const cookies = document.cookie;
 		const arrayOfCookies = cookies.split('; ');
-		if (arrayOfCookies.length > 0) {
+		if (arrayOfCookies[0] === '') {
+			dispatch(setLoginState(false));
+		} else {
 			dispatch(setLoginState(true));
 		}
 	}, []);
