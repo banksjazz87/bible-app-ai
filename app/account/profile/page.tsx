@@ -1,9 +1,11 @@
+"use client";
 
 import { useEffect } from "react";
+import { useSelector } from 'react-redux';
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
 import AppSidebar from "@/app/account/profile/components/AppSidebar";
-import { UserResponse } from "@supabase/supabase-js";
+import { getUserDetails } from "@/app/store/features/account/loginSlice";
+import { useAppSelector } from "@/app/store/hooks";
 
 export default function ProfilePage() {
 	// const supabase = await createClient();
@@ -13,17 +15,14 @@ export default function ProfilePage() {
 	// 	redirect("/login");
     // }
     
-    async function isLoggedIn(): Promise<UserResponse> {
-        const supabase = await createClient();
-        const user = await supabase.auth.getUser();
-        return user;
-    }
+    // async function isLoggedIn(): Promise<UserResponse> {
+    //     const supabase = await createClient();
+    //     const user = await supabase.auth.getUser();
+    //     return user;
+    // }
 
-    useEffect(() => {
-        isLoggedIn().then((data) => {
-            console.log(data);
-        })
-    })
+    const isLoggedIn = useAppSelector(getUserDetails);
 
-	return <p>Hello</p>;
+
+	return <p>{`The user is currently logged in ${isLoggedIn}`}</p>;
 }

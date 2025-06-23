@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/app/utils/supabase/server";
 import { z } from "zod";
 import { LoginForm } from "@/lib/definitions";
 import { APIResponse } from "@/lib/definitions";

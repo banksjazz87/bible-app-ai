@@ -5,7 +5,7 @@ import Image from "next/image";
 import next from "@/public/next.svg";
 import UserAvatar from "./UserAvatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { setLoginState } from "@/app/store/features/account/loginSlice";
+import { logoutUser, loginUser } from "@/app/store/features/account/loginSlice";
 import { useAppSelector, useAppDispatch } from "@/app/store/hooks";
 import { APIResponse } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ type MenuItem = {
 
 
 export default function NavBar(): JSX.Element {
-	const isLoggedIn = useAppSelector(state => state.isLoggedIn.value);
+	const isLoggedIn = useAppSelector(state => state.loggedInData.isLoggedIn);
 	const dispatch = useAppDispatch();
 	const router = useRouter();
 
@@ -27,18 +27,22 @@ export default function NavBar(): JSX.Element {
 		const cookies = document.cookie;
 		const arrayOfCookies = cookies.split('; ');
 		if (arrayOfCookies[0] === '') {
-			dispatch(setLoginState(false));
+			dispatch(logoutUser());
 		} else {
-			dispatch(setLoginState(true));
+			dispatch(loginUser({
+				isLoggedIn: true,
+				email: 'testing @gmail.com', 
+				userName: 'tester'
+			}));
 		}
 	}, []);
 
 	const logoutFunction = async () => {
-		const logoutUser = await fetch('/account/logout/');
-		const jsonData: APIResponse = await logoutUser.json();
+		const logoutCurrentUser = await fetch('/account/logout/');
+		const jsonData: APIResponse = await logoutCurrentUser.json();
 
 		if (jsonData.status === 200) {
-			dispatch(setLoginState(false));
+			dispatch(logoutUser());
 			router.replace('/');
 		} else {
 			console.warn(`The following error has occurred: ${jsonData.message}`);

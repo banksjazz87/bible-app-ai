@@ -11,7 +11,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { APIResponse, LoginFormProps } from "@/lib/definitions";
 import { useAppDispatch } from "@/app/store/hooks";
-import { setLoginState } from "@/app/store/features/account/loginSlice";
+import { loginUser } from "@/app/store/features/account/loginSlice";
 
 
 //Define our Form schema
@@ -33,8 +33,14 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 
 	function onSubmit(values: z.infer<typeof loginFormSchema>) {
 		login(values).then((data: APIResponse): void => {
+
+			console.log('HEREEEEEE ', data);
 			if (data.status && data.status === 200) {
-				dispatch(setLoginState(true));
+				dispatch(loginUser({
+					isLoggedIn: true,
+					email: values.email,
+					userName: 'testing'
+				}));
 			}
 
 			responseHandler(data.status);

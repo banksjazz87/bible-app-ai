@@ -4,7 +4,7 @@ import loginSlice from '../store/features/account/loginSlice';
 export const makeStore = () => {
     return configureStore({
         reducer: {
-            isLoggedIn: loginSlice
+            loggedInData: loginSlice
         }
     });
 }
