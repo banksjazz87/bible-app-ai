@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { APIResponse, LoginFormProps } from "@/lib/definitions";
+import { APIDataResponse, APIResponse, LoginFormProps, UserData } from "@/lib/definitions";
 import { useAppDispatch } from "@/app/store/hooks";
 import { loginUser } from "@/app/store/features/account/loginSlice";
 
@@ -32,14 +32,15 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 	});
 
 	function onSubmit(values: z.infer<typeof loginFormSchema>) {
-		login(values).then((data: APIResponse): void => {
+		login(values).then((data: APIResponse | APIDataResponse<UserData>): void => {
 
-			console.log('HEREEEEEE ', data);
 			if (data.status && data.status === 200) {
+				const userData = data as APIDataResponse<UserData>;
+				const userName = userData.data.email.split('@')[0];
 				dispatch(loginUser({
 					isLoggedIn: true,
-					email: values.email,
-					userName: 'testing'
+					email: userData.data.email,
+					userName: userName
 				}));
 			}
 

@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import { useSelector } from 'react-redux';
 import { redirect } from "next/navigation";
-import AppSidebar from "@/app/account/profile/components/AppSidebar";
-import { getUserDetails } from "@/app/store/features/account/loginSlice";
+import { getUserData } from "@/app/store/features/account/loginSlice";
 import { useAppSelector } from "@/app/store/hooks";
+import PastThreads from "./components/PastThreads";
 
 export default function ProfilePage() {
 	// const supabase = await createClient();
@@ -21,8 +21,14 @@ export default function ProfilePage() {
     //     return user;
     // }
 
-    const isLoggedIn = useAppSelector(getUserDetails);
+
+    const loggedInDetails = useAppSelector(getUserData);
 
 
-	return <p>{`The user is currently logged in ${isLoggedIn}`}</p>;
+    return (
+        <main>
+            <p>{`The user is currently logged in ${loggedInDetails.isLoggedIn} and his username is ${loggedInDetails.userName}`}</p>
+            <PastThreads />
+        </main>
+    );
 }

@@ -1,6 +1,6 @@
 "use server";
 import { UserResponse, SupabaseClient, PostgrestSingleResponse } from "@supabase/supabase-js";
-import { createClient } from "@/app/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { APIResponse, LLMReqObject, ChatThread } from "@/lib/definitions";
 
 class CreateChatThread {

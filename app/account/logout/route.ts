@@ -1,4 +1,4 @@
-import { createClient } from "@/app/utils/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";

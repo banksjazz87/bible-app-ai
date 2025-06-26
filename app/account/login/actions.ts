@@ -1,17 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { createClient } from "@/app/utils/supabase/server";
-import { z } from "zod";
-import { LoginForm } from "@/lib/definitions";
-import { APIResponse } from "@/lib/definitions";
+import { createClient } from "@/utils/supabase/server";
+import { APIResponse, APIDataResponse, LoginForm, UserData } from "@/lib/definitions";
 
 
-export async function login(formData: LoginForm): Promise<APIResponse> {
+export async function login(formData: LoginForm): Promise<APIResponse | APIDataResponse<UserData>> {
     const supabase = await createClient();
     
-    const { error } = await supabase.auth.signInWithPassword(formData);
+    const { error, data } = await supabase.auth.signInWithPassword(formData);
     if (error) {
 		return {
 			status: 404,
@@ -22,7 +19,11 @@ export async function login(formData: LoginForm): Promise<APIResponse> {
 	revalidatePath('/');
 	return {
 		status: 200,
-		message: "The user is verified."
+		message: `The user is verified, ${data.user.id}`,
+		data: {
+			email: data.user.email as string,
+			id: data.user.id,
+		}
 	}
 }
 

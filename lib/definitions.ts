@@ -77,9 +77,18 @@ export type LoginForm = {
     password: string;
 }
 
-export type APIResponse = {
+export interface APIResponse {
     status: number;
     message: string;
+}
+
+export interface APIDataResponse<K> extends APIResponse {
+    data: K,
+}
+
+export type UserData = {
+    email: string,
+    id: string
 }
 
 export type AlertProps = {
