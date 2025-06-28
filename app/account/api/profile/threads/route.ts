@@ -1,20 +1,23 @@
 import { createClient } from "@/utils/supabase/server";
+import { ChatThread, APIDataResponse } from "@/lib/definitions";
+import { NextResponse } from "next/server";
 
 
-type ResponseData = {
+type ChatThreadResponse =  {
     status: number;
     message: string;
-    data: any;
+    data: ChatThread[] | null;
 }
-export async function GET() {
+
+export async function GET(): Promise<NextResponse<ChatThreadResponse>> {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
 
-    let responseData: ResponseData = {
-        status: 500,
-        message: 'This user is not found',
-        data: null
-    }
+    let responseData: APIDataResponse<ChatThread[] | null> = {
+			status: 500,
+			message: "This user is not found",
+			data: null,
+		};
 
     if (!error) {
         const userId = user?.id;
@@ -23,12 +26,13 @@ export async function GET() {
         if (!error) {
             responseData.status = 200;
             responseData.message = 'Data has been found';
-            responseData.data = data;
+            responseData.data = responseData.data ? data as ChatThread[]  : null;
         } else {
             responseData.status = 400;
             responseData.message = `The following error occurred, ${error}`;
         }
     }
 
-    return Response.json(responseData);
+
+    return NextResponse.json(responseData);
 }

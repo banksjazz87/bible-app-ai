@@ -1,17 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // import { GetThreads } from "@/lib/data";
+import { ChatThread, APIDataResponse } from "@/lib/definitions";
+import type { NextApiResponse } from 'next';
 
 
 export default function PastThreads() {
+
+    const [chatThreads, setChatThreads] = useState<ChatThread[]>([]);
+
     useEffect((): void => {
-        const fetchThreads = async () => {
-            const data = await fetch("/account/api/profile/threads");
-            return data;
-        }
+        const fetchThreads = async (): Promise<Response> => {
+					const data = await fetch("/account/api/profile/threads");
+					return data;
+				};
 
         fetchThreads()
-            .then(data => data.json())
-            .then(final => console.log(final))
+            .then((data: Response) => {
+                data.json();
+            })
+            .then((final: void) => {
+                if (final.status === 200) {
+
+                }
+            })
             .catch(error => console.error(error));
 
     }, []);
