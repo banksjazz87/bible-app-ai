@@ -11,9 +11,10 @@ export default function ProfilePage() {
     async function getThreads():  Promise<APIDataResponse<ChatThread[] | null>>{ 
         const data = await fetch('/account/api/profile/threads');
         const jsonData: APIDataResponse<ChatThread[] | null> = await data.json();
+        console.log('HERE ', jsonData);
         return jsonData;
     }
-    const pastThreadData = getThreads().then((data) => data);
+    const pastThreadData = getThreads();
 
 	return (
 		<main>

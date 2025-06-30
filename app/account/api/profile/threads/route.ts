@@ -26,13 +26,12 @@ export async function GET(): Promise<NextResponse<ChatThreadResponse>> {
         if (!error) {
             responseData.status = 200;
             responseData.message = 'Data has been found';
-            responseData.data = responseData.data ? data as ChatThread[]  : null;
+            responseData.data = data ? data as ChatThread[] : null;
         } else {
             responseData.status = 400;
             responseData.message = `The following error occurred, ${error}`;
         }
     }
-
 
     return NextResponse.json(responseData);
 }
