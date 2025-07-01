@@ -3,6 +3,8 @@
 import { use, useState } from "react";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link  from 'next/link';
 
 import { Button } from "@/components/ui/button";
 
@@ -34,7 +36,12 @@ function convertDateTime(timeStamp: string): string {
 	return `${month + 1}/${day}/${year}`;
 }
 
-export default function PastThreads({ threads }: PastThreadsProps) {
+function getSlug(title: string) {
+    const urlOfTitle = title.replace(/[" ", "_", "/"]/g, "-");
+    return urlOfTitle;
+}
+
+function PastThreads({ threads }: PastThreadsProps) {
 	const pastThreads = use(threads);
 	const [selectedForView, setSelectedForView] = useState<ChatThread>(defaultThread);
 
@@ -78,10 +85,10 @@ export default function PastThreads({ threads }: PastThreadsProps) {
 							<TableCell>{thread.thread_name}</TableCell>
 							<TableCell className="capitalize">{`${thread.book} ${thread.chapter}:${thread.start_verse} - ${thread.end_verse}`}</TableCell>
 							<TableCell>
-								<Button onClick={(e) => viewClickHandler(e, thread)}>View</Button>
+                                <Link href={`/account/profile/thread/${getSlug(thread.thread_name)}` } ><Button>View</Button></Link>
 							</TableCell>
 							<TableCell>
-								<Button>Download</Button>
+								<Button onClick={(e) => viewClickHandler(e, thread)}>Download</Button>
 							</TableCell>
 						</TableRow>
 					))}
@@ -89,3 +96,36 @@ export default function PastThreads({ threads }: PastThreadsProps) {
 		</Table>
 	);
 }
+
+function PastThreadsSkeleton() {
+	return (
+		<Skeleton>
+			<Table>
+				<TableCaption>Table loading...</TableCaption>
+				<TableHeader>
+					<TableRow>
+						<TableHead>Last Modified</TableHead>
+						<TableHead>Date Created</TableHead>
+						<TableHead>Thread Name</TableHead>
+						<TableHead>Bible Selection</TableHead>
+						<TableHead className="center">View</TableHead>
+						<TableHead className="center">Download</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+				</TableBody>
+			</Table>
+		</Skeleton>
+	);
+}
+
+export { PastThreads, PastThreadsSkeleton };
