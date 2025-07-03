@@ -24,7 +24,8 @@ const defaultThread: ChatThread = {
 	end_verse: "",
 	llm_notes: [],
 	user_notes: "",
-	user_id: "",
+    user_id: "",
+    thread_slug: ''
 };
 
 function convertDateTime(timeStamp: string): string {

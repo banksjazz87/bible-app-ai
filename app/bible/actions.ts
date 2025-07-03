@@ -1,7 +1,7 @@
 "use server";
 import { UserResponse, SupabaseClient, PostgrestSingleResponse } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
-import { APIResponse, LLMReqObject, ChatThread } from "@/lib/definitions";
+import { APIResponse, ChatThread } from "@/lib/definitions";
 
 class CreateChatThread {
 	threadName: string;
@@ -31,13 +31,37 @@ class CreateChatThread {
 			thread_name: this.threadName,
 		});
 
-		if (chatData.data) {
+		if (chatData.data && chatData.data.length > 0) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
+
+	/**
+	 * 
+	 * @param title string
+	 * @returns string, returns the slug version of the title
+	 */
+	createSlug(title: string): string {
+		let slugOfTitle = title.toLowerCase();
+
+		//Replace non-alphanumerical values
+		slugOfTitle = slugOfTitle.replace(/[^a-zA-Z0-9 -]/g, " ");
+
+		//Replace multiples spaces with a single hyphen
+		slugOfTitle = slugOfTitle.replace(/\s+/g, '-');
+
+		//Replace multiple hyphens with a single hyphen
+		slugOfTitle = slugOfTitle.replace(/-+/g, '-');
+
+		//Replace starting or ending hyphens with a space
+		slugOfTitle = slugOfTitle.replace(/-$/, '');
+		slugOfTitle = slugOfTitle.replace(/^-/, '');
+
+		return slugOfTitle.trim();
+	}
 
 	/**
 	 * 
@@ -49,6 +73,8 @@ class CreateChatThread {
 	async createNewChat(userId: string, supabase: SupabaseClient): Promise<APIResponse> {
 		//Add our user id here
 		this.chatObj.user_id = userId;
+		const title = this.chatObj.thread_name;
+		this.chatObj.thread_slug = this.createSlug(title);
 		const insert = await supabase.from("chat_threads").insert(this.chatObj);
 
 		if (insert.status === 201) {
