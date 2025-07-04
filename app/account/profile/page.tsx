@@ -9,7 +9,7 @@ import { ChatThread, APIDataResponse } from "@/lib/definitions";
 export default function ProfilePage() {
     const loggedInDetails = useAppSelector(getUserData);
     async function getThreads():  Promise<APIDataResponse<ChatThread[] | null>>{ 
-        const data = await fetch('/account/api/profile/threads');
+        const data = await fetch('/account/api/profile/pastThreads');
         const jsonData: APIDataResponse<ChatThread[] | null> = await data.json();
         console.log('HERE ', jsonData);
         return jsonData;

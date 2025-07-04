@@ -37,10 +37,7 @@ function convertDateTime(timeStamp: string): string {
 	return `${month + 1}/${day}/${year}`;
 }
 
-function getSlug(title: string) {
-    const urlOfTitle = title.replace(/[" ", "_", "/"]/g, "-");
-    return urlOfTitle;
-}
+
 
 function PastThreads({ threads }: PastThreadsProps) {
 	const pastThreads = use(threads);
@@ -86,7 +83,7 @@ function PastThreads({ threads }: PastThreadsProps) {
 							<TableCell>{thread.thread_name}</TableCell>
 							<TableCell className="capitalize">{`${thread.book} ${thread.chapter}:${thread.start_verse} - ${thread.end_verse}`}</TableCell>
 							<TableCell>
-                                <Link href={`/account/profile/thread/${getSlug(thread.thread_name)}` } ><Button>View</Button></Link>
+                                <Link href={`/account/profile/thread/${thread.thread_slug}` } ><Button>View</Button></Link>
 							</TableCell>
 							<TableCell>
 								<Button onClick={(e) => viewClickHandler(e, thread)}>Download</Button>

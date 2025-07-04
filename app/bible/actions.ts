@@ -26,9 +26,10 @@ class CreateChatThread {
 	 * @description checks if the currently passed thread name already exists in the database, along with the passed userId.
 	 */
 	async chatExists(userId: string, supabase: SupabaseClient): Promise<Boolean> {
+		const slugOfThreadName = this.createSlug(this.threadName);
 		const chatData = await supabase.from("chat_threads").select().match({
 			user_id: userId,
-			thread_name: this.threadName,
+			thread_slug: slugOfThreadName,
 		});
 
 		if (chatData.data && chatData.data.length > 0) {

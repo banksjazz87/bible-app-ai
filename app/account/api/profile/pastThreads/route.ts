@@ -21,7 +21,11 @@ export async function GET(): Promise<NextResponse<ChatThreadResponse>> {
 
     if (!error) {
         const userId = user?.id;
-        const { data, error } = await supabase.from('chat_threads').select('*').eq('user_id', userId);
+        const { data, error } = await supabase
+            .from('chat_threads')
+            .select('*')
+            .eq('user_id', userId)
+            .order('last_modified', { ascending: false });
 
         if (!error) {
             responseData.status = 200;
