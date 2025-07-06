@@ -4,7 +4,8 @@ import { use, useState } from "react";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link  from 'next/link';
+import Link from 'next/link';
+import { convertDateTime } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 
@@ -27,16 +28,6 @@ const defaultThread: ChatThread = {
     user_id: "",
     thread_slug: ''
 };
-
-function convertDateTime(timeStamp: string): string {
-	const date: Date = new Date(timeStamp);
-	const day: number = date.getDate();
-	const month: number = date.getMonth();
-	const year: number = date.getFullYear();
-
-	return `${month + 1}/${day}/${year}`;
-}
-
 
 
 function PastThreads({ threads }: PastThreadsProps) {
