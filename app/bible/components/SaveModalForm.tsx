@@ -52,7 +52,12 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 			end_verse: endVerse.toString(),
 			llm_notes: currentData.LLMOutput,
 			user_notes: 'Testing user notes',
-			user_id: '1'
+			user_id: '1',
+			id: 1,
+			thread_slug: '',
+			date_created: '', 
+			last_modified: ''
+
 		}
 
 		saveSermonData(values.projectTitle, newChatData)

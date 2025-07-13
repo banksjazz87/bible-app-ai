@@ -43,9 +43,17 @@ type SingleChatThreadResponse = {
 // }
 
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }): Promise<void> {
+// export async function GET(req: NextRequest, { params }: { params: { slug: string } }): Promise<void> {
 	
-    const slug = req;
-    console.log('Slug here', slug);
+//     const slug = req;
+//     console.log('Slug here', slug);
 		
+// }
+
+export async function GET(req: NextRequest) {
+    
+    return NextResponse.json({
+        valid: true,
+        testing: true
+    });
 }
