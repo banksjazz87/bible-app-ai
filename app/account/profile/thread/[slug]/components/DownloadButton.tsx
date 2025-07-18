@@ -21,7 +21,7 @@ export default function DownloadButton({pdfContentID, file } : DownloadButtonPro
                 },
                 x: 10,
                 y: 10,
-                width: 500,
+                width: 570,
                 windowWidth: 700
             });
     }
