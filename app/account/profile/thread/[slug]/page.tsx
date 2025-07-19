@@ -7,7 +7,8 @@ import { LLMReqObject } from "../../../../../lib/definitions";
 import { retrieveBibleChapter } from "@/lib/bible/bibleMethods";
 import BibleVerses from "@/app/bible/components/BibleVerses";
 import { Button } from "@/components/ui/button";
-import DownloadButton from './components/DownloadButton';
+import DownloadPDFButton from './components/DownloadPDFButton';
+import DownloadDOCButton from "./components/DownloadDOCButton";
 
 export default async function Page(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
@@ -50,48 +51,57 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
 			<main>
-				<section id="pdf-content" className="pt-16 flex flex-col gap-8 pb-16">
-					<div className="flex flex-col gap-2">
-						<div className="flex flex-row justify-between">
-							<h1 className="capitalize font-extrabold text-3xl">{thread_name}</h1>
-							<div className="flex flex-row gap-2">
-								<DownloadButton
-									pdfContentID={'pdf-content'}
-									file={thread_name}
-								/>
-								<Button>Print</Button>
-								<Button>Edit</Button>
-							</div>
-						</div>
-						<p className="font-extrabold">{date}</p>
-					</div>
-					<div className="flex flex-col gap-2">
-						<h2 className="capitalize font-extrabold text-2xl">{`${book} ${chapter}:${start_verse} - ${end_verse}`}</h2>
-						<Suspense
-							fallback={
-								<div>
-									<p>Loading bible data..</p>
+				<section className="pt-16 pb-16">
+					<div
+						id="pdf-content"
+						className="flex flex-col gap-2"
+					>
+						<div className="flex flex-col gap-2">
+							<div className="flex flex-row justify-between">
+								<h1 className="capitalize font-extrabold text-3xl">{thread_name}</h1>
+								<div className="flex flex-row gap-2">
+									<DownloadPDFButton
+										pdfContentID={"pdf-content"}
+										file={thread_name}
+									/>
+									<Button>Print</Button>
+									<DownloadDOCButton
+										fileName={thread_name}
+										htmlID={"pdf-content"}
+									/>
+									<Button>Edit</Button>
 								</div>
-							}
-						>
-							{bibleText && (
-								<BibleVerses
-									versesArray={bibleText.data}
-									startVerse={start_verse}
-									endVerse={end_verse}
-								/>
-							)}
-						</Suspense>
-					</div>
-					<div>
-						{user_notes.length > 0 && (
-							<div className="flex flex-col gap-2">
-								<h2 className="text-2xl font-extrabold">User Notes</h2>
-								<p>{user_notes}</p>
 							</div>
-						)}
+							<p className="font-extrabold">{date}</p>
+						</div>
+						<div className="flex flex-col gap-2">
+							<h2 className="capitalize font-extrabold text-2xl">{`${book} ${chapter}:${start_verse} - ${end_verse}`}</h2>
+							<Suspense
+								fallback={
+									<div>
+										<p>Loading bible data..</p>
+									</div>
+								}
+							>
+								{bibleText && (
+									<BibleVerses
+										versesArray={bibleText.data}
+										startVerse={start_verse}
+										endVerse={end_verse}
+									/>
+								)}
+							</Suspense>
+						</div>
+						<div>
+							{user_notes.length > 0 && (
+								<div className="flex flex-col gap-2">
+									<h2 className="text-2xl font-extrabold">User Notes</h2>
+									<p>{user_notes}</p>
+								</div>
+							)}
+						</div>
+						<div>{LLMNotes(llm_notes)}</div>
 					</div>
-					<div>{LLMNotes(llm_notes)}</div>
 				</section>
 			</main>
 		</Suspense>
