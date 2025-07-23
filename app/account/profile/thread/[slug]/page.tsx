@@ -1,3 +1,5 @@
+"use server";
+
 import { JSX } from "react";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { GetSingleThread } from "@/lib/data";
