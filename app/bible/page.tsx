@@ -10,23 +10,21 @@ import { DefaultBibleFormData } from "@/lib/bible/bibleData";
 import AIOptions from "@/app/bible/components/AIOptions";
 import AIOutput from "@/app/bible/components/AIOutput";
 import SaveModalForm from "./components/SaveModalForm";
-import { clear } from "node:console";
-
-
+import DownloadPDFButton from "../account/profile/thread/[slug]/components/DownloadPDFButton";
 
 const initLLMReqAndOutput = [
 	{
 		heading: "What is this about?",
-		output: ""
+		output: "",
 	},
 	{
 		heading: "Suggested Sermon",
-		output: ""
+		output: "",
 	},
 	{
 		heading: "Discussion Questions",
-		output: ""
-	}
+		output: "",
+	},
 ];
 
 export default function Bible(): JSX.Element {
@@ -82,14 +80,14 @@ function PageContent() {
 		const clearedData = LLMReqAndOutput.map((x: LLMReqObject, y: number) => {
 			const currentObj = {
 				heading: x.heading,
-				output: ''
+				output: "",
 			};
 
 			return currentObj;
 		});
 
 		setLLMReqAndOutput(clearedData);
-	}
+	};
 
 	const formHandler = (e: FormEvent<HTMLFormElement>, formData: BibleFormData) => {
 		e.preventDefault();
@@ -103,14 +101,13 @@ function PageContent() {
 			startVerse: formData.startVerse,
 			endVerse: formData.endVerse,
 		});
-
 	};
 
 	const updateLLMOutputData = (output: string, index: number): void => {
 		const copyOfData = LLMReqAndOutput.slice();
-		copyOfData[index]['output'] = output;
+		copyOfData[index]["output"] = output;
 		setLLMReqAndOutput(copyOfData);
-	}
+	};
 
 	return (
 		<main className="grid grid-cols-3 py-10 gap-10 relative">
@@ -135,12 +132,12 @@ function PageContent() {
 
 			{showChapterText && (
 				<section className="flex flex-col gap-5 my-10 col-span-2">
-					<div>
+					<div className="flex flex-col gap-4">
 						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
 
 						<div className="flex flex-row flex-start gap-2">
 							<Button
-								className="hover:cursor-pointer my-3"
+								className="hover:cursor-pointer"
 								onClick={(): void =>
 									setBibleData({
 										...bibleData,
@@ -152,29 +149,29 @@ function PageContent() {
 								Read Full Chapter
 							</Button>
 							<Button
-								className="hover:cursor-pointer my-3"
+								className="hover:cursor-pointer"
 								onClick={(): void => setShowSaveForm(true)}
 							>
 								Save
 							</Button>
-							<Button
-								className="hover:cursor-pointer my-3"
-								onClick={(): void => alert("This will trigger the download function")}
-							>
-								Download
-							</Button>
+							<DownloadPDFButton
+								pdfContentID="output-content"
+								file={`${bibleData.book}-${bibleData.chapter}-${bibleData.startVerse}-${bibleData.endVerse}`}
+							/>
 						</div>
 					</div>
 
-					<BibleVerses
-						versesArray={currentChapterText}
-						startVerse={bibleData.startVerse}
-						endVerse={bibleData.endVerse}
-					/>
-					<AIOutput
-						LLMData={LLMReqAndOutput}
-						isLoading={LLMisLoading}
-					/>
+					<div id="output-content">
+						<BibleVerses
+							versesArray={currentChapterText}
+							startVerse={bibleData.startVerse}
+							endVerse={bibleData.endVerse}
+						/>
+						<AIOutput
+							LLMData={LLMReqAndOutput}
+							isLoading={LLMisLoading}
+						/>
+					</div>
 				</section>
 			)}
 
@@ -184,8 +181,8 @@ function PageContent() {
 				cancelHandler={(): void => setShowSaveForm(false)}
 				confirmHandler={(): void => setShowSaveForm(false)}
 				currentData={{
-						bibleData: bibleData,
-						LLMOutput: LLMReqAndOutput
+					bibleData: bibleData,
+					LLMOutput: LLMReqAndOutput,
 				}}
 			/>
 		</main>

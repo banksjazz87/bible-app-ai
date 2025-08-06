@@ -10,7 +10,6 @@ import { retrieveBibleChapter } from "@/lib/bible/bibleMethods";
 import BibleVerses from "@/app/bible/components/BibleVerses";
 import { Button } from "@/components/ui/button";
 import DownloadPDFButton from './components/DownloadPDFButton';
-import DownloadDOCButton from "./components/DownloadDOCButton";
 
 export default async function Page(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
@@ -67,10 +66,6 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 										file={thread_name}
 									/>
 									<Button>Print</Button>
-									<DownloadDOCButton
-										fileName={thread_name}
-										htmlID={"pdf-content"}
-									/>
 									<Button>Edit</Button>
 								</div>
 							</div>
