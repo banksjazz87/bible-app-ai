@@ -114,7 +114,7 @@ export type SaveSermonData = {
 }; 
 
 export type ChatThread = {
-    id: number;
+    id?: number;
     thread_slug: string;
     date_created?: string;
     last_modified?: string;

@@ -53,7 +53,6 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 			llm_notes: currentData.LLMOutput,
 			user_notes: 'Testing user notes',
 			user_id: '1',
-			id: 1,
 			thread_slug: '',
 
 		}
