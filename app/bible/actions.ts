@@ -78,17 +78,18 @@ class CreateChatThread {
 		this.chatObj.thread_slug = this.createSlug(title);
 		const insert = await supabase.from("chat_threads").insert(this.chatObj);
 
-		if (insert.status === 201) {
+		if (insert.error) {
+			console.log("Error inserting chat thread: ", insert);
+			return {
+				status: 500,
+				message: `The following error occurred while creating the thread: ${insert.error.message}`,
+			};
+		} else {
 			return {
 				status: 201,
 				message: `The thread has been created.`,
 			};
-		} else {
-			return {
-				status: 500,
-				message: `The following error occurred while creating the thread: ${insert.error}`,
-			};
-		}
+		} 
 	}
 
 

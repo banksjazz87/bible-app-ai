@@ -55,8 +55,6 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 			user_id: '1',
 			id: 1,
 			thread_slug: '',
-			date_created: '', 
-			last_modified: ''
 
 		}
 
@@ -64,6 +62,7 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, conf
 			.then(data => {
 				console.log('HEREEEEE ', data);
 				if (data.status === 500) {
+					console.error(data);
 					alert(`The following error has occurred: ${data.message}`);
 				} else {
 					alert('The data has been saved.');

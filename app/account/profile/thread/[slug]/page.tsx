@@ -20,7 +20,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 
 	const bibleText = await retrieveBibleChapter(bible_version, book, chapter);
 
-	const date = convertDateTime(date_created);
+	const date = convertDateTime(date_created as string);
 
 	const LLMNotes = (llmNotes: LLMReqObject[]): (JSX.Element | undefined)[] => {
 		return llmNotes.map((x: LLMReqObject, y: number): JSX.Element | undefined => {
