@@ -20,6 +20,7 @@ export default function DownloadPDFButton({ pdfContentID, file }: DownloadPDFBut
 			},
 			x: 10,
 			y: 10,
+			autoPaging: "text",
 			width: 550,
 			windowWidth: 700,
 			margin: 20,

@@ -69,8 +69,8 @@ function PastThreads({ threads }: PastThreadsProps) {
 				{pastThreads &&
 					pastThreads.data?.map((thread: ChatThread, y: number) => (
 						<TableRow key={`thread_num_${y}`}>
-							<TableCell>{convertDateTime(thread.last_modified)}</TableCell>
-							<TableCell>{convertDateTime(thread.date_created)}</TableCell>
+							<TableCell>{convertDateTime(thread.last_modified as string)}</TableCell>
+							<TableCell>{convertDateTime(thread.date_created as string)}</TableCell>
 							<TableCell>{thread.thread_name}</TableCell>
 							<TableCell className="capitalize">{`${thread.book} ${thread.chapter}:${thread.start_verse} - ${thread.end_verse}`}</TableCell>
 							<TableCell>
