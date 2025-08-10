@@ -1,16 +1,17 @@
 "use client";
 
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import Link from "next/link";
 import HyperLink from "@/app/ui/HyperLink";
 import { signup } from "@/app/account/create-account/actions";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm} from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormProps, APIResponse } from "@/lib/definitions";
+import HideShowEye from "../../../../components/ui/hide-show-eye";
 
 const createAccountFormSchema = z
 	.object({
@@ -23,7 +24,10 @@ const createAccountFormSchema = z
 		path: ["verifiedPassword"],
 	});
 
-export default function CreateAccountForm({responseHandler, alertMessageHandler, alertTitleHandler}: LoginFormProps): JSX.Element {
+export default function CreateAccountForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+	const [showVerifiedPassword, setShowVerifiedPassword] = useState<boolean>(false);
+
 	const form = useForm<z.infer<typeof createAccountFormSchema>>({
 		resolver: zodResolver(createAccountFormSchema),
 		defaultValues: {
@@ -68,6 +72,7 @@ export default function CreateAccountForm({responseHandler, alertMessageHandler,
 							</FormItem>
 						)}
 					/>
+
 					<FormField
 						control={form.control}
 						name="password"
@@ -75,17 +80,24 @@ export default function CreateAccountForm({responseHandler, alertMessageHandler,
 							<FormItem>
 								<FormLabel>Password</FormLabel>
 								<FormControl>
-									<Input
-										placeholder="Password"
-										type="password"
-										{...field}
-										className="border-slate-600 rounded-none"
-									/>
+									<div className="relative">
+										<Input
+											placeholder="Password"
+											type={showPassword ? "text" : "password"}
+											{...field}
+											className="border-slate-600 rounded-none"
+										/>
+										<HideShowEye
+											showPassword={showPassword}
+											toggleShowPassword={() => setShowPassword(!showPassword)}
+										/>
+									</div>
 								</FormControl>
 								<FormMessage className="text-red-700" />
 							</FormItem>
 						)}
 					/>
+
 					<FormField
 						control={form.control}
 						name="verifiedPassword"
@@ -93,17 +105,24 @@ export default function CreateAccountForm({responseHandler, alertMessageHandler,
 							<FormItem>
 								<FormLabel>Validate Password</FormLabel>
 								<FormControl>
-									<Input
-										placeholder="Password"
-										type="password"
-										{...field}
-										className="border-slate-600 rounded-none"
-									/>
+									<div className="relative">
+										<Input
+											placeholder="Password"
+											type={showVerifiedPassword ? "text" : "password"}
+											{...field}
+											className="border-slate-600 rounded-none"
+										/>
+										<HideShowEye
+											showPassword={showVerifiedPassword}
+											toggleShowPassword={() => setShowVerifiedPassword(!showVerifiedPassword)}
+										/>
+									</div>
 								</FormControl>
 								<FormMessage className="text-red-700" />
 							</FormItem>
 						)}
 					/>
+
 					<Button type="submit">Submit</Button>
 				</form>
 			</Form>
