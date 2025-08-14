@@ -43,6 +43,7 @@ function PageContent() {
 	const [LLMReqAndOutput, setLLMReqAndOutput] = useState<LLMReqObject[]>(initLLMReqAndOutput);
 	const [LLMisLoading, setLLMisLoading] = useState<boolean>(false);
 	const [showSaveForm, setShowSaveForm] = useState<boolean>(false);
+	const [userRoles, setUserRoles] = useState<string>('');
 
 	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
 	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
@@ -74,6 +75,28 @@ function PageContent() {
 				endVerse: endVerse,
 			});
 		}
+	}, []);
+
+	useEffect((): void => {
+		const fetchUserRoles = async () => {
+			try {
+				const response = await fetch('/api/user/roles');
+				console.log('fetch response:', response);
+				const data = await response.json();
+				if (data.status === 200 && data.data) {
+					const roles = data.data.map((roleObj: { role: string }) => roleObj.role);
+					console.log('fetched data:', data);
+					setUserRoles(roles.join(', '));
+				} else {
+					setUserRoles('');
+				}
+			} catch (error) {
+				console.error('Error fetching user roles:', error);
+				setUserRoles('');
+			}
+		};
+
+		fetchUserRoles();
 	}, []);
 
 	const resetLLMData = (): void => {

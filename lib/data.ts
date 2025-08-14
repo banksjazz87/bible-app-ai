@@ -38,3 +38,37 @@ export async function GetSingleThread(slugName: string) {
 
 	return NextResponse.json(responseData);
 }
+
+
+export async function GetUserRoles(userId: string): Promise<APIDataResponse<any[] | null>> {
+	const supabase = await createClient();
+	const { data, error } = await supabase.from("user_roles").select("*").eq("user_id", userId);
+
+	if (error) {
+		return {
+			status: 400,
+			message: `Error fetching user roles: ${error.message}`,
+			data: null,
+		};
+	}
+
+	return {
+		status: 200,
+		message: "User roles fetched successfully",
+		data: data,
+	};
+}
+
+export async function GetCurrentUserId(): Promise<string | null> {
+	const supabase = await createClient();
+	const {
+		data: { user },
+		error,
+	} = await supabase.auth.getUser();
+
+	if (error || !user) {
+		return null;
+	}
+
+	return user.id;
+}

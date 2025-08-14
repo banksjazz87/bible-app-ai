@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+"use client";
 import { Button } from "@/components/ui/button";
 import { BibleFormData } from "@/lib/definitions";
 import OpenAI from "openai";
