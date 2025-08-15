@@ -1,5 +1,7 @@
 //Contains all of the definitions used in the app
 
+import { User } from "lucide-react";
+
 export type BookAndChapters = {
     text: string;
     chapters: number;
@@ -128,3 +130,12 @@ export type ChatThread = {
 	user_notes: string;
 	user_id: string;
 };
+
+export type UserRoles = {
+    id: number;
+    user_id: string;
+    super_admin: boolean;
+    subscribed: boolean;
+    free_tier: boolean;
+    email_address: string;
+}

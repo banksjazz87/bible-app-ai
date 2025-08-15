@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "../../../utils/supabase/server";
 import { APIDataResponse } from "@/lib/definitions";
+import { UserRoles } from "@/lib/definitions";
 
 
 export async function GET(request: Request) {
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
         if (!error) {
             responseData.status = 200;
             responseData.message = "User roles fetched successfully";
-            responseData.data = data ? (data as any[]) : null;
+            responseData.data = data ? (data as UserRoles[]) : null;
         } else {
             responseData.status = 400;
             responseData.message = `The following error occurred, ${error.message}`;

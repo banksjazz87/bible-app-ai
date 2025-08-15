@@ -80,13 +80,17 @@ function PageContent() {
 	useEffect((): void => {
 		const fetchUserRoles = async () => {
 			try {
-				const response = await fetch('/api/user/roles');
-				console.log('fetch response:', response);
+				const response = await fetch('/api/user-roles');
 				const data = await response.json();
+				console.log('User roles data:', data);
 				if (data.status === 200 && data.data) {
-					const roles = data.data.map((roleObj: { role: string }) => roleObj.role);
-					console.log('fetched data:', data);
-					setUserRoles(roles.join(', '));
+					if (data.superAdmin) {
+						setUserRoles('superAdmin');
+					} else if (data.subscribed) {
+						setUserRoles('subscribed');
+					} else {
+						setUserRoles('freeTier');
+					}
 				} else {
 					setUserRoles('');
 				}
@@ -95,7 +99,6 @@ function PageContent() {
 				setUserRoles('');
 			}
 		};
-
 		fetchUserRoles();
 	}, []);
 
