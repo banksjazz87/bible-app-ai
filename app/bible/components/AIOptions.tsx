@@ -9,10 +9,12 @@ type AIOptionsProps = {
     selectedBibleData: BibleFormData;
     updateOutput: Function;
     startLoading: Function;
-    stopLoading: Function;
+	stopLoading: Function;
+	userRole: string;
+	maxRequests: number;
 };
 
-export default function AIOptions({ selectedBibleData, updateOutput, startLoading, stopLoading }: AIOptionsProps) {
+export default function AIOptions({ selectedBibleData, updateOutput, startLoading, stopLoading, userRole, maxRequests }: AIOptionsProps) {
     const {
         book,
         chapter,
@@ -52,7 +54,18 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
     const processMarkdown = async (markdown: string): Promise<string> => {
         const result = await remark().use(html).process(markdown);
         return result.toString();
-    }
+	}
+	
+	async function currentNumberOfRequests(): Promise<number> {
+		const requests = await fetch('/api/daily-calls');
+		const requestsData = await requests.json();
+		
+		if (requestsData.status === 200 && requestsData.data) {
+			return requestsData.data[0].total_requests;
+		}
+		return 0;
+
+	}
 
 	const clickHandler = (prompt: string, index: number): void => {
 		if (!dataIsPresent()) {

@@ -21,13 +21,26 @@ export async function GET(request: Request) {
         const userId = user.id;
         const { data, error } = await supabase.from("daily_requests").select("total_requests").eq("user_id", userId);
 
-        if (!error) {
+        if (!error && data.length > 0) {
             responseData.status = 200;
             responseData.message = "Daily calls fetched successfully";
             responseData.data = data ? (data as any[]) : null;
-        } else {
+        } else if (error) {
             responseData.status = 400;
-            responseData.message = `The following error occurred, ${error.message}`;
+			responseData.message = `The following error occurred, ${error.message}`;
+        } else {
+            // If no record exists, create one with total_requests set to 0
+
+            const { data, error } = await supabase.from('daily_requests').insert({ user_id: userId, total_requests: 0 });
+            
+            if (error) {
+                console.error('Error creating daily_requests record: ', error);
+            } else {
+                responseData.status = 201;
+                responseData.message = "Daily calls record created successfully";
+                responseData.data = [{total_requests: 0}];
+            }
+
         }
     } else if (error) {
         responseData.status = 400;

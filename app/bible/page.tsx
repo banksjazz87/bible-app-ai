@@ -11,6 +11,7 @@ import AIOptions from "@/app/bible/components/AIOptions";
 import AIOutput from "@/app/bible/components/AIOutput";
 import SaveModalForm from "./components/SaveModalForm";
 import DownloadPDFButton from "../account/profile/thread/[slug]/components/DownloadPDFButton";
+import { set } from "react-hook-form";
 
 const initLLMReqAndOutput = [
 	{
@@ -43,7 +44,8 @@ function PageContent() {
 	const [LLMReqAndOutput, setLLMReqAndOutput] = useState<LLMReqObject[]>(initLLMReqAndOutput);
 	const [LLMisLoading, setLLMisLoading] = useState<boolean>(false);
 	const [showSaveForm, setShowSaveForm] = useState<boolean>(false);
-	const [userRoles, setUserRoles] = useState<string>('');
+	const [userRoles, setUserRoles] = useState<string>('freeTier');
+	const [maxRequests, setMaxRequests] = useState<number>(5);
 
 	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
 	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
@@ -86,17 +88,17 @@ function PageContent() {
 				if (data.status === 200 && data.data) {
 					if (data.superAdmin) {
 						setUserRoles('superAdmin');
+						setMaxRequests(10000);
 					} else if (data.subscribed) {
 						setUserRoles('subscribed');
-					} else {
-						setUserRoles('freeTier');
+						setMaxRequests(50);
 					}
 				} else {
-					setUserRoles('');
+					setUserRoles("freeTier");
+					setMaxRequests(5);
 				}
 			} catch (error) {
 				console.error('Error fetching user roles:', error);
-				setUserRoles('');
 			}
 		};
 		fetchUserRoles();
@@ -152,6 +154,8 @@ function PageContent() {
 						updateOutput={(output: string, index: number): void => updateLLMOutputData(output, index)}
 						startLoading={(): void => setLLMisLoading(true)}
 						stopLoading={(): void => setLLMisLoading(false)}
+						userRole={userRoles}
+						maxRequests={maxRequests}
 					/>
 				)}
 			</section>
