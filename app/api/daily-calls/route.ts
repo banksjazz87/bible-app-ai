@@ -31,20 +31,23 @@ export async function GET(request: Request) {
         } else {
             // If no record exists, create one with total_requests set to 0
 
-            const { data, error } = await supabase.from('daily_requests').insert({ user_id: userId, total_requests: 0 });
+            // const { data, error } = await supabase.from('daily_requests').insert({ user_id: userId, total_requests: 0 });
             
-            if (error) {
-                console.error('Error creating daily_requests record: ', error);
-            } else {
-                responseData.status = 201;
-                responseData.message = "Daily calls record created successfully";
-                responseData.data = [{total_requests: 0}];
-            }
+            // if (error) {
+            //     console.error('Error creating daily_requests record: ', error);
+            // } else {
+            //     responseData.status = 201;
+            //     responseData.message = "Daily calls record created successfully";
+            //     responseData.data = [{total_requests: 0}];
+            // }
+            responseData.status = 200;
+            responseData.message = "No daily calls record found, initializing to 0";        
+            responseData.data = [{total_requests: 0}];
 
         }
     } else if (error) {
         responseData.status = 400;
-        responseData.message = `Error fetching user: ${error.message}`;
+        responseData.message = `User is no longer Authenicated: ${error.message}`;
     }
 
     return NextResponse.json(responseData);

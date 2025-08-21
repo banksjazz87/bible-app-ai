@@ -64,7 +64,6 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
 			return requestsData.data[0].total_requests;
 		}
 		return 0;
-
 	}
 
 	const clickHandler = (prompt: string, index: number): void => {
