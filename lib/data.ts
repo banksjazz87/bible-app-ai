@@ -9,7 +9,7 @@ export async function GetThreads() {
 	return data;
 }
 
-export async function GetSingleThread(slugName: string) {
+export async function GetSingleThread(slugName: string): Promise<NextResponse> {
 	const supabase = await createClient();
 	const {
 		data: { user },
@@ -71,4 +71,61 @@ export async function GetCurrentUserId(): Promise<string | null> {
 	}
 
 	return user.id;
+}
+
+export async function IncrementDailyCalls(limit: number): Promise<NextResponse> {
+	const supabase = await createClient();
+	const userId = await GetCurrentUserId();
+	const responseData = {
+		status: 500,
+		message: "This user is not found",
+		data: null,			
+	}
+
+	if (!userId) {
+		console.error("User is not authenticated.");
+		responseData.message = "User is not authenticated.";
+		responseData.status = 401;
+	} 
+
+	const { data, error } = await supabase.from("daily_requests").select("total_requests").eq("user_id", userId);
+
+	if (error) {
+		console.error("Error fetching daily requests: ", error);
+		responseData.message = `Error fetching daily requests: ${error.message}`;
+		responseData.status = 400;
+	}
+
+	if (data && data.length > 0) {
+		const newTotal = data[0].total_requests + 1;
+
+		if (newTotal > limit) {
+			console.warn("User has exceeded their daily request limit.");
+			responseData.message = "User has exceeded their daily request limit.";
+			responseData.status = 429;
+		}
+
+		const currentRequests = data[0].total_requests;
+		const { error: updateError } = await supabase.from("daily_requests").update({ total_requests: currentRequests + 1 }).eq("user_id", userId);
+
+		if (updateError) {
+			console.error("Error updating daily requests: ", updateError);
+			responseData.message = `Error updating daily requests: ${updateError.message}`;
+			responseData.status = 400;
+		}
+
+	} else {
+		const { error: insertError } = await supabase.from("daily_requests").insert({ user_id: userId, total_requests: 1 });
+
+		if (insertError) {
+			console.error("Error inserting daily requests: ", insertError);
+			responseData.message = `Error inserting daily requests: ${insertError.message}`;
+			responseData.status = 400;
+		} else {
+			responseData.status = 201;
+			responseData.message = "Daily requests record created successfully";
+		}
+	}
+
+	return NextResponse.json(responseData);
 }
