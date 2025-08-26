@@ -1,4 +1,3 @@
-"use server";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
 import { GetCurrentUserId } from "../data";
@@ -12,11 +11,14 @@ export default class IncrementDailyRequests {
         this.limit = limit;
     }
 
-
+    async userID(): Promise<string | null> {
+        const userId = await GetCurrentUserId();
+        return userId;
+    }
 
     async main() {
         const supabase = await createClient();
-        const userId = await GetCurrentUserId();
+        const userId = await this.userID();
 
         const responseData = {
             status: 500,
@@ -67,7 +69,8 @@ export default class IncrementDailyRequests {
             }
         }
 
-        return NextResponse.json(responseData);
+        // return NextResponse.json(responseData);
+        return responseData;
     }
 
 }

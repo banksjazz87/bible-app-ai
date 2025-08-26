@@ -1,9 +1,12 @@
 "use client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BibleFormData } from "@/lib/definitions";
 import OpenAI from "openai";
 import { remark } from "remark";
 import html from "remark-html";
+import { incrementRequests } from "@/app/bible/actions";
+
 
 type AIOptionsProps = {
     selectedBibleData: BibleFormData;
@@ -20,7 +23,8 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
         chapter,
         startVerse,
         endVerse
-    } = selectedBibleData;
+	} = selectedBibleData;
+	const [errorMessage, setErrorMessage] = useState<string>('');
 
     const client: OpenAI = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
     const bibleSelection = endVerse.length > 0 ? `${book} ${chapter}:${startVerse} - ${endVerse}` : `${book} ${chapter}:${startVerse}`;
@@ -56,36 +60,47 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
         return result.toString();
 	}
 	
-	async function currentNumberOfRequests(): Promise<number> {
-		const requests = await fetch('/api/daily-calls');
-		const requestsData = await requests.json();
-		
-		if (requestsData.status === 200 && requestsData.data) {
-			return requestsData.data[0].total_requests;
+	async function incrementSuccessful(): Promise<boolean> {
+		const requests = await incrementRequests(maxRequests);
+
+		if (requests.status === 201) {
+			console.log(requests);
+			return true;
+		} else {
+			alert(requests.message);
+			return false;
 		}
-		return 0;
 	}
 
 	const clickHandler = (prompt: string, index: number): void => {
 		if (!dataIsPresent()) {
 			alert("Please search before using this.");
         } else {
-            startLoading();
-            completion(prompt)
-                .then((data: any): void => {
-                    const output = data.choices[0].message.content;
-                    processMarkdown(output)
-                        .then((final: string) => {
-                            updateOutput(final, index);
-                        })
-                        .catch((e: any) => {
-                            console.warn('The following error occurred while processing the markdown: ', e);
-                        });
-                })
-                .catch((e: any): void => {
-                    console.warn(e);
-                })
-                .finally(() => stopLoading());
+			startLoading();
+			incrementSuccessful().
+				then((data) => {
+					if (!data) {
+						stopLoading();
+					} else {
+						completion(prompt)
+							.then((data: any): void => {
+								const output = data.choices[0].message.content;
+								processMarkdown(output)
+									.then((final: string) => {
+										updateOutput(final, index);
+									})
+									.catch((e: any) => {
+										console.warn("The following error occurred while processing the markdown: ", e);
+									});
+							})
+							.catch((e: any): void => {
+								console.warn(e);
+							})
+							.finally(() => stopLoading());
+
+					}
+				})
+				.catch((e: any) => console.warn(`The following error occurred ${ e }`));
         }
 	};
 

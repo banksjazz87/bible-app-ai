@@ -1,4 +1,3 @@
-"use server";
 import { UserResponse, SupabaseClient, PostgrestSingleResponse } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
 import { APIResponse, ChatThread } from "@/lib/definitions";
