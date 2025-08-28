@@ -11,7 +11,8 @@ import AIOptions from "@/app/bible/components/AIOptions";
 import AIOutput from "@/app/bible/components/AIOutput";
 import SaveModalForm from "./components/SaveModalForm";
 import DownloadPDFButton from "../account/profile/thread/[slug]/components/DownloadPDFButton";
-import { set } from "react-hook-form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 const initLLMReqAndOutput = [
 	{
@@ -46,6 +47,7 @@ function PageContent() {
 	const [showSaveForm, setShowSaveForm] = useState<boolean>(false);
 	const [userRoles, setUserRoles] = useState<string>('freeTier');
 	const [maxRequests, setMaxRequests] = useState<number>(5);
+	const [errorMessage, setErrorMessage] = useState<string>('');
 
 	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
 	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
@@ -79,17 +81,20 @@ function PageContent() {
 		}
 	}, []);
 
+
+	//Set our userRoles and maxRequests on initial load
 	useEffect((): void => {
 		const fetchUserRoles = async () => {
 			try {
 				const response = await fetch('/api/user-roles');
 				const data = await response.json();
-				console.log('User roles data:', data);
+				const userData = data.data[0];
+			
 				if (data.status === 200 && data.data) {
-					if (data.superAdmin) {
+					if (userData.super_admin) {
 						setUserRoles('superAdmin');
-						setMaxRequests(10000);
-					} else if (data.subscribed) {
+						setMaxRequests(5);
+					} else if (userData.subscribed) {
 						setUserRoles('subscribed');
 						setMaxRequests(50);
 					}
@@ -156,12 +161,19 @@ function PageContent() {
 						stopLoading={(): void => setLLMisLoading(false)}
 						userRole={userRoles}
 						maxRequests={maxRequests}
+						updateErrorMessage={(message: string): void => setErrorMessage(message)}
 					/>
 				)}
 			</section>
 
 			{showChapterText && (
 				<section className="flex flex-col gap-5 my-10 col-span-2">
+					{errorMessage.length > 0 && (
+						<Alert>
+							<AlertTitle>An Error Has Occurred!</AlertTitle>
+							<AlertDescription>{errorMessage}</AlertDescription>
+						</Alert>
+					)}
 					<div className="flex flex-col gap-4">
 						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
 

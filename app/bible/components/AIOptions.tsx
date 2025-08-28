@@ -15,9 +15,10 @@ type AIOptionsProps = {
 	stopLoading: Function;
 	userRole: string;
 	maxRequests: number;
+	updateErrorMessage(message: string): void;
 };
 
-export default function AIOptions({ selectedBibleData, updateOutput, startLoading, stopLoading, userRole, maxRequests }: AIOptionsProps) {
+export default function AIOptions({ selectedBibleData, updateOutput, startLoading, stopLoading, userRole, maxRequests, updateErrorMessage }: AIOptionsProps) {
     const {
         book,
         chapter,
@@ -67,7 +68,7 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
 			console.log(requests);
 			return true;
 		} else {
-			alert(requests.message);
+			updateErrorMessage(requests.message);
 			return false;
 		}
 	}
