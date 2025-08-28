@@ -65,7 +65,6 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
 		const requests = await incrementRequests(maxRequests);
 
 		if (requests.status === 201) {
-			console.log(requests);
 			return true;
 		} else {
 			updateErrorMessage(requests.message);

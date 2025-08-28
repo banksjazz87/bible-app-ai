@@ -47,7 +47,7 @@ function PageContent() {
 	const [showSaveForm, setShowSaveForm] = useState<boolean>(false);
 	const [userRoles, setUserRoles] = useState<string>('freeTier');
 	const [maxRequests, setMaxRequests] = useState<number>(5);
-	const [errorMessage, setErrorMessage] = useState<string>('');
+	const [errorMessage, setErrorMessage] = useState<string>('Testing');
 
 	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
 	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
@@ -161,19 +161,22 @@ function PageContent() {
 						stopLoading={(): void => setLLMisLoading(false)}
 						userRole={userRoles}
 						maxRequests={maxRequests}
-						updateErrorMessage={(message: string): void => setErrorMessage(message)}
+						updateErrorMessage={(message: string): void => {
+							setErrorMessage(message);
+							console.log('HERE IS THE MESSAGE ', message);
+						}}
 					/>
 				)}
 			</section>
 
 			{showChapterText && (
 				<section className="flex flex-col gap-5 my-10 col-span-2">
-					{errorMessage.length > 0 && (
+					
 						<Alert>
 							<AlertTitle>An Error Has Occurred!</AlertTitle>
 							<AlertDescription>{errorMessage}</AlertDescription>
 						</Alert>
-					)}
+					
 					<div className="flex flex-col gap-4">
 						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
 
