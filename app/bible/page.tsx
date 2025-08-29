@@ -11,7 +11,8 @@ import AIOptions from "@/app/bible/components/AIOptions";
 import AIOutput from "@/app/bible/components/AIOutput";
 import SaveModalForm from "./components/SaveModalForm";
 import DownloadPDFButton from "../account/profile/thread/[slug]/components/DownloadPDFButton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Alert from "../ui/Alert";
+import { useRouter } from "next/navigation";
 
 
 const initLLMReqAndOutput = [
@@ -48,6 +49,9 @@ function PageContent() {
 	const [userRoles, setUserRoles] = useState<string>('freeTier');
 	const [maxRequests, setMaxRequests] = useState<number>(5);
 	const [errorMessage, setErrorMessage] = useState<string>('Testing');
+	const [showAlert, setShowAlert] = useState<boolean>(false);
+
+	const router = useRouter();
 
 	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
 	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
@@ -88,9 +92,9 @@ function PageContent() {
 			try {
 				const response = await fetch('/api/user-roles');
 				const data = await response.json();
-				const userData = data.data[0];
 			
 				if (data.status === 200 && data.data) {
+					const userData = data.data[0];
 					if (userData.super_admin) {
 						setUserRoles('superAdmin');
 						setMaxRequests(5);
@@ -142,6 +146,17 @@ function PageContent() {
 		setLLMReqAndOutput(copyOfData);
 	};
 
+	const loginHandler = (): void => {
+		setShowAlert(!showAlert);
+		const newPath = 
+		router.push('/account/login');	
+	}
+
+	const singUpHandler = (): void => {
+		setShowAlert(!showAlert);
+		router.push('/account/create-account');
+	}
+
 	return (
 		<main className="grid grid-cols-3 py-10 gap-10 relative">
 			<section
@@ -163,6 +178,7 @@ function PageContent() {
 						maxRequests={maxRequests}
 						updateErrorMessage={(message: string): void => {
 							setErrorMessage(message);
+							setShowAlert(true);
 							console.log('HERE IS THE MESSAGE ', message);
 						}}
 					/>
@@ -172,10 +188,16 @@ function PageContent() {
 			{showChapterText && (
 				<section className="flex flex-col gap-5 my-10 col-span-2">
 					
-						<Alert>
-							<AlertTitle>An Error Has Occurred!</AlertTitle>
-							<AlertDescription>{errorMessage}</AlertDescription>
-						</Alert>
+					<Alert
+						isOpen={showAlert}
+						openHandler={(): void => setShowAlert(!showAlert)}
+						title={'An Error Has Occurred'}
+						description={errorMessage}
+						cancelHandler={(): void => singUpHandler()}
+						confirmHandler={(): void => loginHandler()}
+						confirmText="Login"
+						cancelText="Sign-Up"
+					/>
 					
 					<div className="flex flex-col gap-4">
 						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>

@@ -42,8 +42,9 @@ export default class IncrementDailyRequests {
         //User not authenticated
 		if (!userId) {
 			console.error("User is not authenticated");
-			responseData.message = "User is not authenticated";
-			responseData.status = 401;
+			responseData.message = "User is not authenticated, please log in or create an account before continuing.";
+            responseData.status = 401;
+            return responseData;
 		}
 
         //Retrieve the data found for the current user id
@@ -53,7 +54,8 @@ export default class IncrementDailyRequests {
 		if (error) {
 			console.error(`Error fetching daily requests: ${error}`);
 			responseData.message = `Error fetching daily requests: ${error}`;
-			responseData.status = 400;
+            responseData.status = 400;
+            return responseData;
 		}
 
         //If data is currently present, and not empty
