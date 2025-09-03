@@ -95,7 +95,8 @@ export type UserData = {
 
 export type AlertProps = {
 	isOpen: boolean;
-	openHandler: (isOpen: boolean) => void;
+    openHandler: (isOpen: boolean) => void;
+    closeHandler: () => void;
 	title: string;
 	description: string;
 	confirmText?: string;

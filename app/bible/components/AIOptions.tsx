@@ -25,7 +25,7 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
         startVerse,
         endVerse
 	} = selectedBibleData;
-	const [errorMessage, setErrorMessage] = useState<string>('');
+	
 
     const client: OpenAI = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
     const bibleSelection = endVerse.length > 0 ? `${book} ${chapter}:${startVerse} - ${endVerse}` : `${book} ${chapter}:${startVerse}`;

@@ -179,7 +179,6 @@ function PageContent() {
 						updateErrorMessage={(message: string): void => {
 							setErrorMessage(message);
 							setShowAlert(true);
-							console.log('HERE IS THE MESSAGE ', message);
 						}}
 					/>
 				)}
@@ -191,7 +190,8 @@ function PageContent() {
 					<Alert
 						isOpen={showAlert}
 						openHandler={(): void => setShowAlert(!showAlert)}
-						title={'An Error Has Occurred'}
+						closeHandler={(): void => setShowAlert(false)}
+						title={"Error"}
 						description={errorMessage}
 						cancelHandler={(): void => singUpHandler()}
 						confirmHandler={(): void => loginHandler()}
