@@ -196,7 +196,7 @@ function PageContent() {
 						cancelHandler={(): void => singUpHandler()}
 						confirmHandler={(): void => loginHandler()}
 						confirmText="Login"
-						cancelText="Sign-Up"
+						cancelText="Sign Up"
 					/>
 					
 					<div className="flex flex-col gap-4">
