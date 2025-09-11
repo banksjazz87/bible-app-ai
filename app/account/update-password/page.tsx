@@ -39,6 +39,7 @@ export default function UpdatePassword(): JSX.Element {
 				description={alertMessage}
 				cancelHandler={(): void => modalCloseHandler()}
 				confirmHandler={(): void => closeAndRedirect()}
+				closeHandler={(): void => setShowAlert(false)}
 			/>
 			<UpdatePasswordForm
 				responseHandler={setResponse}

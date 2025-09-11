@@ -35,6 +35,7 @@ export default function Login(): JSX.Element {
 				description={alertMessage}
 				cancelHandler={(): void => modalCloseHandler()}
 				confirmHandler={(): void => modalCloseHandler()}
+				closeHandler={(): void => setShowAlert(false)}
 			/>
 			<LoginForm 
 				responseHandler={setResponse}

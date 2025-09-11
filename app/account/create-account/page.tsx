@@ -31,6 +31,7 @@ export default function CreateAccount(): JSX.Element {
 				description={alertMessage}
 				cancelHandler={(): void => modalCloseHandler()}
 				confirmHandler={(): void => modalCloseHandler()}
+				closeHandler={(): void => setShowAlert(false)}
 			/>
 			<CreateAccountForm
 				responseHandler={setResponse}

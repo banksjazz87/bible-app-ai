@@ -31,6 +31,7 @@ export default function page(): JSX.Element {
 				description={alertMessage}
 				cancelHandler={(): void => modalCloseHandler()}
 				confirmHandler={(): void => modalCloseHandler()}
+				closeHandler={(): void => setShowAlert(false)}
 			/>
 			<ResetPasswordForm
 				responseHandler={setResponse}
