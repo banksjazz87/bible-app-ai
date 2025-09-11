@@ -140,3 +140,9 @@ export type UserRoles = {
     free_tier: boolean;
     email_address: string;
 }
+
+export type SubscriptionData = {
+    priceTitle: string;
+    details: string[],
+    value: string
+}
