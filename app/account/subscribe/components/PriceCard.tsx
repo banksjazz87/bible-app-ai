@@ -4,20 +4,37 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { SubscriptionData } from "@/lib/definitions";
 
-
 type PriceCardProps = {
-    cardData: SubscriptionData;
-}
+	title: string;
+	details: string[];
+	value: string;
+};
 
-export default function PriceCard({cardData}: PriceCardProps) {
-    return (
-			<div className="grid-cols-1 border border-slate-800 rounded-md p-2 flex flex-col gap-2 align-middle justify-between min-h-96 py-24 px-10">
-				<p className="text-center text-3xl font-semibold">Free</p>
-				<ul className="text-left">
-					<li>Limit of 5 AI queries per day</li>
-					<li>Email notifications of all future updates</li>
-				</ul>
-				<Button>Sign Up</Button>
-			</div>
+export default function PriceCard({ title, details, value }: PriceCardProps) {
+	const listItems = details.map((x: string, y: number) => {
+		return (
+			<li
+				key={`list_item_${y}`}
+				className="flex flex-row gap-2 align-middle"
+			>
+				<FontAwesomeIcon
+					icon={faCheck}
+					className="size-4"
+				/>
+				{x}
+			</li>
 		);
+	});
+	return (
+		<div className="grid-cols-1 border border-slate-800 rounded-md p-2 flex flex-col gap-2 align-middle justify-between min-h-96 py-24 px-10">
+			<p className="text-center text-3xl font-semibold">{title}</p>
+			<ul className="text-left">{listItems}</ul>
+			<input
+				type="hidden"
+				name="price-option"
+				value={value}
+			/>
+			<Button>Sign Up</Button>
+		</div>
+	);
 }
