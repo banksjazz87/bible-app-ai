@@ -1,9 +1,13 @@
+"use client";
 
 import PriceCard from "./components/PriceCard";
+import { useRouter } from "next/navigation";
 
 
 
-export default async function Subscribe() {
+export default function Subscribe() {
+    const router = useRouter();
+
 	return (
 		<main className="flex flex-col">
 			<section className="py-16">
@@ -15,16 +19,19 @@ export default async function Subscribe() {
 						title="Free"
 						details={["Limit of 5 AI queries per day", "Email notifications of all future updates"]}
 						value="free"
+						clickHandler={(): void => router.push("/subscribe/form?option=free")}
 					/>
 					<PriceCard
 						title="$10/Month"
 						details={["Limit of 20 AI queries per day", "Save Data for up to 2 Weeks", "Print PDF of notes", "Email notifications of all future updates"]}
 						value="basic"
+						clickHandler={(): void => router.push("/subscribe/form?option=basic")}
 					/>
 					<PriceCard
 						title="25/Month"
 						details={["Limit of 50 AI queries per day", "Save data for life", "Print PDF of notes", "Email notifications of all future updates"]}
 						value="premiere"
+						clickHandler={(): void => router.push("/subscribe/form?option=premiere")}
 					/>
 				</div>
 			</section>

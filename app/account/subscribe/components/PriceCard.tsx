@@ -7,7 +7,8 @@ import { SubscriptionData } from "@/lib/definitions";
 type PriceCardProps = {
 	title: string;
 	details: string[];
-	value: string;
+    value: string;
+    clickHandler: () => void;
 };
 
 export default function PriceCard({ title, details, value }: PriceCardProps) {
