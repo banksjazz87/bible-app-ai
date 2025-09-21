@@ -50,6 +50,8 @@ function PageContent() {
 	const [maxRequests, setMaxRequests] = useState<number>(5);
 	const [errorMessage, setErrorMessage] = useState<string>('Testing');
 	const [showAlert, setShowAlert] = useState<boolean>(false);
+	const [alertTitle, setAlertTitle] = useState<string>('Error');
+	const [requestStatus, setRequestStatus] = useState<number>(200);
 
 	const router = useRouter();
 
@@ -112,6 +114,16 @@ function PageContent() {
 		};
 		fetchUserRoles();
 	}, []);
+
+
+
+	//ADD USE EFFECT HERE TO UPDATE THE ALERT TITLE
+	
+
+
+
+
+	//ADD CODE ABOVE 
 
 	const resetLLMData = (): void => {
 		const clearedData = LLMReqAndOutput.map((x: LLMReqObject, y: number) => {
@@ -176,8 +188,9 @@ function PageContent() {
 						stopLoading={(): void => setLLMisLoading(false)}
 						userRole={userRoles}
 						maxRequests={maxRequests}
-						updateErrorMessage={(message: string): void => {
+						updateErrorMessage={(message: string, status: number): void => {
 							setErrorMessage(message);
+							setRequestStatus(status);
 							setShowAlert(true);
 						}}
 					/>
@@ -191,7 +204,7 @@ function PageContent() {
 						isOpen={showAlert}
 						openHandler={(): void => setShowAlert(!showAlert)}
 						closeHandler={(): void => setShowAlert(false)}
-						title={"Error"}
+						title={alertTitle}
 						description={errorMessage}
 						cancelHandler={(): void => singUpHandler()}
 						confirmHandler={(): void => loginHandler()}

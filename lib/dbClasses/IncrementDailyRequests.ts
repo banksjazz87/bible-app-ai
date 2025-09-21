@@ -61,16 +61,12 @@ export default class IncrementDailyRequests {
         //If data is currently present, and not empty
 		if (data && data.length > 0) {
             const newTotal = data[0].total_requests + 1;
-            
-            console.log("HERE newTotal:", newTotal);
-            console.log("HERE max: ", this.limit);
-            console.log(newTotal > this.limit);
 
             //User has reached their daily limit
 			if (newTotal > this.limit) {
 				console.warn("User has exceeded their daily request limit.");
-				responseData.message = "It looks like you've used up your daily tokens.";
-                responseData.status = 400;
+				responseData.message = "It looks like you've used up your daily tokens, please take a moment to upgrade your subscription plan.";
+                responseData.status = 429;
                 
                 return responseData;
 			}

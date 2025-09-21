@@ -15,7 +15,7 @@ type AIOptionsProps = {
 	stopLoading: Function;
 	userRole: string;
 	maxRequests: number;
-	updateErrorMessage(message: string): void;
+	updateErrorMessage(message: string, status: number): void;
 };
 
 export default function AIOptions({ selectedBibleData, updateOutput, startLoading, stopLoading, userRole, maxRequests, updateErrorMessage }: AIOptionsProps) {
@@ -66,8 +66,19 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
 
 		if (requests.status === 201) {
 			return true;
+
+		//Max Requests Met
+		} else if (requests.status === 429) {
+			updateErrorMessage(requests.message, requests.status);
+			return false;
+
+		//Not Authenticated
+		} else if (requests.status === 401) {
+			updateErrorMessage(requests.message, requests.status);
+			return false;
+
 		} else {
-			updateErrorMessage(requests.message);
+			updateErrorMessage(requests.message, requests.status);
 			return false;
 		}
 	}
