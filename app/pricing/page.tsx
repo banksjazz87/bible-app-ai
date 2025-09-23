@@ -11,7 +11,7 @@ export default function Subscribe() {
 	return (
 		<main className="flex flex-col">
 			<section className="py-16">
-				<h1 className="font-mono font-extrabold text-5xl text-center">Thanks for signing up!</h1>
+				<h1 className="font-mono font-extrabold text-5xl text-center">Pricing</h1>
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Check out our subscription options</p>
 
 				<div className="grid grid-cols-3 gap-4 pt-9">

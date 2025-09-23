@@ -118,7 +118,15 @@ function PageContent() {
 
 
 	//ADD USE EFFECT HERE TO UPDATE THE ALERT TITLE
-	
+	useEffect((): void => {
+		if (requestStatus === 401 || requestStatus === 500) {
+			setAlertTitle('Invalid User')
+		} else if (requestStatus === 400) {
+			setAlertTitle('Server Error')
+		} else if (requestStatus === 429) {
+			setAlertTitle('Too Many Requests')
+		}
+	}, [requestStatus]);
 
 
 
@@ -206,10 +214,10 @@ function PageContent() {
 						closeHandler={(): void => setShowAlert(false)}
 						title={alertTitle}
 						description={errorMessage}
-						cancelHandler={(): void => singUpHandler()}
-						confirmHandler={(): void => loginHandler()}
-						confirmText="Login"
-						cancelText="Sign Up"
+						cancelHandler={(): void => requestStatus === 429 ? setShowAlert(false) : singUpHandler()}
+						confirmHandler={(): void => requestStatus === 429 ? router.push("/pricing") : loginHandler()}
+						confirmText={requestStatus === 429 ? "Yes" : "Login"}
+						cancelText={requestStatus === 429 ? "No" : "Sign Up"}
 					/>
 					
 					<div className="flex flex-col gap-4">

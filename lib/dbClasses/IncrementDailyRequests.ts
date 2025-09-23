@@ -65,7 +65,7 @@ export default class IncrementDailyRequests {
             //User has reached their daily limit
 			if (newTotal > this.limit) {
 				console.warn("User has exceeded their daily request limit.");
-				responseData.message = "It looks like you've used up your daily tokens, please take a moment to upgrade your subscription plan.";
+				responseData.message = "It looks like you've used up your daily tokens, would you like to take a moment to upgrade your subscription plan?";
                 responseData.status = 429;
                 
                 return responseData;
