@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 
 
-export default function Subscribe() {
+export default function Pricing() {
     const router = useRouter();
 
 	return (
@@ -19,19 +19,19 @@ export default function Subscribe() {
 						title="Free"
 						details={["Limit of 5 AI queries per day", "Email notifications of all future updates"]}
 						value="free"
-						hrefValue="/subscribe/form?option=free"
+						hrefValue="/subscribe?option=free"
 					/>
 					<PriceCard
 						title="$10/Month"
 						details={["Limit of 20 AI queries per day", "Save Data for up to 2 Weeks", "Print PDF of notes", "Email notifications of all future updates"]}
 						value="basic"
-						hrefValue="/subscribe/form?option=basic"
+						hrefValue="/subscribe?option=basic"
 					/>
 					<PriceCard
 						title="25/Month"
 						details={["Limit of 50 AI queries per day", "Save data for life", "Print PDF of notes", "Email notifications of all future updates"]}
 						value="premiere"
-						hrefValue="/subscribe/form?option=premiere"
+						hrefValue="/subscribe?option=premiere"
 					/>
 				</div>
 			</section>
