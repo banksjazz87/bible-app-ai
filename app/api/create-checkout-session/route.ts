@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 
 
 
-const stripe = new Stripe("sk_test_51RaoLE2MvhEOzU3CX893XTTaGmO0EcM6SH3Cc8MPL1CMTESpGLBZqIdt3iTWeJguoR4QdASoHykbtz2VMHRm3RS300YrJUjYAR");
+const stripe = new Stripe(process.env.STRIPE_TEST_API_KEY!);
 
 
 export async function POST(request: Request, res: Response) {
