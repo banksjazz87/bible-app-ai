@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 const stripe = new Stripe(process.env.STRIPE_TEST_API_KEY!);
 
 
-export async function POST(request: Request, res: Response) {
+export async function POST(request: Request) {
     const headersList = await headers();
     const domain = headersList.get('host');
 
