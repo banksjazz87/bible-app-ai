@@ -2,10 +2,6 @@ import Stripe from "stripe";
 import { headers } from "next/headers";
 import { redirect } from 'next/navigation';
 
-
-
-
-
 const stripe = new Stripe(process.env.STRIPE_TEST_API_KEY!);
 
 
