@@ -14,7 +14,7 @@ import getStripe from "@/utils/get-stripe";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 
 interface CheckoutFormProps {
-	uiMode: Stripe.Checkout.SessionCreateParams.UiMode;
+	uiMode?: Stripe.Checkout.SessionCreateParams.UiMode;
 }
 
 export default function CheckoutForm(props: CheckoutFormProps): JSX.Element {
