@@ -6,7 +6,8 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "stripe": "stripe listen --forward-to localhost:3000/api/webhooks"
     },
     "dependencies": {
         "@aspose/words": "^25.7.0",
@@ -50,7 +51,7 @@
         "remark": "^15.0.1",
         "remark-html": "^16.0.1",
         "server-only": "^0.0.1",
-        "stripe": "^18.5.0",
+        "stripe": "^19.0.0",
         "tailwind-merge": "^3.0.1",
         "tailwindcss-animate": "^1.0.7",
         "words": "link:@types/@aspose/words",
