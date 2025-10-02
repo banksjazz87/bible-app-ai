@@ -45,7 +45,7 @@ export default function CheckoutForm(props: CheckoutFormProps): JSX.Element {
 				<input
 					type="hidden"
 					name="uiMode"
-					value={props.uiMode}
+					value={props.uiMode ? props.uiMode : 'embedded'}
 				/>
 				<CustomDonationInput
 					className="checkout-style"

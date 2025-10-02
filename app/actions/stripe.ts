@@ -10,7 +10,6 @@ import { stripe } from "@/lib/stripe";
 
 export async function createCheckoutSession(data: FormData): Promise<{ client_secret: string | null; url: string | null }> {
     const ui_mode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
-
     const urlHeaders = await headers();
     const origin: string =  urlHeaders.get("origin") as string;
 
@@ -34,11 +33,12 @@ export async function createCheckoutSession(data: FormData): Promise<{ client_se
             cancel_url: `${origin}/donate-with-checkout`,
         }),
         ...(ui_mode === "embedded" && {
-            return_url: `${origin}/donate-with-embedded-checkout/result?session_id={CHECKOUT_SESSION_ID}`,
+            return_url: `${origin}/subscribe?session_id={CHECKOUT_SESSION_ID}`,
         }),
         ui_mode,
     });
 
+    console.log('Session here ', checkoutSession);
     return {
         client_secret: checkoutSession.client_secret,
         url: checkoutSession.url,
