@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { createCheckoutSession } from "../../actions/stripe";
+import { createCheckoutSession, subscribeAction } from "../../actions/stripe";
 import type Stripe from "stripe";
 
 const SubscribeFormSchema = z.object({

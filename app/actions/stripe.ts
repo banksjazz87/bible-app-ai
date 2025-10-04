@@ -49,3 +49,19 @@ export async function createPaymentIntent(data: FormData): Promise<{ client_secr
 
     return { client_secret: paymentIntent.client_secret as string };
 }
+
+
+export async function subscribeAction() {
+    const { url } = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+            {
+                price: "price_1SDxaFRv9ZEy80pDmAiLFtd2",
+                quantity: 1
+            }
+        ],
+        mode: 'subscription',
+        success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/success`,
+        cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/cancel`
+    });
+}

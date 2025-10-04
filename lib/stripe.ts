@@ -8,8 +8,10 @@ const apiKey = testMode ? process.env.STRIPE_TEST_PRIVATE_KEY : process.env.STRI
 
 export const stripe = new Stripe(apiKey as string, {
 	// https://github.com/stripe/stripe-node#configuration
-	appInfo: {
-		name: "nextjs-with-stripe-typescript-demo",
-		url: "https://nextjs-with-stripe-typescript-demo.vercel.app",
-	},
+	// appInfo: {
+	// 	name: "nextjs-with-stripe-typescript-demo",
+	// 	url: "https://nextjs-with-stripe-typescript-demo.vercel.app",
+	// },
+	typescript: true,
+	apiVersion: "2025-09-30.clover"
 });
