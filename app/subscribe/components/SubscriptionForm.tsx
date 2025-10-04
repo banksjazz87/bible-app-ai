@@ -55,12 +55,13 @@ export default function SubscriptionForm() {
 			<Form {...form}>
 				<form
 					action={formAction}
+					method="POST"
 					className="space-y-5 w-100 mx-auto"
 				>
 					<input
 						type="hidden"
-						name="uiMode"
-						value="embedded"
+						name="lookup_key"
+						value="price_1SDxaFRv9ZEy80pDmAiLFtd2"
 					/>
 					<FormField
 						control={form.control}
