@@ -13,7 +13,9 @@ export async function createCheckoutSession(data: FormData): Promise<{ client_se
 	const prices = await stripe.prices.list({
 		lookup_keys: [lookupKey],
 		expand: ["data.product"],
-	});
+    });
+    
+    console.log("Prices Here !!!!! ", prices);
 
 	const session = await stripe.checkout.sessions.create({
 		billing_address_collection: "auto",

@@ -153,6 +153,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.0.6
+      '@types/css-modules':
+        specifier: ^1.0.5
+        version: 1.0.5
       '@types/file-saver':
         specifier: ^2.0.7
         version: 2.0.7
@@ -1442,6 +1445,9 @@ packages:
 
   '@turbodocx/html-to-docx@1.13.4':
     resolution: {integrity: sha512-VFoloVf/9cKYsLdWvR8Omjn9iqozfJK3NGttH9Gl9fkpcOIAyxWkB/ed53Pfic6H43kC7bFvR42KPVczZTc/pg==}
+
+  '@types/css-modules@1.0.5':
+    resolution: {integrity: sha512-oeKafs/df9lwOvtfiXVliZsocFVOexK9PZtLQWuPeuVCFR7jwiqlg60lu80JTe5NFNtH3tnV6Fs/ySR8BUPHAw==}
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
@@ -4559,6 +4565,8 @@ snapshots:
       xmlbuilder2: 2.1.2
     transitivePeerDependencies:
       - encoding
+
+  '@types/css-modules@1.0.5': {}
 
   '@types/debug@4.1.12':
     dependencies:

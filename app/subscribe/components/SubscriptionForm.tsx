@@ -1,4 +1,5 @@
 "use client";
+
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +12,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { createCheckoutSession, subscribeAction } from "../../actions/stripe";
 import type Stripe from "stripe";
+import { useRouter } from "next/navigation";
 
 const SubscribeFormSchema = z.object({
 	firstName: z.string({ message: "Please provide a valid name." }),
@@ -22,6 +24,7 @@ const SubscribeFormSchema = z.object({
 export default function SubscriptionForm() {
 	const searchParams = useSearchParams();
 	const preSelectedSubscription: string | null = searchParams.get("option");
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
 		resolver: zodResolver(SubscribeFormSchema),
@@ -40,9 +43,13 @@ export default function SubscriptionForm() {
 	const formAction = async (data: FormData): Promise<void> => {
 		const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
 		const { client_secret, url } = await createCheckoutSession(data);
-
 		console.log("needed url = ", url);
-		// window.location.assign(url as string);
+
+		if (url) {
+			router.push(url);
+		} else {
+			alert('No return url provided');
+		}
 	};
 
 	return (
@@ -55,7 +62,6 @@ export default function SubscriptionForm() {
 			<Form {...form}>
 				<form
 					action={formAction}
-					method="POST"
 					className="space-y-5 w-100 mx-auto"
 				>
 					<input
