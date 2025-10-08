@@ -9,11 +9,20 @@ import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 
 export async function createCheckoutSession(data: FormData): Promise<{ client_secret: string | null; url: string | null }> {
-	const lookupKey = data.get("lookup_key") as string;
-	const prices = await stripe.prices.list({
-		lookup_keys: [lookupKey],
-		expand: ["data.product"],
-    });
+    const lookupKey = data.get("lookup_key") as string;
+    console.log("key = ", lookupKey);
+    
+	// const prices = await stripe.prices.list({
+	// 	lookup_keys: [lookupKey],
+	// 	expand: ["data.product"],
+    // });
+
+    // const prices = await stripe.prices.list({
+    //     product: lookupKey
+    // });
+
+    const prices = await stripe.prices.retrieve(lookupKey);
+
     
     console.log("Prices Here !!!!! ", prices);
 
@@ -21,7 +30,7 @@ export async function createCheckoutSession(data: FormData): Promise<{ client_se
 		billing_address_collection: "auto",
 		line_items: [
 			{
-				price: prices.data[0].id,
+				price: prices.id,
 				quantity: 1,
 			},
 		],

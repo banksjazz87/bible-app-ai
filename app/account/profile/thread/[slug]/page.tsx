@@ -69,7 +69,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 									<Button>Edit</Button>
 								</div>
 							</div>
-							<p className="font-extrabold">{date}</p>
+							<p className="font-extrabold" suppressHydrationWarning>{date}</p>
 						</div>
 						<div className="flex flex-col gap-2">
 							<h2 className="capitalize font-extrabold text-2xl">{`${book} ${chapter}:${start_verse} - ${end_verse}`}</h2>
