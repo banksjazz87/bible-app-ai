@@ -17,10 +17,6 @@ export async function createCheckoutSession(data: FormData): Promise<{ client_se
 	// 	expand: ["data.product"],
     // });
 
-    // const prices = await stripe.prices.list({
-    //     product: lookupKey
-    // });
-
     const prices = await stripe.prices.retrieve(lookupKey);
 
     
@@ -86,4 +82,20 @@ export async function subscribeAction() {
 		success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/success`,
 		cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/cancel`,
 	});
+}
+
+export async function createCustomer(data: FormData) {
+    const post = await fetch('/create-customer', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: data.get('email'),
+            firstName: data.get('firstName'),
+            lastName: data.get('lastName'),
+            
+
+        })
+    })
 }
