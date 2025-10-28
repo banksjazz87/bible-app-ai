@@ -9,18 +9,17 @@ import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 
 export async function createCheckoutSession(data: FormData): Promise<{ client_secret: string | null; url: string | null }> {
-    const lookupKey = data.get("lookup_key") as string;
-    console.log("key = ", lookupKey);
-    
+	const lookupKey = data.get("lookup_key") as string;
+	console.log("key = ", lookupKey);
+
 	// const prices = await stripe.prices.list({
 	// 	lookup_keys: [lookupKey],
 	// 	expand: ["data.product"],
-    // });
+	// });
 
-    const prices = await stripe.prices.retrieve(lookupKey);
+	const prices = await stripe.prices.retrieve(lookupKey);
 
-    
-    console.log("Prices Here !!!!! ", prices);
+	console.log("Prices Here !!!!! ", prices);
 
 	const session = await stripe.checkout.sessions.create({
 		billing_address_collection: "auto",
@@ -42,21 +41,20 @@ export async function createCheckoutSession(data: FormData): Promise<{ client_se
 	};
 }
 
-
 export async function createPortalSession(data: FormData) {
-    const sessionID = data.get('session') as string;
-    const { customer } = await stripe.checkout.sessions.retrieve(sessionID);
-    const returnURL = process.env.NEX_PUBLIC_DOMAIN as string;
+	const sessionID = data.get("session") as string;
+	const { customer } = await stripe.checkout.sessions.retrieve(sessionID);
+	const returnURL = process.env.NEX_PUBLIC_DOMAIN as string;
 
-    const portalSession = await stripe.billingPortal.sessions.create({
-			customer: customer as string,
-			return_url: returnURL,
-    });
-    
-    return {
-        customer: portalSession.customer,
-        url: portalSession.url
-    }
+	const portalSession = await stripe.billingPortal.sessions.create({
+		customer: customer as string,
+		return_url: returnURL,
+	});
+
+	return {
+		customer: portalSession.customer,
+		url: portalSession.url,
+	};
 }
 
 export async function createPaymentIntent(data: FormData): Promise<{ client_secret: string }> {
@@ -85,17 +83,44 @@ export async function subscribeAction() {
 }
 
 export async function createCustomer(data: FormData) {
-    const post = await fetch('/create-customer', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: data.get('email'),
-            firstName: data.get('firstName'),
-            lastName: data.get('lastName'),
-            
+	const getString = (key: string): string => {
+		const value = data.get(key);
+		if (typeof value !== "string") {
+			throw new Error(`Expected string for ${key}, but got ${typeof value}`);
+		}
+		return value;
+	};
 
-        })
-    })
+	const email = getString("email");
+	const firstName = getString("firstName");
+	const lastName = getString("lastName");
+	const fullName = `${firstName} ${lastName}`;
+	const city = getString("city");
+	const country = getString("country");
+	const streetAddress = getString("streetAddress");
+	const postalCode = getString("zipCode");
+	const state = getString("state");
+	
+	
+	const customer = await stripe.customers.create({
+		email: email,
+		name: fullName,
+		shipping: {
+			address: {
+				city: city,
+				country: country,
+				line1: streetAddress,
+				postal_code: postalCode,
+				state: state,
+			},
+			name: fullName,
+		},
+		address: {
+			city: city,
+			country: country,
+			line1: streetAddress,
+			postal_code: postalCode,
+			state: state,
+		},
+	});
 }
