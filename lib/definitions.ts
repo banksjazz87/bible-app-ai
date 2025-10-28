@@ -146,3 +146,8 @@ export type SubscriptionData = {
     details: string[],
     value: string
 }
+
+export type LocationObject = {
+    code: string;
+    name: string;
+}

@@ -83,6 +83,7 @@ export async function subscribeAction() {
 }
 
 export async function createCustomer(data: FormData) {
+	console.log(data);
 	const getString = (key: string): string => {
 		const value = data.get(key);
 		if (typeof value !== "string") {

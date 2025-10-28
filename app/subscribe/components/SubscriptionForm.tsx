@@ -13,6 +13,8 @@ import { Suspense } from "react";
 import { createCheckoutSession, subscribeAction, createCustomer } from "../../actions/stripe";
 import type Stripe from "stripe";
 import { useRouter } from "next/navigation";
+import { countries, states } from "@/lib/geoLocations";
+import { LocationObject } from "@/lib/definitions";
 
 const SubscribeFormSchema = z.object({
 	firstName: z.string({ message: "Please provide a valid name." }),
@@ -69,9 +71,13 @@ export default function SubscriptionForm() {
 		
 	};
 
-	// const countryOptions = () => {
-	// 	return 
-	// }
+	const locationOptions = (locations: LocationObject[]) => {
+		return locations.map((x: LocationObject, y: number) => {
+			return (
+				<SelectItem value={x.code}>{x.name}</SelectItem>
+			)
+		});
+	}
 
 	return (
 		<main>
@@ -158,23 +164,25 @@ export default function SubscriptionForm() {
 
 						<div className="grid grid-cols-2 gap-2">
 							<div className="col-span-2">
-							<FormField
-								control={form.control}
-								name="country"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Country</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="Country"
-												type="text"
-												{...field}
-												className="border-slate-600 rounded-none"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-700" />
-									</FormItem>
-								)}
+								<FormField
+									control={form.control}
+									name="country"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Country</FormLabel>
+											<Select
+												onValueChange={field.onChange}
+												defaultValue={"US"}
+											>
+												<FormControl>
+													<SelectTrigger className="border-slate-600 rounded-none">
+														<SelectValue placeholder="Select a subscription plan" />
+													</SelectTrigger>
+												</FormControl>
+												<SelectContent>{locationOptions(countries)}</SelectContent>
+											</Select>
+										</FormItem>
+									)}
 								/>
 							</div>
 
@@ -221,15 +229,17 @@ export default function SubscriptionForm() {
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>State</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="State"
-												type="text"
-												{...field}
-												className="border-slate-600 rounded-none"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-700" />
+										<Select
+											onValueChange={field.onChange}
+											defaultValue={"PA"}
+										>
+											<FormControl>
+												<SelectTrigger className="border-slate-600 rounded-none">
+													<SelectValue placeholder="Select a subscription plan" />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>{locationOptions(states)}</SelectContent>
+										</Select>
 									</FormItem>
 								)}
 							/>
@@ -265,7 +275,7 @@ export default function SubscriptionForm() {
 									onValueChange={field.onChange}
 									defaultValue={preSelectedSubscription ? preSelectedSubscription : field.value}
 								>
-									<FormControl>
+									<FormControl className="border-slate-600 rounded-none">
 										<SelectTrigger>
 											<SelectValue placeholder="Select a subscription plan" />
 										</SelectTrigger>

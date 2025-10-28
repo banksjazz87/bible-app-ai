@@ -1,8 +1,5 @@
+import { LocationObject } from "./definitions";
 
-type LocationObject = {
-	code: string;
-	name: string;
-}
 
 /**List of all countries */
 export const countries: LocationObject[] = [
