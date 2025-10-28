@@ -123,4 +123,6 @@ export async function createCustomer(data: FormData) {
 			state: state,
 		},
 	});
+
+	return customer;
 }

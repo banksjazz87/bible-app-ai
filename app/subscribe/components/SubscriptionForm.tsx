@@ -50,18 +50,28 @@ export default function SubscriptionForm() {
 	}
 
 	const formAction = async (data: FormData): Promise<void> => {
-		const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
-		const { client_secret, url } = await createCheckoutSession(data);
-		console.log("needed url = ", url);
+		// const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
+		// const { client_secret, url } = await createCheckoutSession(data);
+		// console.log("needed url = ", url);
 
-		if (url) {
-			router.push(url);
-		} else {
-			alert("No return url provided");
+		// if (url) {
+		// 	router.push(url);
+		// } else {
+		// 	alert("No return url provided");
+		// }
+
+		try {
+			const customer = await createCustomer(data);
+			console.log(customer);
+		} catch (e: any) {
+			console.warn('The following error occurred while creating the customer object ', e);
 		}
-
 		
 	};
+
+	// const countryOptions = () => {
+	// 	return 
+	// }
 
 	return (
 		<main>
