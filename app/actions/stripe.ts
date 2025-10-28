@@ -83,7 +83,7 @@ export async function subscribeAction() {
 }
 
 export async function createCustomer(data: FormData) {
-	console.log(data);
+	console.log('This is the selected country ', data.get('country'));
 	const getString = (key: string): string => {
 		const value = data.get(key);
 		if (typeof value !== "string") {
@@ -124,6 +124,10 @@ export async function createCustomer(data: FormData) {
 			state: state,
 		},
 	});
+	console.log('Customer Details HERE: ', customer);
 
-	return customer;
+	return {
+		customerId: customer.id as string,
+		
+	}
 }

@@ -42,6 +42,7 @@ export default function SubscriptionForm() {
 			streetAddress: "12 Mayburry Street",
 			city: "Dubois",
 			state: "PA",
+			country: "US",
 			zipCode: "15840",
 			subscription: "free",
 		},
@@ -74,7 +75,7 @@ export default function SubscriptionForm() {
 	const locationOptions = (locations: LocationObject[]) => {
 		return locations.map((x: LocationObject, y: number) => {
 			return (
-				<SelectItem value={x.code}>{x.name}</SelectItem>
+				<SelectItem key={`country_option_${y}`}value={x.code}>{x.name}</SelectItem>
 			)
 		});
 	}
@@ -173,6 +174,7 @@ export default function SubscriptionForm() {
 											<Select
 												onValueChange={field.onChange}
 												defaultValue={"US"}
+												{...field}
 											>
 												<FormControl>
 													<SelectTrigger className="border-slate-600 rounded-none">
@@ -232,6 +234,7 @@ export default function SubscriptionForm() {
 										<Select
 											onValueChange={field.onChange}
 											defaultValue={"PA"}
+											{...field}
 										>
 											<FormControl>
 												<SelectTrigger className="border-slate-600 rounded-none">
@@ -274,6 +277,7 @@ export default function SubscriptionForm() {
 								<Select
 									onValueChange={field.onChange}
 									defaultValue={preSelectedSubscription ? preSelectedSubscription : field.value}
+									{...field}
 								>
 									<FormControl className="border-slate-600 rounded-none">
 										<SelectTrigger>
