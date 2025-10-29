@@ -82,6 +82,16 @@ export async function subscribeAction() {
 	});
 }
 
+
+export async function searchCustomer(data: FormData, field: string) {
+	const email = data.get(field) as string;
+
+	try {
+		const customers = await stripe.customers.search({query: `email: ${email}`})
+	} catch (e: any) {
+		throw new Error(`The following error occurred in retrieving the customer data: ${e}`);
+	}
+}
 export async function createCustomer(data: FormData) {
 	console.log('This is the selected country ', data.get('country'));
 	const getString = (key: string): string => {
@@ -128,6 +138,6 @@ export async function createCustomer(data: FormData) {
 
 	return {
 		customerId: customer.id as string,
-		
+
 	}
 }
