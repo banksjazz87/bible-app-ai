@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { createCheckoutSession, subscribeAction, createCustomer } from "../../actions/stripe";
+import { createCheckoutSession, subscribeAction, createCustomer, searchCustomer } from "../../actions/stripe";
 import type Stripe from "stripe";
 import { useRouter } from "next/navigation";
 import { countries, states } from "@/lib/geoLocations";
@@ -64,10 +64,37 @@ export default function SubscriptionForm() {
 		// }
 
 		try {
-			const customer = await createCustomer(data);
-			console.log(customer);
+			const customer = await searchCustomer(data, 'email');
+
+			//If the customer data came back and the data array is empty, create new customer.
+			if (customer && customer.data.length === 0) {
+				try {
+					const newCustomer = await createCustomer(data);
+					if (newCustomer.status === 200) {
+						try {
+							const customerID: string = newCustomer.customerId;
+							const checkoutSession = await createCheckoutSession(data, customerID);
+							console.log(checkoutSession);
+						} catch (e) {
+							console.error('The following error occurred in creating a checkout session ', e);
+						}
+					}
+				} catch (e: any) {
+					console.error('The following error occured while creating the customer ', e);
+				}
+
+			//This will be executed if the customer already exists
+			} else {
+				const customerID: string = customer?.data[0].id as string;
+				try {
+					const checkoutSession = await createCheckoutSession(data, customerID);
+					console.log(checkoutSession);
+				} catch (e) {
+					console.error("The following error occurred in creating a checkout session ", e);
+				}
+			}	
 		} catch (e: any) {
-			console.warn('The following error occurred while creating the customer object ', e);
+			console.warn('The following error occurred while searching for the customer ', e);
 		}
 		
 	};

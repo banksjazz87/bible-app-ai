@@ -1,37 +1,31 @@
 "use server";
 
 import type { Stripe } from "stripe";
-
 import { headers } from "next/headers";
-
 import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 
-export async function createCheckoutSession(data: FormData): Promise<{ client_secret: string | null; url: string | null }> {
+export async function createCheckoutSession(data: FormData, customerId: string): Promise<{ client_secret: string | null; url: string | null }> {
 	const lookupKey = data.get("lookup_key") as string;
 	console.log("key = ", lookupKey);
 
-	// const prices = await stripe.prices.list({
-	// 	lookup_keys: [lookupKey],
-	// 	expand: ["data.product"],
-	// });
-
 	const prices = await stripe.prices.retrieve(lookupKey);
-
 	console.log("Prices Here !!!!! ", prices);
 
 	const session = await stripe.checkout.sessions.create({
-		billing_address_collection: "auto",
+		ui_mode: "custom",
+		// Provide the customer ID of the customer you previously created
+		customer: customerId,
 		line_items: [
 			{
+				// Provide the exact Price ID (e.g. price_1234) of the product you want to sell
 				price: prices.id,
 				quantity: 1,
 			},
 		],
 		mode: "subscription",
-		success_url: `${process.env.NEXT_PUBLIC_DOMAIN}/subscription-success/?success=true&session={CHECKOUT_SESSION_ID}`,
-		cancel_url: `${process.env.NEXT_PUBLIC_DOMAIN}/subscription-failure/?canceled=true`,
+		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}/return?session_id={CHECKOUT_SESSION_ID}`,
 	});
 
 	console.log("Session here ", session);
@@ -40,6 +34,7 @@ export async function createCheckoutSession(data: FormData): Promise<{ client_se
 		url: session.url,
 	};
 }
+
 
 export async function createPortalSession(data: FormData) {
 	const sessionID = data.get("session") as string;
@@ -84,14 +79,21 @@ export async function subscribeAction() {
 
 
 export async function searchCustomer(data: FormData, field: string) {
-	const email = data.get(field) as string;
+	const fieldValue = data.get(field) as string;
 
 	try {
-		const customers = await stripe.customers.search({query: `email: ${email}`})
+		const customers = await stripe.customers.search({ query: `${field}: "${fieldValue}"` });
+
+		return {
+			code: 200,
+			message: "Successfully requested the customers object",
+			data: customers.data
+		}
 	} catch (e: any) {
-		throw new Error(`The following error occurred in retrieving the customer data: ${e}`);
+		console.log(`The following error occurred in retrieving the customer data: ${e}`);
 	}
 }
+
 export async function createCustomer(data: FormData) {
 	console.log('This is the selected country ', data.get('country'));
 	const getString = (key: string): string => {
@@ -137,7 +139,9 @@ export async function createCustomer(data: FormData) {
 	console.log('Customer Details HERE: ', customer);
 
 	return {
+		status: 200,
 		customerId: customer.id as string,
-
 	}
 }
+
+
