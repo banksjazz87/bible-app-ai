@@ -63,7 +63,7 @@
         "@tailwindcss/postcss": "^4",
         "@types/css-modules": "^1.0.5",
         "@types/file-saver": "^2.0.7",
-        "@types/node": "^20",
+        "@types/node": "^20.17.19",
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "eslint": "^9",

@@ -16,7 +16,7 @@ import { LocationObject } from "@/lib/definitions";
 import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
 import { CheckoutForm } from "@/components/stripe/CheckoutForm";
 import UICheckoutForm from "@/components/stripe/UICheckoutForm";
-import StripeCheckoutProvider from "./StripeCheckoutProvider";
+import { getStripe } from "@/lib/stripe-client";
 
 
 const SubscribeFormSchema = z.object({
@@ -54,6 +54,7 @@ export default function SubscriptionForm() {
 	const country = form.watch('country');
 	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
 	const [clientSecret, setClientSecret] = useState<string>("");
+	const stripePromise = getStripe();
 
 	useEffect((): void => {
 		if (country === "US") {
@@ -73,7 +74,7 @@ export default function SubscriptionForm() {
 
 
 	function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
-		alert("Form Submitted");
+		console.log('Form submitted');
 	}
 
 	const formAction = async (data: FormData): Promise<void> => {
@@ -142,7 +143,7 @@ export default function SubscriptionForm() {
 
 			<Form {...form}>
 				<form
-					action={formAction}
+					onSubmit={form.handleSubmit(onSubmit)}
 					className="space-y-5 w-170 mx-auto"
 				>
 					<input
@@ -372,11 +373,15 @@ export default function SubscriptionForm() {
 
 					<Button type="submit">Submit</Button>
 				</form>
-				</Form>
-			<StripeCheckoutProvider
-				clientSecret={clientSecret}
-			/>
-			
+			</Form>
+
+			{/* <CheckoutProvider
+				stripe={stripePromise}
+				options={{ clientSecret }}
+			>
+				<CheckoutForm />
+				<UICheckoutForm />
+			</CheckoutProvider> */}
 		</main>
 	);
 }

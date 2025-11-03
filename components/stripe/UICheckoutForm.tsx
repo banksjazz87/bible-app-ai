@@ -1,7 +1,7 @@
 import React from "react";
 import { PaymentElement, useCheckout } from "@stripe/react-stripe-js/checkout";
 
-const UICheckoutForm = () => {
+export default function UICheckoutForm(){
 	const checkoutState = useCheckout();
 	return (
 		<form>
@@ -10,4 +10,3 @@ const UICheckoutForm = () => {
 	);
 };
 
-export default UICheckoutForm;

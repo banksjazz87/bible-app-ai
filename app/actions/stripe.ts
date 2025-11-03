@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
-import { initStripe } from "@/lib/stripe";
 
 export async function createCheckoutSession(data: FormData, customerId: string): Promise<{ client_secret: string | null; url: string | null }> {
 	const lookupKey = data.get("lookup_key") as string;
@@ -145,7 +144,5 @@ export async function createCustomer(data: FormData) {
 	}
 }
 
-export async function loadStripe() {
-	return initStripe;
-}
+
 
