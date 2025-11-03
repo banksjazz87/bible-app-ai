@@ -8,13 +8,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
-import { connection } from "next/server";
-import { Suspense, useEffect, useState } from "react";
-import { createCheckoutSession, subscribeAction, createCustomer, searchCustomer } from "../../actions/stripe";
-import type Stripe from "stripe";
+import { useEffect, useState } from "react";
+import { createCheckoutSession, createCustomer, searchCustomer } from "../../actions/stripe";
 import { useRouter } from "next/navigation";
 import { countries, states, provinces } from "@/lib/geoLocations";
 import { LocationObject } from "@/lib/definitions";
+import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
+import { CheckoutForm } from "@/components/stripe/CheckoutForm";
+import UICheckoutForm from "@/components/stripe/UICheckoutForm";
+import StripeCheckoutProvider from "./StripeCheckoutProvider";
+
 
 const SubscribeFormSchema = z.object({
 	firstName: z.string({ message: "Please provide a valid name." }),
@@ -50,8 +53,9 @@ export default function SubscriptionForm() {
 
 	const country = form.watch('country');
 	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
+	const [clientSecret, setClientSecret] = useState<string>("");
 
-	useEffect(() => {
+	useEffect((): void => {
 		if (country === "US") {
 			setRegionOptions(states);
 			form.setValue('state', 'PA');
@@ -63,6 +67,8 @@ export default function SubscriptionForm() {
 			form.setValue('state', '');
 		}
 	}, [country, form]);
+
+	useEffect((): void => console.log(clientSecret), [clientSecret]);
 
 
 
@@ -106,7 +112,9 @@ export default function SubscriptionForm() {
 				const customerID: string = customer?.data[0].id as string;
 				try {
 					const checkoutSession = await createCheckoutSession(data, customerID);
-					console.log(checkoutSession);
+					const clientSecret = checkoutSession.client_secret as string;
+					setClientSecret(clientSecret);
+					console.log(clientSecret);
 				} catch (e) {
 					console.error("The following error occurred in creating a checkout session ", e);
 				}
@@ -364,7 +372,11 @@ export default function SubscriptionForm() {
 
 					<Button type="submit">Submit</Button>
 				</form>
-			</Form>
+				</Form>
+			<StripeCheckoutProvider
+				clientSecret={clientSecret}
+			/>
+			
 		</main>
 	);
 }
