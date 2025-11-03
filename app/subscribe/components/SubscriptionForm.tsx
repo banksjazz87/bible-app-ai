@@ -9,11 +9,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { connection } from "next/server";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createCheckoutSession, subscribeAction, createCustomer, searchCustomer } from "../../actions/stripe";
 import type Stripe from "stripe";
 import { useRouter } from "next/navigation";
-import { countries, states } from "@/lib/geoLocations";
+import { countries, states, provinces } from "@/lib/geoLocations";
 import { LocationObject } from "@/lib/definitions";
 
 const SubscribeFormSchema = z.object({
@@ -47,6 +47,24 @@ export default function SubscriptionForm() {
 			subscription: "free",
 		},
 	});
+
+	const country = form.watch('country');
+	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
+
+	useEffect(() => {
+		if (country === "US") {
+			setRegionOptions(states);
+			form.setValue('state', 'PA');
+		} else if (country === "CA") {
+			setRegionOptions(provinces);
+			form.setValue('state', 'AB');
+		} else {
+			setRegionOptions([]);
+			form.setValue('state', '');
+		}
+	}, [country, form]);
+
+
 
 	function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
 		alert("Form Submitted");
@@ -252,27 +270,48 @@ export default function SubscriptionForm() {
 								)}
 							/>
 
-							<FormField
-								control={form.control}
-								name="state"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>State</FormLabel>
-										<Select
-											onValueChange={field.onChange}
-											defaultValue={"PA"}
-											{...field}
-										>
+							{regionOptions.length == 0 ? (
+								<FormField
+									control={form.control}
+									name="state"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Region</FormLabel>
 											<FormControl>
-												<SelectTrigger className="border-slate-600 rounded-none">
-													<SelectValue placeholder="Select a subscription plan" />
-												</SelectTrigger>
+												<Input
+													placeholder="Region"
+													type="text"
+													{...field}
+													className="border-slate-600 rounded-none"
+												/>
 											</FormControl>
-											<SelectContent>{locationOptions(states)}</SelectContent>
-										</Select>
-									</FormItem>
-								)}
-							/>
+											<FormMessage className="text-red-700" />
+										</FormItem>
+									)}
+								/>
+							) : (
+								<FormField
+									control={form.control}
+									name="state"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>State</FormLabel>
+											<Select
+												onValueChange={field.onChange}
+												defaultValue={"PA"}
+												{...field}
+											>
+												<FormControl>
+													<SelectTrigger className="border-slate-600 rounded-none">
+														<SelectValue placeholder="Select a subscription plan" />
+													</SelectTrigger>
+												</FormControl>
+												<SelectContent>{locationOptions(regionOptions)}</SelectContent>
+											</Select>
+										</FormItem>
+									)}
+								/>
+							)}
 
 							<FormField
 								control={form.control}
