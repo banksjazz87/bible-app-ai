@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createCheckoutSession, createCustomer, searchCustomer } from "../../actions/stripe";
+import { createCheckoutSession, createCustomer, searchCustomer, getProducts } from "../../actions/stripe";
 import { useRouter } from "next/navigation";
 import { countries, states, provinces } from "@/lib/geoLocations";
 import { LocationObject } from "@/lib/definitions";
@@ -55,7 +55,7 @@ export default function SubscriptionForm() {
 	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
 	const [clientSecret, setClientSecret] = useState<string>("");
 	const stripePromise = getStripe();
-
+	
 	useEffect((): void => {
 		if (country === "US") {
 			setRegionOptions(states);
@@ -71,60 +71,63 @@ export default function SubscriptionForm() {
 
 	useEffect((): void => console.log(clientSecret), [clientSecret]);
 
+	useEffect((): void => {
+		getProducts().then(data => console.log(data));
+	}, []);
 
 
-	function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
-		console.log('Form submitted');
-	}
 
-	const formAction = async (data: FormData): Promise<void> => {
-		// const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
-		// const { client_secret, url } = await createCheckoutSession(data);
-		// console.log("needed url = ", url);
+	// function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
+	// 	console.log('Form submitted');
+	// }
 
-		// if (url) {
-		// 	router.push(url);
-		// } else {
-		// 	alert("No return url provided");
-		// }
+	// const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
+	// 	// const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
+	// 	// const { client_secret, url } = await createCheckoutSession(data);
+	// 	// console.log("needed url = ", url);
 
-		try {
-			const customer = await searchCustomer(data, 'email');
+	// 	// if (url) {
+	// 	// 	router.push(url);
+	// 	// } else {
+	// 	// 	alert("No return url provided");
+	// 	// }
 
-			//If the customer data came back and the data array is empty, create new customer.
-			if (customer && customer.data.length === 0) {
-				try {
-					const newCustomer = await createCustomer(data);
-					if (newCustomer.status === 200) {
-						try {
-							const customerID: string = newCustomer.customerId;
-							const checkoutSession = await createCheckoutSession(data, customerID);
-							console.log(checkoutSession);
-						} catch (e) {
-							console.error('The following error occurred in creating a checkout session ', e);
-						}
-					}
-				} catch (e: any) {
-					console.error('The following error occured while creating the customer ', e);
-				}
+	// 	try {
+	// 		const customer = await searchCustomer(data, "email");
 
-			//This will be executed if the customer already exists
-			} else {
-				const customerID: string = customer?.data[0].id as string;
-				try {
-					const checkoutSession = await createCheckoutSession(data, customerID);
-					const clientSecret = checkoutSession.client_secret as string;
-					setClientSecret(clientSecret);
-					console.log(clientSecret);
-				} catch (e) {
-					console.error("The following error occurred in creating a checkout session ", e);
-				}
-			}	
-		} catch (e: any) {
-			console.warn('The following error occurred while searching for the customer ', e);
-		}
-		
-	};
+	// 		//If the customer data came back and the data array is empty, create new customer.
+	// 		if (customer && customer.data.length === 0) {
+	// 			try {
+	// 				const newCustomer = await createCustomer(data);
+	// 				if (newCustomer.status === 200) {
+	// 					try {
+	// 						const customerID: string = newCustomer.customerId;
+	// 						const checkoutSession = await createCheckoutSession(data, customerID);
+	// 						console.log(checkoutSession);
+	// 					} catch (e) {
+	// 						console.error("The following error occurred in creating a checkout session ", e);
+	// 					}
+	// 				}
+	// 			} catch (e: any) {
+	// 				console.error("The following error occured while creating the customer ", e);
+	// 			}
+
+	// 			//This will be executed if the customer already exists
+	// 		} else {
+	// 			const customerID: string = customer?.data[0].id as string;
+	// 			try {
+	// 				const checkoutSession = await createCheckoutSession(data, customerID);
+	// 				const clientSecret = checkoutSession.client_secret as string;
+	// 				setClientSecret(clientSecret);
+	// 				console.log(clientSecret);
+	// 			} catch (e) {
+	// 				console.error("The following error occurred in creating a checkout session ", e);
+	// 			}
+	// 		}
+	// 	} catch (e: any) {
+	// 		console.warn("The following error occurred while searching for the customer ", e);
+	// 	}
+	// };
 
 	const locationOptions = (locations: LocationObject[]) => {
 		return locations.map((x: LocationObject, y: number) => {
@@ -143,7 +146,7 @@ export default function SubscriptionForm() {
 
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(onSubmit)}
+					onSubmit={form.handleSubmit(()=> console.log('submitted'))}
 					className="space-y-5 w-170 mx-auto"
 				>
 					<input

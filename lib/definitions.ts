@@ -151,3 +151,15 @@ export type LocationObject = {
     code: string;
     name: string;
 }
+
+export type SubscribeFormSchema = {
+    firstName: string;
+    lastName: string;
+    streetAddress: string;
+    city: string;
+    country: string;
+    state: string;
+    zipCode: string;
+    email: string;
+    subscription: string;
+}

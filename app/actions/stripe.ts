@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
+import { SubscribeFormSchema } from "@/lib/definitions";
 
 export async function createCheckoutSession(data: FormData, customerId: string): Promise<{ client_secret: string | null; url: string | null }> {
 	const lookupKey = data.get("lookup_key") as string;
@@ -78,8 +79,8 @@ export async function subscribeAction() {
 }
 
 
-export async function searchCustomer(data: FormData, field: string) {
-	const fieldValue = data.get(field) as string;
+export async function searchCustomer(data: SubscribeFormSchema, field: keyof SubscribeFormSchema) {
+	const fieldValue = data[field];
 
 	try {
 		const customers = await stripe.customers.search({ query: `${field}: "${fieldValue}"` });
@@ -87,34 +88,26 @@ export async function searchCustomer(data: FormData, field: string) {
 		return {
 			code: 200,
 			message: "Successfully requested the customers object",
-			data: customers.data
-		}
+			data: customers.data,
+		};
 	} catch (e: any) {
 		console.log(`The following error occurred in retrieving the customer data: ${e}`);
 	}
 }
 
-export async function createCustomer(data: FormData) {
-	console.log('This is the selected country ', data.get('country'));
-	const getString = (key: string): string => {
-		const value = data.get(key);
-		if (typeof value !== "string") {
-			throw new Error(`Expected string for ${key}, but got ${typeof value}`);
-		}
-		return value;
-	};
+export async function createCustomer(data: SubscribeFormSchema) {
+	console.log("This is the selected country ", data.country);
 
-	const email = getString("email");
-	const firstName = getString("firstName");
-	const lastName = getString("lastName");
+	const email = data.email;
+	const firstName = data.firstName;
+	const lastName = data.lastName;
 	const fullName = `${firstName} ${lastName}`;
-	const city = getString("city");
-	const country = getString("country");
-	const streetAddress = getString("streetAddress");
-	const postalCode = getString("zipCode");
-	const state = getString("state");
-	
-	
+	const city = data.city;
+	const country = data.country;
+	const streetAddress = data.streetAddress;
+	const postalCode = data.zipCode;
+	const state = data.state;
+
 	const customer = await stripe.customers.create({
 		email: email,
 		name: fullName,
@@ -136,11 +129,26 @@ export async function createCustomer(data: FormData) {
 			state: state,
 		},
 	});
-	console.log('Customer Details HERE: ', customer);
+	console.log("Customer Details HERE: ", customer);
 
 	return {
 		status: 200,
 		customerId: customer.id as string,
+	};
+}
+
+
+export async function getProducts(): Promise<any> {
+	try {
+		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list();
+		const productArray = products.data;
+
+		return {
+			status: 200,
+			data: productArray,
+		};
+	} catch (e: any) {
+		return e;
 	}
 }
 
