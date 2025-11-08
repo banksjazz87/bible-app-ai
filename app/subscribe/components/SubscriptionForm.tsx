@@ -78,9 +78,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	useEffect((): void => console.log(clientSecret), [clientSecret]);
 
-	useEffect((): void => {
-		getProducts().then((data) => console.log(data));
-	}, []);
 
 	// function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
 	// 	console.log('Form submitted');
@@ -152,9 +149,16 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 			const products: (Stripe.Price & { product: Stripe.Product})[] = allProducts.data;
 
 			const displayProducts = products.map((x: Stripe.Price & { product: Stripe.Product }) => {
-				return <SelectItem value={x.id}>{x.product.name}</SelectItem>;
+				return (
+					<SelectItem key={x.product.name} value={x.id}>{x.product.name}</SelectItem>
+				);
 			});
-
+			// Add a default option
+			displayProducts.unshift(
+				<SelectItem key="free"value="FREE">
+					FREE
+				</SelectItem>
+			);
 			return displayProducts;
 		} else {
 			return (
@@ -389,9 +393,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
-										<SelectItem value="free">FREE</SelectItem>
-										<SelectItem value="basic">Basic</SelectItem>
-										<SelectItem value="premiere">Premiere</SelectItem>
+										{renderProducts()}
 									</SelectContent>
 								</Select>
 								<FormDescription>Choose a subscription to meet your needs.</FormDescription>
