@@ -137,18 +137,26 @@ export async function createCustomer(data: SubscribeFormSchema) {
 	};
 }
 
+type ProductResponse = {
+	status: number;
+	data?: Stripe.Price[];
+	errorMessage?: string;
+}
 
-export async function getProducts(): Promise<any> {
+export async function getProducts(): Promise<ProductResponse> {
 	try {
-		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list();
-		const productArray = products.data;
+		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({expand: ['data.product']});
+		const productArray: Stripe.Price[] = products.data;
 
 		return {
 			status: 200,
 			data: productArray,
 		};
 	} catch (e: any) {
-		return e;
+		return {
+			status: 500,
+			errorMessage: `The following error occurred in getting the products: ${e}`,
+		};
 	}
 }
 

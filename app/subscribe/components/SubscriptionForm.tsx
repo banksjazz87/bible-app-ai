@@ -8,15 +8,17 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer, getProducts } from "../../actions/stripe";
 import { useRouter } from "next/navigation";
 import { countries, states, provinces } from "@/lib/geoLocations";
-import { LocationObject } from "@/lib/definitions";
+import { LocationObject, ProductResponse } from "@/lib/definitions";
 import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
 import { CheckoutForm } from "@/components/stripe/CheckoutForm";
 import UICheckoutForm from "@/components/stripe/UICheckoutForm";
 import { getStripe } from "@/lib/stripe-client";
+import { Stripe } from "stripe";
+
 
 
 const SubscribeFormSchema = z.object({
@@ -31,10 +33,15 @@ const SubscribeFormSchema = z.object({
 	subscription: z.string(),
 });
 
-export default function SubscriptionForm() {
+type SubscriptionFormProps = {
+	products: Promise<ProductResponse>
+}
+
+export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const preSelectedSubscription: string | null = searchParams.get("option");
 	const router = useRouter();
+	const allProducts = use(products);
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
 		resolver: zodResolver(SubscribeFormSchema),
@@ -51,31 +58,29 @@ export default function SubscriptionForm() {
 		},
 	});
 
-	const country = form.watch('country');
+	const country = form.watch("country");
 	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
 	const [clientSecret, setClientSecret] = useState<string>("");
 	const stripePromise = getStripe();
-	
+
 	useEffect((): void => {
 		if (country === "US") {
 			setRegionOptions(states);
-			form.setValue('state', 'PA');
+			form.setValue("state", "PA");
 		} else if (country === "CA") {
 			setRegionOptions(provinces);
-			form.setValue('state', 'AB');
+			form.setValue("state", "AB");
 		} else {
 			setRegionOptions([]);
-			form.setValue('state', '');
+			form.setValue("state", "");
 		}
 	}, [country, form]);
 
 	useEffect((): void => console.log(clientSecret), [clientSecret]);
 
 	useEffect((): void => {
-		getProducts().then(data => console.log(data));
+		getProducts().then((data) => console.log(data));
 	}, []);
-
-
 
 	// function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
 	// 	console.log('Form submitted');
@@ -132,9 +137,30 @@ export default function SubscriptionForm() {
 	const locationOptions = (locations: LocationObject[]) => {
 		return locations.map((x: LocationObject, y: number) => {
 			return (
-				<SelectItem key={`country_option_${y}`}value={x.code}>{x.name}</SelectItem>
-			)
+				<SelectItem
+					key={`country_option_${y}`}
+					value={x.code}
+				>
+					{x.name}
+				</SelectItem>
+			);
 		});
+	};
+
+	const renderProducts = () => {
+		if (allProducts.data && allProducts.data.length > 0) {
+			const products: Stripe.Price[] = allProducts.data;
+
+			const displayProducts = products.map((x: Stripe.Price) => {
+				return <SelectItem value={x.id}>{}</SelectItem>;
+			});
+
+			return displayProducts;
+		} else {
+			return (
+				<p>{ `The following error occurred in getting the products ${allProducts.errorMessage}`}</p>
+			)
+		}
 	}
 
 	return (
@@ -146,7 +172,7 @@ export default function SubscriptionForm() {
 
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(()=> console.log('submitted'))}
+					onSubmit={form.handleSubmit(() => console.log("submitted"))}
 					className="space-y-5 w-170 mx-auto"
 				>
 					<input

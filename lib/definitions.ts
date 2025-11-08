@@ -1,6 +1,7 @@
 //Contains all of the definitions used in the app
 
 import { User } from "lucide-react";
+import { Stripe } from "stripe";
 
 export type BookAndChapters = {
     text: string;
@@ -163,3 +164,9 @@ export type SubscribeFormSchema = {
     email: string;
     subscription: string;
 }
+
+export type ProductResponse = {
+	status: number;
+	data?: Stripe.Price[];
+	errorMessage?: string;
+};
