@@ -139,14 +139,14 @@ export async function createCustomer(data: SubscribeFormSchema) {
 
 type ProductResponse = {
 	status: number;
-	data?: Stripe.Price[];
+	data?: (Stripe.Price & { product: Stripe.Product })[];
 	errorMessage?: string;
-}
+};
 
 export async function getProducts(): Promise<ProductResponse> {
 	try {
-		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({expand: ['data.product']});
-		const productArray: Stripe.Price[] = products.data;
+		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({ expand: ["data.product"] });
+		const productArray = products.data as (Stripe.Price & { product: Stripe.Product })[];
 
 		return {
 			status: 200,

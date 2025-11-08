@@ -149,10 +149,10 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	const renderProducts = () => {
 		if (allProducts.data && allProducts.data.length > 0) {
-			const products: Stripe.Price[] = allProducts.data;
+			const products: (Stripe.Price & { product: Stripe.Product})[] = allProducts.data;
 
-			const displayProducts = products.map((x: Stripe.Price) => {
-				return <SelectItem value={x.id}>{}</SelectItem>;
+			const displayProducts = products.map((x: Stripe.Price & { product: Stripe.Product }) => {
+				return <SelectItem value={x.id}>{x.product.name}</SelectItem>;
 			});
 
 			return displayProducts;

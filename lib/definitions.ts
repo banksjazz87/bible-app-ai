@@ -167,6 +167,6 @@ export type SubscribeFormSchema = {
 
 export type ProductResponse = {
 	status: number;
-	data?: Stripe.Price[];
+    data?: (Stripe.Price & { product: Stripe.Product })[];
 	errorMessage?: string;
 };
