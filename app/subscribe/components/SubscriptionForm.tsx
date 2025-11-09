@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer, getProducts } from "../../actions/stripe";
-import { useRouter } from "next/navigation";
 import { countries, states, provinces } from "@/lib/geoLocations";
 import { LocationObject, ProductResponse } from "@/lib/definitions";
 import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
@@ -40,7 +39,6 @@ type SubscriptionFormProps = {
 export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const preSelectedSubscription: string | null = searchParams.get("option");
-	const router = useRouter();
 	const allProducts = use(products);
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
@@ -83,53 +81,53 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	// 	console.log('Form submitted');
 	// }
 
-	// const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
-	// 	// const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
-	// 	// const { client_secret, url } = await createCheckoutSession(data);
-	// 	// console.log("needed url = ", url);
+	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
+		// const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
+		// const { client_secret, url } = await createCheckoutSession(data);
+		// console.log("needed url = ", url);
 
-	// 	// if (url) {
-	// 	// 	router.push(url);
-	// 	// } else {
-	// 	// 	alert("No return url provided");
-	// 	// }
+		// if (url) {
+		// 	router.push(url);
+		// } else {
+		// 	alert("No return url provided");
+		// }
 
-	// 	try {
-	// 		const customer = await searchCustomer(data, "email");
+		try {
+			const customer = await searchCustomer(data, "email");
 
-	// 		//If the customer data came back and the data array is empty, create new customer.
-	// 		if (customer && customer.data.length === 0) {
-	// 			try {
-	// 				const newCustomer = await createCustomer(data);
-	// 				if (newCustomer.status === 200) {
-	// 					try {
-	// 						const customerID: string = newCustomer.customerId;
-	// 						const checkoutSession = await createCheckoutSession(data, customerID);
-	// 						console.log(checkoutSession);
-	// 					} catch (e) {
-	// 						console.error("The following error occurred in creating a checkout session ", e);
-	// 					}
-	// 				}
-	// 			} catch (e: any) {
-	// 				console.error("The following error occured while creating the customer ", e);
-	// 			}
+			//If the customer data came back and the data array is empty, create new customer.
+			if (customer && customer.data.length === 0) {
+				try {
+					const newCustomer = await createCustomer(data);
+					if (newCustomer.status === 200) {
+						try {
+							const customerID: string = newCustomer.customerId;
+							const checkoutSession = await createCheckoutSession(data, customerID);
+							console.log(checkoutSession);
+						} catch (e) {
+							console.error("The following error occurred in creating a checkout session ", e);
+						}
+					}
+				} catch (e: any) {
+					console.error("The following error occured while creating the customer ", e);
+				}
 
-	// 			//This will be executed if the customer already exists
-	// 		} else {
-	// 			const customerID: string = customer?.data[0].id as string;
-	// 			try {
-	// 				const checkoutSession = await createCheckoutSession(data, customerID);
-	// 				const clientSecret = checkoutSession.client_secret as string;
-	// 				setClientSecret(clientSecret);
-	// 				console.log(clientSecret);
-	// 			} catch (e) {
-	// 				console.error("The following error occurred in creating a checkout session ", e);
-	// 			}
-	// 		}
-	// 	} catch (e: any) {
-	// 		console.warn("The following error occurred while searching for the customer ", e);
-	// 	}
-	// };
+				//This will be executed if the customer already exists
+			} else {
+				const customerID: string = customer?.data[0].id as string;
+				try {
+					const checkoutSession = await createCheckoutSession(data, customerID);
+					const clientSecret = checkoutSession.client_secret as string;
+					setClientSecret(clientSecret);
+					console.log(clientSecret);
+				} catch (e) {
+					console.error("The following error occurred in creating a checkout session ", e);
+				}
+			}
+		} catch (e: any) {
+			console.warn("The following error occurred while searching for the customer ", e);
+		}
+	};
 
 	const locationOptions = (locations: LocationObject[]) => {
 		return locations.map((x: LocationObject, y: number) => {
@@ -155,7 +153,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 			});
 			// Add a default option
 			displayProducts.unshift(
-				<SelectItem key="free"value="FREE">
+				<SelectItem key="free"value="free">
 					FREE
 				</SelectItem>
 			);

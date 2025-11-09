@@ -7,9 +7,18 @@ import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema } from "@/lib/definitions";
 
-export async function createCheckoutSession(data: FormData, customerId: string): Promise<{ client_secret: string | null; url: string | null }> {
-	const lookupKey = data.get("lookup_key") as string;
+export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null, status: number, message?: string, }> {
+	const lookupKey = data.subscription as string;
 	console.log("key = ", lookupKey);
+
+	if (lookupKey === 'free') {
+		return {
+			status: 200,
+			message: 'A free product has been selected, no checkout is required.',
+			client_secret: null,
+			url: null
+		}
+	}
 
 	const prices = await stripe.prices.retrieve(lookupKey);
 	console.log("Prices Here !!!!! ", prices);
@@ -31,6 +40,7 @@ export async function createCheckoutSession(data: FormData, customerId: string):
 
 	console.log("Session here ", session);
 	return {
+		status: 200,
 		client_secret: session.client_secret,
 		url: session.url,
 	};

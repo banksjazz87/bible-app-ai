@@ -1,12 +1,12 @@
-import React from "react";
+import { useState } from "react";
 import { useCheckout } from "@stripe/react-stripe-js/checkout";
 
 type CheckoutError = { message?: string } | null;
 
-const PayButton: React.FC = () => {
+export default function PayButton(): React.JSX.Element {
 	const checkoutState = useCheckout();
-	const [loading, setLoading] = React.useState(false);
-	const [error, setError] = React.useState<CheckoutError>(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<CheckoutError>(null);
 
 	const handleClick = async () => {
 		setLoading(true);
@@ -43,4 +43,3 @@ const PayButton: React.FC = () => {
 	);
 };
 
-export default PayButton;
