@@ -27,7 +27,7 @@ export default function SampleCheckout() {
 			stripe={stripePromise}
 			options={{ clientSecret: promise }}
 		>
-			<SubscriptionForm />
+		{/* <SubscriptionForm /> */}
 		</CheckoutProvider>
 	);
 }

@@ -8,5 +8,5 @@ const apiKey = testMode ? process.env.STRIPE_TEST_PRIVATE_KEY! : process.env.STR
 
 export const stripe: Stripe = new Stripe(apiKey as string, {
 	typescript: true,
-	apiVersion: "2025-09-30.clover"
+	apiVersion: "2025-10-29.clover",
 });

@@ -1,8 +1,8 @@
-'use client'
+'use server'
 
 import Link from 'next/link';
 
-export default function Home() {
+export default async function Home() {
   return (
 		<div className="flex flex-col justify-center align-middle h-dvh ">
 			<main className="flex flex-col items-center justify-center gap-7">
