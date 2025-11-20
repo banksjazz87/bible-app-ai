@@ -17,8 +17,7 @@ import { CheckoutForm } from "@/components/stripe/CheckoutForm";
 import UICheckoutForm from "@/components/stripe/UICheckoutForm";
 import { getStripe } from "@/lib/stripe-client";
 import { Stripe } from "stripe";
-
-
+import { PaymentElement, Elements } from "@stripe/react-stripe-js";
 
 const SubscribeFormSchema = z.object({
 	firstName: z.string({ message: "Please provide a valid name." }),
@@ -33,8 +32,8 @@ const SubscribeFormSchema = z.object({
 });
 
 type SubscriptionFormProps = {
-	products: Promise<ProductResponse>
-}
+	products: Promise<ProductResponse>;
+};
 
 export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
@@ -75,7 +74,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	}, [country, form]);
 
 	useEffect((): void => console.log(clientSecret), [clientSecret]);
-
 
 	// function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
 	// 	console.log('Form submitted');
@@ -144,26 +142,32 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	const renderProducts = () => {
 		if (allProducts.data && allProducts.data.length > 0) {
-			const products: (Stripe.Price & { product: Stripe.Product})[] = allProducts.data;
+			const products: (Stripe.Price & { product: Stripe.Product })[] = allProducts.data;
 
 			const displayProducts = products.map((x: Stripe.Price & { product: Stripe.Product }) => {
 				return (
-					<SelectItem key={x.product.name} value={x.id}>{x.product.name}</SelectItem>
+					<SelectItem
+						key={x.product.name}
+						value={x.id}
+					>
+						{x.product.name}
+					</SelectItem>
 				);
 			});
 			// Add a default option
 			displayProducts.unshift(
-				<SelectItem key="free"value="free">
+				<SelectItem
+					key="free"
+					value="free"
+				>
 					FREE
 				</SelectItem>
 			);
 			return displayProducts;
 		} else {
-			return (
-				<p>{ `The following error occurred in getting the products ${allProducts.errorMessage}`}</p>
-			)
+			return <p>{`The following error occurred in getting the products ${allProducts.errorMessage}`}</p>;
 		}
-	}
+	};
 
 	return (
 		<main>
@@ -171,136 +175,78 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				<h1 className="font-mono font-extrabold text-5xl text-center">Subscribe</h1>
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Update Your Subscription Today</p>
 			</section>
-
-			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
-					className="space-y-5 w-170 mx-auto"
+			<CheckoutProvider
+				stripe={stripePromise}
+				options={{ clientSecret }}
+			>
+				<Elements
+					stripe={stripePromise}
+					options={{ clientSecret }}
 				>
-					<input
-						type="hidden"
-						name="lookup_key"
-						value="price_1SDxaFRv9ZEy80pDmAiLFtd2"
-					/>
-
-					<div className="flex flex-col gap-2">
-						<p className="font-mono text-sm font-bold text-left">Customer Name</p>
-						<div className="grid grid-cols-2 gap-2">
-							<FormField
-								control={form.control}
-								name="firstName"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>First Name</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="Bob"
-												type="text"
-												{...field}
-												className="border-slate-600 rounded-none"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-700" />
-									</FormItem>
-								)}
+					<Form {...form}>
+						<form
+							onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
+							className="space-y-5 w-170 mx-auto"
+						>
+							<input
+								type="hidden"
+								name="lookup_key"
+								value="price_1SDxaFRv9ZEy80pDmAiLFtd2"
 							/>
 
-							<FormField
-								control={form.control}
-								name="lastName"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Last Name</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="Dole"
-												type="text"
-												{...field}
-												className="border-slate-600 rounded-none"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-700" />
-									</FormItem>
-								)}
-							/>
-						</div>
-					</div>
-
-					<FormField
-						control={form.control}
-						name="email"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Email</FormLabel>
-								<FormControl>
-									<Input
-										placeholder="Email"
-										type="email"
-										{...field}
-										className="border-slate-600 rounded-none"
-									/>
-								</FormControl>
-								<FormMessage className="text-red-700" />
-							</FormItem>
-						)}
-					/>
-
-					<div className="flex flex-col gap-2">
-						<p className="font-mono text-sm font-bold text-left">Address</p>
-
-						<div className="grid grid-cols-2 gap-2">
-							<div className="col-span-2">
-								<FormField
-									control={form.control}
-									name="country"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Country</FormLabel>
-											<Select
-												onValueChange={field.onChange}
-												defaultValue={"US"}
-												{...field}
-											>
+							<div className="flex flex-col gap-2">
+								<p className="font-mono text-sm font-bold text-left">Customer Name</p>
+								<div className="grid grid-cols-2 gap-2">
+									<FormField
+										control={form.control}
+										name="firstName"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>First Name</FormLabel>
 												<FormControl>
-													<SelectTrigger className="border-slate-600 rounded-none">
-														<SelectValue placeholder="Select a subscription plan" />
-													</SelectTrigger>
+													<Input
+														placeholder="Bob"
+														type="text"
+														{...field}
+														className="border-slate-600 rounded-none"
+													/>
 												</FormControl>
-												<SelectContent>{locationOptions(countries)}</SelectContent>
-											</Select>
-										</FormItem>
-									)}
-								/>
+												<FormMessage className="text-red-700" />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="lastName"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Last Name</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="Dole"
+														type="text"
+														{...field}
+														className="border-slate-600 rounded-none"
+													/>
+												</FormControl>
+												<FormMessage className="text-red-700" />
+											</FormItem>
+										)}
+									/>
+								</div>
 							</div>
 
 							<FormField
 								control={form.control}
-								name="streetAddress"
+								name="email"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Street Address</FormLabel>
+										<FormLabel>Email</FormLabel>
 										<FormControl>
 											<Input
-												placeholder="Street Address 1"
-												type="text"
-												{...field}
-												className="border-slate-600 rounded-none"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-700" />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="city"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>City</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="City"
-												type="text"
+												placeholder="Email"
+												type="email"
 												{...field}
 												className="border-slate-600 rounded-none"
 											/>
@@ -310,99 +256,167 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 								)}
 							/>
 
-							{regionOptions.length == 0 ? (
-								<FormField
-									control={form.control}
-									name="state"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Region</FormLabel>
-											<FormControl>
-												<Input
-													placeholder="Region"
-													type="text"
-													{...field}
-													className="border-slate-600 rounded-none"
-												/>
-											</FormControl>
-											<FormMessage className="text-red-700" />
-										</FormItem>
-									)}
-								/>
-							) : (
-								<FormField
-									control={form.control}
-									name="state"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>State</FormLabel>
-											<Select
-												onValueChange={field.onChange}
-												defaultValue={"PA"}
-												{...field}
-											>
+							<div className="flex flex-col gap-2">
+								<p className="font-mono text-sm font-bold text-left">Address</p>
+
+								<div className="grid grid-cols-2 gap-2">
+									<div className="col-span-2">
+										<FormField
+											control={form.control}
+											name="country"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Country</FormLabel>
+													<Select
+														onValueChange={field.onChange}
+														defaultValue={"US"}
+														{...field}
+													>
+														<FormControl>
+															<SelectTrigger className="border-slate-600 rounded-none">
+																<SelectValue placeholder="Select a subscription plan" />
+															</SelectTrigger>
+														</FormControl>
+														<SelectContent>{locationOptions(countries)}</SelectContent>
+													</Select>
+												</FormItem>
+											)}
+										/>
+									</div>
+
+									<FormField
+										control={form.control}
+										name="streetAddress"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Street Address</FormLabel>
 												<FormControl>
-													<SelectTrigger className="border-slate-600 rounded-none">
-														<SelectValue placeholder="Select a subscription plan" />
-													</SelectTrigger>
+													<Input
+														placeholder="Street Address 1"
+														type="text"
+														{...field}
+														className="border-slate-600 rounded-none"
+													/>
 												</FormControl>
-												<SelectContent>{locationOptions(regionOptions)}</SelectContent>
-											</Select>
-										</FormItem>
+												<FormMessage className="text-red-700" />
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="city"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>City</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="City"
+														type="text"
+														{...field}
+														className="border-slate-600 rounded-none"
+													/>
+												</FormControl>
+												<FormMessage className="text-red-700" />
+											</FormItem>
+										)}
+									/>
+
+									{regionOptions.length == 0 ? (
+										<FormField
+											control={form.control}
+											name="state"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Region</FormLabel>
+													<FormControl>
+														<Input
+															placeholder="Region"
+															type="text"
+															{...field}
+															className="border-slate-600 rounded-none"
+														/>
+													</FormControl>
+													<FormMessage className="text-red-700" />
+												</FormItem>
+											)}
+										/>
+									) : (
+										<FormField
+											control={form.control}
+											name="state"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>State</FormLabel>
+													<Select
+														onValueChange={field.onChange}
+														defaultValue={"PA"}
+														{...field}
+													>
+														<FormControl>
+															<SelectTrigger className="border-slate-600 rounded-none">
+																<SelectValue placeholder="Select a subscription plan" />
+															</SelectTrigger>
+														</FormControl>
+														<SelectContent>{locationOptions(regionOptions)}</SelectContent>
+													</Select>
+												</FormItem>
+											)}
+										/>
 									)}
-								/>
-							)}
+
+									<FormField
+										control={form.control}
+										name="zipCode"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Zip Code</FormLabel>
+												<FormControl>
+													<Input
+														placeholder="Zip Code"
+														type="text"
+														{...field}
+														className="border-slate-600 rounded-none"
+													/>
+												</FormControl>
+												<FormMessage className="text-red-700" />
+											</FormItem>
+										)}
+									/>
+								</div>
+							</div>
 
 							<FormField
 								control={form.control}
-								name="zipCode"
+								name="subscription"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Zip Code</FormLabel>
-										<FormControl>
-											<Input
-												placeholder="Zip Code"
-												type="text"
-												{...field}
-												className="border-slate-600 rounded-none"
-											/>
-										</FormControl>
-										<FormMessage className="text-red-700" />
+										<FormLabel>Subscription</FormLabel>
+										<Select
+											onValueChange={field.onChange}
+											defaultValue={preSelectedSubscription ? preSelectedSubscription : field.value}
+											{...field}
+										>
+											<FormControl className="border-slate-600 rounded-none">
+												<SelectTrigger>
+													<SelectValue placeholder="Select a subscription plan" />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>{renderProducts()}</SelectContent>
+										</Select>
+										<FormDescription>Choose a subscription to meet your needs.</FormDescription>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>
-						</div>
-					</div>
 
-					<FormField
-						control={form.control}
-						name="subscription"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Subscription</FormLabel>
-								<Select
-									onValueChange={field.onChange}
-									defaultValue={preSelectedSubscription ? preSelectedSubscription : field.value}
-									{...field}
-								>
-									<FormControl className="border-slate-600 rounded-none">
-										<SelectTrigger>
-											<SelectValue placeholder="Select a subscription plan" />
-										</SelectTrigger>
-									</FormControl>
-									<SelectContent>
-										{renderProducts()}
-									</SelectContent>
-								</Select>
-								<FormDescription>Choose a subscription to meet your needs.</FormDescription>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-
-					<Button type="submit">Submit</Button>
-				</form>
-			</Form>
+							<Button type="submit">Submit</Button>
+						</form>
+					</Form>
+					<CheckoutForm />
+					<UICheckoutForm />
+					
+				</Elements>
+			</CheckoutProvider>
 
 			{/* <CheckoutProvider
 				stripe={stripePromise}
