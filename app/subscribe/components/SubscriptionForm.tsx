@@ -174,7 +174,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(() => console.log("submitted"))}
+					onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
 					className="space-y-5 w-170 mx-auto"
 				>
 					<input
