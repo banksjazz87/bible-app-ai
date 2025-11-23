@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "./ui/Navbar";
 import StoreProvider from "./StoreProvider";
-import { createCheckoutSession } from "./actions/stripe";
+import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
+import UICheckoutForm from "@/components/stripe/UICheckoutForm";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -20,6 +21,10 @@ export const metadata: Metadata = {
 	description: "Not another bible app.  Use this app to view bible verses and create sermons, using openAI.",
 };
 
+
+const clientSecret = fetch('/api/create-checkout-session', { method: 'POST' })
+	.then((res) => res.json())
+	.then((data) => data.checkoutSessionClientSecret);
 
 export default function RootLayout({
 	children,
