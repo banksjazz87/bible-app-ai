@@ -57,7 +57,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	const country = form.watch("country");
 	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
-	const [clientSecret, setClientSecret] = useState<string>("");
+	// const [clientSecret, setClientSecret] = useState<string>("");
 	const stripePromise = getStripe();
 
 	useEffect((): void => {
@@ -73,23 +73,13 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		}
 	}, [country, form]);
 
-	useEffect((): void => console.log(clientSecret), [clientSecret]);
+	// useEffect((): void => console.log(clientSecret), [clientSecret]);
 
-	// function onSubmit(values: z.infer<typeof SubscribeFormSchema>) {
-	// 	console.log('Form submitted');
-	// }
+	const clientSecret = fetch('/api/create-checkout-session', { method: 'POST' })
+		.then((res) => res.json())
+		.then((data) => data.checkoutSessionClientSecret);
 
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
-		// const uiMode = data.get("uiMode") as Stripe.Checkout.SessionCreateParams.UiMode;
-		// const { client_secret, url } = await createCheckoutSession(data);
-		// console.log("needed url = ", url);
-
-		// if (url) {
-		// 	router.push(url);
-		// } else {
-		// 	alert("No return url provided");
-		// }
-
 		try {
 			const customer = await searchCustomer(data, "email");
 
@@ -101,6 +91,8 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 						try {
 							const customerID: string = newCustomer.customerId;
 							const checkoutSession = await createCheckoutSession(data, customerID);
+							const clientSecret = checkoutSession.client_secret as string;
+							// setClientSecret(clientSecret);
 							console.log(checkoutSession);
 						} catch (e) {
 							console.error("The following error occurred in creating a checkout session ", e);
@@ -110,13 +102,13 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					console.error("The following error occured while creating the customer ", e);
 				}
 
-				//This will be executed if the customer already exists
+			//This will be executed if the customer already exists
 			} else {
 				const customerID: string = customer?.data[0].id as string;
 				try {
 					const checkoutSession = await createCheckoutSession(data, customerID);
 					const clientSecret = checkoutSession.client_secret as string;
-					setClientSecret(clientSecret);
+					// setClientSecret(clientSecret);
 					console.log(clientSecret);
 				} catch (e) {
 					console.error("The following error occurred in creating a checkout session ", e);
@@ -175,78 +167,30 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				<h1 className="font-mono font-extrabold text-5xl text-center">Subscribe</h1>
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Update Your Subscription Today</p>
 			</section>
-			<CheckoutProvider
-				stripe={stripePromise}
-				options={{ clientSecret }}
-			>
-				<Elements
-					stripe={stripePromise}
-					options={{ clientSecret }}
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
+					className="space-y-5 w-170 mx-auto"
 				>
-					<Form {...form}>
-						<form
-							onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
-							className="space-y-5 w-170 mx-auto"
-						>
-							<input
-								type="hidden"
-								name="lookup_key"
-								value="price_1SDxaFRv9ZEy80pDmAiLFtd2"
-							/>
+					<input
+						type="hidden"
+						name="lookup_key"
+						value="price_1SDxaFRv9ZEy80pDmAiLFtd2"
+					/>
 
-							<div className="flex flex-col gap-2">
-								<p className="font-mono text-sm font-bold text-left">Customer Name</p>
-								<div className="grid grid-cols-2 gap-2">
-									<FormField
-										control={form.control}
-										name="firstName"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>First Name</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="Bob"
-														type="text"
-														{...field}
-														className="border-slate-600 rounded-none"
-													/>
-												</FormControl>
-												<FormMessage className="text-red-700" />
-											</FormItem>
-										)}
-									/>
-
-									<FormField
-										control={form.control}
-										name="lastName"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Last Name</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="Dole"
-														type="text"
-														{...field}
-														className="border-slate-600 rounded-none"
-													/>
-												</FormControl>
-												<FormMessage className="text-red-700" />
-											</FormItem>
-										)}
-									/>
-								</div>
-							</div>
-
+					<div className="flex flex-col gap-2">
+						<p className="font-mono text-sm font-bold text-left">Customer Name</p>
+						<div className="grid grid-cols-2 gap-2">
 							<FormField
 								control={form.control}
-								name="email"
+								name="firstName"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Email</FormLabel>
+										<FormLabel>First Name</FormLabel>
 										<FormControl>
 											<Input
-												placeholder="Email"
-												type="email"
+												placeholder="Bob"
+												type="text"
 												{...field}
 												className="border-slate-600 rounded-none"
 											/>
@@ -256,175 +200,212 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 								)}
 							/>
 
-							<div className="flex flex-col gap-2">
-								<p className="font-mono text-sm font-bold text-left">Address</p>
+							<FormField
+								control={form.control}
+								name="lastName"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Last Name</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Dole"
+												type="text"
+												{...field}
+												className="border-slate-600 rounded-none"
+											/>
+										</FormControl>
+										<FormMessage className="text-red-700" />
+									</FormItem>
+								)}
+							/>
+						</div>
+					</div>
 
-								<div className="grid grid-cols-2 gap-2">
-									<div className="col-span-2">
-										<FormField
-											control={form.control}
-											name="country"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Country</FormLabel>
-													<Select
-														onValueChange={field.onChange}
-														defaultValue={"US"}
-														{...field}
-													>
-														<FormControl>
-															<SelectTrigger className="border-slate-600 rounded-none">
-																<SelectValue placeholder="Select a subscription plan" />
-															</SelectTrigger>
-														</FormControl>
-														<SelectContent>{locationOptions(countries)}</SelectContent>
-													</Select>
-												</FormItem>
-											)}
-										/>
-									</div>
-
-									<FormField
-										control={form.control}
-										name="streetAddress"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Street Address</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="Street Address 1"
-														type="text"
-														{...field}
-														className="border-slate-600 rounded-none"
-													/>
-												</FormControl>
-												<FormMessage className="text-red-700" />
-											</FormItem>
-										)}
+					<FormField
+						control={form.control}
+						name="email"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Email</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="Email"
+										type="email"
+										{...field}
+										className="border-slate-600 rounded-none"
 									/>
-									<FormField
-										control={form.control}
-										name="city"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>City</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="City"
-														type="text"
-														{...field}
-														className="border-slate-600 rounded-none"
-													/>
-												</FormControl>
-												<FormMessage className="text-red-700" />
-											</FormItem>
-										)}
-									/>
+								</FormControl>
+								<FormMessage className="text-red-700" />
+							</FormItem>
+						)}
+					/>
 
-									{regionOptions.length == 0 ? (
-										<FormField
-											control={form.control}
-											name="state"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Region</FormLabel>
-													<FormControl>
-														<Input
-															placeholder="Region"
-															type="text"
-															{...field}
-															className="border-slate-600 rounded-none"
-														/>
-													</FormControl>
-													<FormMessage className="text-red-700" />
-												</FormItem>
-											)}
-										/>
-									) : (
-										<FormField
-											control={form.control}
-											name="state"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>State</FormLabel>
-													<Select
-														onValueChange={field.onChange}
-														defaultValue={"PA"}
-														{...field}
-													>
-														<FormControl>
-															<SelectTrigger className="border-slate-600 rounded-none">
-																<SelectValue placeholder="Select a subscription plan" />
-															</SelectTrigger>
-														</FormControl>
-														<SelectContent>{locationOptions(regionOptions)}</SelectContent>
-													</Select>
-												</FormItem>
-											)}
-										/>
+					<div className="flex flex-col gap-2">
+						<p className="font-mono text-sm font-bold text-left">Address</p>
+
+						<div className="grid grid-cols-2 gap-2">
+							<div className="col-span-2">
+								<FormField
+									control={form.control}
+									name="country"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Country</FormLabel>
+											<Select
+												onValueChange={field.onChange}
+												defaultValue={"US"}
+												{...field}
+											>
+												<FormControl>
+													<SelectTrigger className="border-slate-600 rounded-none">
+														<SelectValue placeholder="Select a subscription plan" />
+													</SelectTrigger>
+												</FormControl>
+												<SelectContent>{locationOptions(countries)}</SelectContent>
+											</Select>
+										</FormItem>
 									)}
-
-									<FormField
-										control={form.control}
-										name="zipCode"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Zip Code</FormLabel>
-												<FormControl>
-													<Input
-														placeholder="Zip Code"
-														type="text"
-														{...field}
-														className="border-slate-600 rounded-none"
-													/>
-												</FormControl>
-												<FormMessage className="text-red-700" />
-											</FormItem>
-										)}
-									/>
-								</div>
+								/>
 							</div>
 
 							<FormField
 								control={form.control}
-								name="subscription"
+								name="streetAddress"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Subscription</FormLabel>
-										<Select
-											onValueChange={field.onChange}
-											defaultValue={preSelectedSubscription ? preSelectedSubscription : field.value}
-											{...field}
-										>
-											<FormControl className="border-slate-600 rounded-none">
-												<SelectTrigger>
-													<SelectValue placeholder="Select a subscription plan" />
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent>{renderProducts()}</SelectContent>
-										</Select>
-										<FormDescription>Choose a subscription to meet your needs.</FormDescription>
-										<FormMessage />
+										<FormLabel>Street Address</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Street Address 1"
+												type="text"
+												{...field}
+												className="border-slate-600 rounded-none"
+											/>
+										</FormControl>
+										<FormMessage className="text-red-700" />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="city"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>City</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="City"
+												type="text"
+												{...field}
+												className="border-slate-600 rounded-none"
+											/>
+										</FormControl>
+										<FormMessage className="text-red-700" />
 									</FormItem>
 								)}
 							/>
 
-							<Button type="submit">Submit</Button>
-						</form>
-					</Form>
-					<CheckoutForm />
-					<UICheckoutForm />
-					
-				</Elements>
-			</CheckoutProvider>
+							{regionOptions.length == 0 ? (
+								<FormField
+									control={form.control}
+									name="state"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Region</FormLabel>
+											<FormControl>
+												<Input
+													placeholder="Region"
+													type="text"
+													{...field}
+													className="border-slate-600 rounded-none"
+												/>
+											</FormControl>
+											<FormMessage className="text-red-700" />
+										</FormItem>
+									)}
+								/>
+							) : (
+								<FormField
+									control={form.control}
+									name="state"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>State</FormLabel>
+											<Select
+												onValueChange={field.onChange}
+												defaultValue={"PA"}
+												{...field}
+											>
+												<FormControl>
+													<SelectTrigger className="border-slate-600 rounded-none">
+														<SelectValue placeholder="Select a subscription plan" />
+													</SelectTrigger>
+												</FormControl>
+												<SelectContent>{locationOptions(regionOptions)}</SelectContent>
+											</Select>
+										</FormItem>
+									)}
+								/>
+							)}
 
-			{/* <CheckoutProvider
-				stripe={stripePromise}
-				options={{ clientSecret }}
-			>
-				<CheckoutForm />
-				<UICheckoutForm />
-			</CheckoutProvider> */}
+							<FormField
+								control={form.control}
+								name="zipCode"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Zip Code</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Zip Code"
+												type="text"
+												{...field}
+												className="border-slate-600 rounded-none"
+											/>
+										</FormControl>
+										<FormMessage className="text-red-700" />
+									</FormItem>
+								)}
+							/>
+						</div>
+					</div>
+
+					<FormField
+						control={form.control}
+						name="subscription"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Subscription</FormLabel>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={preSelectedSubscription ? preSelectedSubscription : field.value}
+									{...field}
+								>
+									<FormControl className="border-slate-600 rounded-none">
+										<SelectTrigger>
+											<SelectValue placeholder="Select a subscription plan" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>{renderProducts()}</SelectContent>
+								</Select>
+								<FormDescription>Choose a subscription to meet your needs.</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<Button type="submit">Submit</Button>
+				</form>
+			</Form>
+
+			
+				<CheckoutProvider
+					stripe={stripePromise}
+					// options={{ clientSecret }}
+					options={{ clientSecret}}
+				>
+					<CheckoutForm />
+				</CheckoutProvider>
+			
 		</main>
 	);
 }

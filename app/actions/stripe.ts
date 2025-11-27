@@ -35,7 +35,7 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 			},
 		],
 		mode: "subscription",
-		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}/return?session_id={CHECKOUT_SESSION_ID}`,
+		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`,
 	});
 
 	console.log("Session here ", session);
