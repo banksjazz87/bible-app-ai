@@ -5,7 +5,7 @@ export default function UICheckoutForm(){
 	const checkoutState = useCheckout();
 	return (
 		<form>
-			<PaymentElement options={{ layout: "accordion" }} />
+			<PaymentElement />
 		</form>
 	);
 };

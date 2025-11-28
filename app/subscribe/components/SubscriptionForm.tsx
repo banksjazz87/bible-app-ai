@@ -17,7 +17,7 @@ import { CheckoutForm } from "@/components/stripe/CheckoutForm";
 import UICheckoutForm from "@/components/stripe/UICheckoutForm";
 import { getStripe } from "@/lib/stripe-client";
 import { Stripe } from "stripe";
-import { PaymentElement, Elements } from "@stripe/react-stripe-js";
+import { PaymentElement } from "@stripe/react-stripe-js/checkout";
 
 const SubscribeFormSchema = z.object({
 	firstName: z.string({ message: "Please provide a valid name." }),
@@ -57,7 +57,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	const country = form.watch("country");
 	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
-	// const [clientSecret, setClientSecret] = useState<string>("");
+	const [clientSecret, setClientSecret] = useState<string>("");
 	const stripePromise = getStripe();
 
 	useEffect((): void => {
@@ -75,10 +75,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	// useEffect((): void => console.log(clientSecret), [clientSecret]);
 
-	const clientSecret = fetch('/api/create-checkout-session', { method: 'POST' })
-		.then((res) => res.json())
-		.then((data) => data.checkoutSessionClientSecret);
-
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
 		try {
 			const customer = await searchCustomer(data, "email");
@@ -92,7 +88,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 							const customerID: string = newCustomer.customerId;
 							const checkoutSession = await createCheckoutSession(data, customerID);
 							const clientSecret = checkoutSession.client_secret as string;
-							// setClientSecret(clientSecret);
+							setClientSecret(clientSecret);
 							console.log(checkoutSession);
 						} catch (e) {
 							console.error("The following error occurred in creating a checkout session ", e);
@@ -108,7 +104,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				try {
 					const checkoutSession = await createCheckoutSession(data, customerID);
 					const clientSecret = checkoutSession.client_secret as string;
-					// setClientSecret(clientSecret);
+					setClientSecret(clientSecret);
 					console.log(clientSecret);
 				} catch (e) {
 					console.error("The following error occurred in creating a checkout session ", e);
@@ -397,15 +393,16 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				</form>
 			</Form>
 
-			
-				<CheckoutProvider
-					stripe={stripePromise}
-					// options={{ clientSecret }}
-					options={{ clientSecret}}
-				>
-					<CheckoutForm />
-				</CheckoutProvider>
-			
+			<CheckoutProvider
+				stripe={stripePromise}
+				// options={{ clientSecret }}
+				options={{ clientSecret }}
+			>
+				<CheckoutForm />
+				<UICheckoutForm />
+				
+					<PaymentElement />
+			</CheckoutProvider>
 		</main>
 	);
 }

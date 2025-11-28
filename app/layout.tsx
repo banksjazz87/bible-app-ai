@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 	description: "Not another bible app.  Use this app to view bible verses and create sermons, using openAI.",
 };
 
+
 export default function RootLayout({
 	children,
 }: Readonly<{
