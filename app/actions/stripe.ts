@@ -24,7 +24,7 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 	console.log("Prices Here !!!!! ", prices);
 
 	const session = await stripe.checkout.sessions.create({
-		ui_mode: "custom",
+		ui_mode: "embedded",
 		// Provide the customer ID of the customer you previously created
 		customer: customerId,
 		line_items: [
@@ -35,7 +35,7 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 			},
 		],
 		mode: "subscription",
-		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}subscribe?session_id={CHECKOUT_SESSION_ID}`,
+		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`,
 	});
 
 	console.log("Session here ", session);

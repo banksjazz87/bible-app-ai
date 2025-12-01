@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,12 +13,8 @@ import { useEffect, useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer, getProducts } from "../../actions/stripe";
 import { countries, states, provinces } from "@/lib/geoLocations";
 import { LocationObject, ProductResponse } from "@/lib/definitions";
-import { CheckoutProvider } from "@stripe/react-stripe-js/checkout";
-import { CheckoutForm } from "@/components/stripe/CheckoutForm";
-import UICheckoutForm from "@/components/stripe/UICheckoutForm";
-import { getStripe } from "@/lib/stripe-client";
 import { Stripe } from "stripe";
-import { PaymentElement } from "@stripe/react-stripe-js/checkout";
+
 
 const SubscribeFormSchema = z.object({
 	firstName: z.string({ message: "Please provide a valid name." }),
@@ -39,6 +36,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const preSelectedSubscription: string | null = searchParams.get("option");
 	const allProducts = use(products);
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
 		resolver: zodResolver(SubscribeFormSchema),
@@ -57,8 +55,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	const country = form.watch("country");
 	const [regionOptions, setRegionOptions] = useState<LocationObject[]>([]);
-	const [clientSecret, setClientSecret] = useState<string>("");
-	const stripePromise = getStripe();
 
 	useEffect((): void => {
 		if (country === "US") {
@@ -73,7 +69,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		}
 	}, [country, form]);
 
-	// useEffect((): void => console.log(clientSecret), [clientSecret]);
+	
 
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
 		try {
@@ -88,8 +84,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 							const customerID: string = newCustomer.customerId;
 							const checkoutSession = await createCheckoutSession(data, customerID);
 							const clientSecret = checkoutSession.client_secret as string;
-							setClientSecret(clientSecret);
-							console.log(checkoutSession);
+							router.push(`/checkout?session_id=${clientSecret}`);
 						} catch (e) {
 							console.error("The following error occurred in creating a checkout session ", e);
 						}
@@ -104,8 +99,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				try {
 					const checkoutSession = await createCheckoutSession(data, customerID);
 					const clientSecret = checkoutSession.client_secret as string;
-					setClientSecret(clientSecret);
-					console.log(clientSecret);
+					router.push(`/checkout?session_id=${clientSecret}`);
 				} catch (e) {
 					console.error("The following error occurred in creating a checkout session ", e);
 				}
@@ -392,17 +386,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					<Button type="submit">Submit</Button>
 				</form>
 			</Form>
-
-			<CheckoutProvider
-				stripe={stripePromise}
-				// options={{ clientSecret }}
-				options={{ clientSecret }}
-			>
-				<CheckoutForm />
-				<UICheckoutForm />
-				
-					<PaymentElement />
-			</CheckoutProvider>
 		</main>
 	);
 }
