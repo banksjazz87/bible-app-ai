@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,8 @@ import { createCheckoutSession, createCustomer, searchCustomer, getProducts } fr
 import { countries, states, provinces } from "@/lib/geoLocations";
 import { LocationObject, ProductResponse } from "@/lib/definitions";
 import { Stripe } from "stripe";
+import CheckoutForm from "@/app/checkout/components/CheckoutForm";
+import { Check } from "lucide-react";
 
 
 const SubscribeFormSchema = z.object({
@@ -37,6 +39,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const preSelectedSubscription: string | null = searchParams.get("option");
 	const allProducts = use(products);
 	const router = useRouter();
+	const [customerId, setCustomerId] = useState<string | null>(null);
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
 		resolver: zodResolver(SubscribeFormSchema),
@@ -82,9 +85,10 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					if (newCustomer.status === 200) {
 						try {
 							const customerID: string = newCustomer.customerId;
-							const checkoutSession = await createCheckoutSession(data, customerID);
-							const clientSecret = checkoutSession.client_secret as string;
-							router.push(`/checkout?session_id=${clientSecret}`);
+							setCustomerId(customerID);
+							// const checkoutSession = await createCheckoutSession(data, customerID);
+							// const clientSecret = checkoutSession.client_secret as string;
+							// router.push(`/checkout?session_id=${clientSecret}`);
 						} catch (e) {
 							console.error("The following error occurred in creating a checkout session ", e);
 						}
@@ -96,13 +100,14 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 			//This will be executed if the customer already exists
 			} else {
 				const customerID: string = customer?.data[0].id as string;
-				try {
-					const checkoutSession = await createCheckoutSession(data, customerID);
-					const clientSecret = checkoutSession.client_secret as string;
-					router.push(`/checkout?session_id=${clientSecret}`);
-				} catch (e) {
-					console.error("The following error occurred in creating a checkout session ", e);
-				}
+				setCustomerId(customerID);
+				// try {
+				// 	const checkoutSession = await createCheckoutSession(data, customerID);
+				// 	// const clientSecret = checkoutSession.client_secret as string;
+				// 	// router.push(`/checkout?session_id=${clientSecret}`);
+				// } catch (e) {
+				// 	console.error("The following error occurred in creating a checkout session ", e);
+				// }
 			}
 		} catch (e: any) {
 			console.warn("The following error occurred while searching for the customer ", e);
@@ -150,6 +155,18 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 			return <p>{`The following error occurred in getting the products ${allProducts.errorMessage}`}</p>;
 		}
 	};
+
+	const fetchClientSecret = async (): Promise<string> => {
+		console.log('Fetching client is running');
+		if (customerId) {
+			const data = form.getValues();
+			const checkoutSession = await createCheckoutSession(data, customerId);
+			console.log('this is the checkout session ', checkoutSession);
+			return checkoutSession.client_secret as string;
+		} else {
+			return "";
+		}
+	}
 
 	return (
 		<main>
@@ -386,6 +403,12 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					<Button type="submit">Submit</Button>
 				</form>
 			</Form>
+
+			{
+				customerId && (
+					<CheckoutForm fetchClientSecret={fetchClientSecret} />
+					
+				)}
 		</main>
 	);
 }

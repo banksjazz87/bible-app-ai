@@ -170,5 +170,11 @@ export async function getProducts(): Promise<ProductResponse> {
 	}
 }
 
+export async function getCheckoutSession(sessionId: string): Promise<Stripe.Response<Stripe.Checkout.Session>> {
+	const session: Stripe.Response<Stripe.Checkout.Session> = await stripe.checkout.sessions.retrieve(sessionId);
+	console.log("The session has been retrieved and the returned value is ", session);
+	return session;
+}
+
 
 
