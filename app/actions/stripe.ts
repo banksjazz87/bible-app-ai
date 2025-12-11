@@ -24,6 +24,16 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 	console.log("Prices Here !!!!! ", prices);
 
 	const session = await stripe.checkout.sessions.create({
+		billing_address_collection: 'required',
+		name_collection: {
+			individual: {
+				enabled: true, 
+				optional: false
+			}
+		},
+		automatic_tax: {
+			enabled: true
+		},
 		ui_mode: "embedded",
 		// Provide the customer ID of the customer you previously created
 		customer: customerId,

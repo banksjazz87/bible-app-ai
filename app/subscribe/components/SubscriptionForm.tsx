@@ -86,9 +86,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 						try {
 							const customerID: string = newCustomer.customerId;
 							setCustomerId(customerID);
-							// const checkoutSession = await createCheckoutSession(data, customerID);
-							// const clientSecret = checkoutSession.client_secret as string;
-							// router.push(`/checkout?session_id=${clientSecret}`);
 						} catch (e) {
 							console.error("The following error occurred in creating a checkout session ", e);
 						}
@@ -101,13 +98,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 			} else {
 				const customerID: string = customer?.data[0].id as string;
 				setCustomerId(customerID);
-				// try {
-				// 	const checkoutSession = await createCheckoutSession(data, customerID);
-				// 	// const clientSecret = checkoutSession.client_secret as string;
-				// 	// router.push(`/checkout?session_id=${clientSecret}`);
-				// } catch (e) {
-				// 	console.error("The following error occurred in creating a checkout session ", e);
-				// }
 			}
 		} catch (e: any) {
 			console.warn("The following error occurred while searching for the customer ", e);
