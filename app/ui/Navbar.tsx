@@ -9,6 +9,7 @@ import { logoutUser, loginUser } from "@/app/store/features/account/loginSlice";
 import { useAppSelector, useAppDispatch } from "@/app/store/hooks";
 import { APIResponse } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 type MenuItem = {
 	title: string;
@@ -87,8 +88,7 @@ export default function NavBar(): JSX.Element {
 						>
 							{x.title}
 						</Link>
-					))
-				}
+					))}
 				{isLoggedIn && (
 					<>
 						<Link
@@ -103,26 +103,31 @@ export default function NavBar(): JSX.Element {
 						>
 							Bible
 						</Link>
+
+						<Link
+							href="/pricing"
+						>
+							<Button>Upgrade</Button>
+						</Link>
 						<DropdownMenu>
 							<DropdownMenuTrigger>
 								<UserAvatar />
 							</DropdownMenuTrigger>
 							<DropdownMenuContent>
 								<DropdownMenuLabel>
-									<Link href={"/account/profile"}>
-										My Account
-									</Link>
+									<Link href={"/account/profile"}>My Account</Link>
 								</DropdownMenuLabel>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>
-									<Link href="/account/profile">
-										Profile
-									</Link>
+									<Link href="/account/profile">Profile</Link>
 								</DropdownMenuItem>
 								<DropdownMenuItem>Billing</DropdownMenuItem>
 								<DropdownMenuItem>Subscription</DropdownMenuItem>
 								<DropdownMenuItem>
-									<button type="button" onClick={() => logoutFunction()}>
+									<button
+										type="button"
+										onClick={() => logoutFunction()}
+									>
 										Logout
 									</button>
 								</DropdownMenuItem>
