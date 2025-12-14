@@ -116,40 +116,28 @@ export async function searchCustomer(data: SubscribeFormSchema, field: keyof Sub
 }
 
 export async function createCustomer(data: SubscribeFormSchema) {
-	console.log("This is the selected country ", data.country);
-
 	const email = data.email;
-	const firstName = data.firstName;
-	const lastName = data.lastName;
-	const fullName = `${firstName} ${lastName}`;
-	const city = data.city;
-	const country = data.country;
-	const streetAddress = data.streetAddress;
-	const postalCode = data.zipCode;
-	const state = data.state;
-
 	const customer = await stripe.customers.create({
 		email: email,
-		name: fullName,
-		shipping: {
-			address: {
-				city: city,
-				country: country,
-				line1: streetAddress,
-				postal_code: postalCode,
-				state: state,
-			},
-			name: fullName,
-		},
-		address: {
-			city: city,
-			country: country,
-			line1: streetAddress,
-			postal_code: postalCode,
-			state: state,
-		},
+		// name: fullName,
+		// shipping: {
+		// 	address: {
+		// 		city: city,
+		// 		country: country,
+		// 		line1: streetAddress,
+		// 		postal_code: postalCode,
+		// 		state: state,
+		// 	},
+		// 	name: fullName,
+		// },
+		// address: {
+		// 	city: city,
+		// 	country: country,
+		// 	line1: streetAddress,
+		// 	postal_code: postalCode,
+		// 	state: state,
+		// },
 	});
-	console.log("Customer Details HERE: ", customer);
 
 	return {
 		status: 200,
