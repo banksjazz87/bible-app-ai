@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -27,7 +28,7 @@ type SubscriptionFormProps = {
 
 export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
-	const preSelectedSubscription: string | null = searchParams.get("option");
+	const preSelectedSubscription: string = searchParams.get("option") ? searchParams.get("option") as string : "free";
 	const allProducts = use(products);
 	const router = useRouter();
 	const [customerId, setCustomerId] = useState<string | null>(null);
@@ -36,9 +37,11 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		resolver: zodResolver(SubscribeFormSchema),
 		defaultValues: {
 			email: "bobdole@yahoo.com",
-			subscription: "free"
+			subscription: preSelectedSubscription
 		},
 	});
+
+	useEffect(() => console.log(products), [products]);
 
 	
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
@@ -115,7 +118,21 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 						)}
 					/>
 
-					<input type="hidden" value={preSelectedSubscription ? preSelectedSubscription : "free"} {...form.register("subscription")} />	
+					<FormField
+						control={form.control}
+						name="subscription"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										type="hidden"
+										{...field}
+										value={preSelectedSubscription}
+									/>
+								</FormControl>
+							</FormItem>
+						)}		
+					/>
 
 					<Button type="submit">Submit</Button>
 				</form>

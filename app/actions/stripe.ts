@@ -20,6 +20,7 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 		}
 	}
 
+
 	const prices = await stripe.prices.retrieve(lookupKey);
 	console.log("Prices Here !!!!! ", prices);
 
@@ -99,6 +100,7 @@ export async function subscribeAction() {
 }
 
 
+
 export async function searchCustomer(data: SubscribeFormSchema, field: keyof SubscribeFormSchema) {
 	const fieldValue = data[field];
 
@@ -119,24 +121,6 @@ export async function createCustomer(data: SubscribeFormSchema) {
 	const email = data.email;
 	const customer = await stripe.customers.create({
 		email: email,
-		// name: fullName,
-		// shipping: {
-		// 	address: {
-		// 		city: city,
-		// 		country: country,
-		// 		line1: streetAddress,
-		// 		postal_code: postalCode,
-		// 		state: state,
-		// 	},
-		// 	name: fullName,
-		// },
-		// address: {
-		// 	city: city,
-		// 	country: country,
-		// 	line1: streetAddress,
-		// 	postal_code: postalCode,
-		// 	state: state,
-		// },
 	});
 
 	return {
@@ -153,8 +137,13 @@ type ProductResponse = {
 
 export async function getProducts(): Promise<ProductResponse> {
 	try {
-		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({ expand: ["data.product"] });
+		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({ expand: ["data.product"] }, 
+		);
 		const productArray = products.data as (Stripe.Price & { product: Stripe.Product })[];
+		
+		if (productArray.length > 1) {
+			productArray.sort((a: Stripe.Price, b: Stripe.Price) => a.unit_amount as number - b.unit_amount! as number);
+		}
 
 		return {
 			status: 200,
