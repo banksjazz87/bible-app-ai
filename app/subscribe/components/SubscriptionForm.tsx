@@ -12,8 +12,8 @@ import { useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer, getProducts } from "../../actions/stripe";
 import { ProductResponse } from "@/lib/definitions";
-
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
+import { useAppSelector } from "@/app/store/hooks";
 
 
 
@@ -32,16 +32,24 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const allProducts = use(products);
 	const router = useRouter();
 	const [customerId, setCustomerId] = useState<string | null>(null);
+	const userEmail = useAppSelector((state) => state.loggedInData.email);
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
 		resolver: zodResolver(SubscribeFormSchema),
 		defaultValues: {
-			email: "bobdole@yahoo.com",
+			email: userEmail ? userEmail : "",
 			subscription: preSelectedSubscription
 		},
 	});
 
 	useEffect(() => console.log(products), [products]);
+
+	useEffect(() => {
+		if (userEmail && userEmail.length > 0) {
+			form.setValue("email", userEmail);
+			formAction(form.getValues());
+		}
+	}, [userEmail]);
 
 	
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
@@ -93,56 +101,53 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				<h1 className="font-mono font-extrabold text-5xl text-center">Subscribe</h1>
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Update Your Subscription Today</p>
 			</section>
-			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
-					className="space-y-5 w-170 mx-auto"
-				>
+			{ userEmail && userEmail.length === 0 && (
+				<Form {...form}>
+					<form
+						onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
+						className="space-y-5 w-170 mx-auto"
+					>
+						<FormField
+							control={form.control}
+							name="email"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email</FormLabel>
+									<FormControl>
+										<Input
+											placeholder="Email"
+											type="email"
+											{...field}
+											className="border-slate-600 rounded-none"
+										/>
+									</FormControl>
+									<FormMessage className="text-red-700" />
+								</FormItem>
+							)}
+						/>
 
-					<FormField
-						control={form.control}
-						name="email"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Email</FormLabel>
-								<FormControl>
-									<Input
-										placeholder="Email"
-										type="email"
-										{...field}
-										className="border-slate-600 rounded-none"
-									/>
-								</FormControl>
-								<FormMessage className="text-red-700" />
-							</FormItem>
-						)}
-					/>
+						<FormField
+							control={form.control}
+							name="subscription"
+							render={({ field }) => (
+								<FormItem>
+									<FormControl>
+										<Input
+											type="hidden"
+											{...field}
+											value={preSelectedSubscription}
+										/>
+									</FormControl>
+								</FormItem>
+							)}
+						/>
 
-					<FormField
-						control={form.control}
-						name="subscription"
-						render={({ field }) => (
-							<FormItem>
-								<FormControl>
-									<Input
-										type="hidden"
-										{...field}
-										value={preSelectedSubscription}
-									/>
-								</FormControl>
-							</FormItem>
-						)}		
-					/>
+						<Button type="submit">Submit</Button>
+					</form>
+				</Form>
+			)}
 
-					<Button type="submit">Submit</Button>
-				</form>
-			</Form>
-
-			{
-				customerId && (
-					<CheckoutForm fetchClientSecret={fetchClientSecret} />
-					
-				)}
+			{customerId && <CheckoutForm fetchClientSecret={fetchClientSecret} />}
 		</main>
 	);
 }

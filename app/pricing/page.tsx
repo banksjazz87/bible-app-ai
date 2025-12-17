@@ -4,6 +4,7 @@ import PriceCard from "./components/PriceCard";
 import { Suspense, JSX } from "react";
 import { getProducts } from "../actions/stripe";
 
+
 const products = await getProducts();
 
 export default async function Pricing(): Promise<JSX.Element> {
