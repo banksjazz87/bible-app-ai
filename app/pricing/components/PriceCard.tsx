@@ -1,18 +1,25 @@
-import { JSX } from "react";
+"use client";
+
+import { JSX, use } from "react";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { SubscriptionData } from "@/lib/definitions";
 import Link from "next/link";
+import { useAppSelector } from "@/app/store/hooks";
 
 type PriceCardProps = {
 	title: string;
 	details: string[];
     value: string;
-	hrefValue: string;
+	optionValue: string;
 };
 
-export default function PriceCard({ title, details, value, hrefValue }: PriceCardProps) {
+export default function PriceCard({ title, details, value, optionValue }: PriceCardProps) {
+	const userLoggedIn = useAppSelector((state) => state.loggedInData.isLoggedIn);
+	const targetPage = userLoggedIn ? "/subscribe" : "/account/login";
+	const hrefLink = `${targetPage}?option=${optionValue}`;
+
 	const listItems = details.map((x: string, y: number) => {
 		return (
 			<li
@@ -36,7 +43,7 @@ export default function PriceCard({ title, details, value, hrefValue }: PriceCar
 				name="price-option"
 				value={value}
 			/>
-			<Link href={hrefValue} className="flex flex-col">
+			<Link href={hrefLink} className="flex flex-col">
 				<Button>Signup</Button>
 			</Link>
 		</div>

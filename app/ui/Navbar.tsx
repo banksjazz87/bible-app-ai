@@ -31,9 +31,9 @@ export default function NavBar(): JSX.Element {
 			dispatch(logoutUser());
 		} else {
 			dispatch(loginUser({
-				isLoggedIn: true,
-				email: 'testing @gmail.com', 
-				userName: 'tester'
+				isLoggedIn: false,
+				email: '', 
+				userName: ''
 			}));
 		}
 	}, []);

@@ -27,7 +27,7 @@ const pageContent = (): JSX.Element => {
 				title={x.product.name}
 				details={details ? details : []}
 				value={x.product.default_price as string}
-				hrefValue={`/subscribe?option=${x.product.default_price as string}`}
+				optionValue={`${x.product.default_price as string}`}
 			/>
 		);
 	});
@@ -43,7 +43,7 @@ const pageContent = (): JSX.Element => {
 						title="Free"
 						details={["Limit of 5 AI queries per day", "Email notifications of all future updates"]}
 						value="free"
-						hrefValue="/subscribe?option=free"
+						optionValue="free"
 					/>
 					{allProducts}
 				</div>
