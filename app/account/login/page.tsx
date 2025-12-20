@@ -4,6 +4,7 @@ import { JSX, useEffect,  useState } from "react";
 import Alert from "@/app/ui/Alert";
 import LoginForm from "@/app/account/login/components/LoginForm";
 import { redirect } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 
 
 export default function Login(): JSX.Element {
@@ -12,11 +13,18 @@ export default function Login(): JSX.Element {
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertTitle, setAlertTitle] = useState<string>('');
 
+	const params = useSearchParams();
+	const optionValue = params.get('option') ? params.get('option') : null;
+
 	useEffect((): void => {
 		if (response !== null && response !== 200) {
 			setShowAlert(true);
 		} else if (response !== null && response === 200) {
-			redirect('/bible');
+			if (optionValue) {
+				redirect(`/subscribe?option=${optionValue}`);
+			} else {
+				redirect('/bible');
+			}
 		}
 	}, [response]);
 

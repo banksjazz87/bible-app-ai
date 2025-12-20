@@ -53,7 +53,7 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 	}
 
 	return (
-		<div className="border-1 border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
+		<div className="border border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
 			<h2 className="font-bold text-xl pb-6">Login Form</h2>
 			<Form {...form}>
 				<form
