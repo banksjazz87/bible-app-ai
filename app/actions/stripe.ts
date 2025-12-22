@@ -46,7 +46,7 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 			},
 		],
 		mode: "subscription",
-		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`,
+		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`
 	});
 
 	console.log("Session here ", session);
@@ -140,7 +140,7 @@ export async function getProducts(): Promise<ProductResponse> {
 		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({ expand: ["data.product"] }, 
 		);
 		const productArray = products.data as (Stripe.Price & { product: Stripe.Product })[];
-		
+
 		if (productArray.length > 1) {
 			productArray.sort((a: Stripe.Price, b: Stripe.Price) => a.unit_amount as number - b.unit_amount! as number);
 		}
