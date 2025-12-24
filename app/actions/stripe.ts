@@ -26,12 +26,12 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 
 	const session = await stripe.checkout.sessions.create({
 		billing_address_collection: 'required',
-		name_collection: {
-			individual: {
-				enabled: true, 
-				optional: false
-			}
-		},
+		// name_collection: {
+		// 	individual: {
+		// 		enabled: true, 
+		// 		optional: false
+		// 	}
+		// },
 		automatic_tax: {
 			enabled: true
 		},

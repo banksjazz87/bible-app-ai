@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
+import Message from "./components/Message";
 
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ session_id: string }> }) {
@@ -30,8 +31,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					<h1 className="font-mono font-extrabold text-5xl text-center">{orderMessage}</h1>
 				</section>
 				<section className="py-16">
-					<p className="text-center">{`Thanks for your subscription to the Bible App ${customerName}!  We're so happy to have you with us.  If you would ever like to change or cancel your subscription you can do so within your account page.  Thanks again!  We're excited to have you on board.`}</p>
-					<div className="flex flex-row gap-4 justify-center pt-9">
+                <Message
+                    customerEmail={customerEmail}
+                    customerName={customerName}
+                />
+                    <div className="flex flex-row gap-4 justify-center pt-10">
 						<Button>
 							<Link href="/bible">Go to App</Link>
 						</Button>
