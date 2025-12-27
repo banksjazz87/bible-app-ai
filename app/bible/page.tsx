@@ -99,10 +99,13 @@ function PageContent() {
 					const userData = data.data[0];
 					if (userData.super_admin) {
 						setUserRoles('superAdmin');
-						setMaxRequests(5);
-					} else if (userData.subscribed) {
-						setUserRoles('subscribed');
+						setMaxRequests(5000);
+					} else if (userData.premiere_tier) {
+						setUserRoles('premiere');
 						setMaxRequests(50);
+					} else if (userData.standard_tier) {
+						setUserRoles('standard');
+						setMaxRequests(20);
 					}
 				} else {
 					setUserRoles("freeTier");
@@ -132,7 +135,6 @@ function PageContent() {
 
 
 	//ADD CODE ABOVE 
-
 	const resetLLMData = (): void => {
 		const clearedData = LLMReqAndOutput.map((x: LLMReqObject, y: number) => {
 			const currentObj = {
@@ -168,7 +170,6 @@ function PageContent() {
 
 	const loginHandler = (): void => {
 		setShowAlert(!showAlert);
-		const newPath = 
 		router.push('/account/login');	
 	}
 

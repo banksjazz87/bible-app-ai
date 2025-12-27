@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { NextResponse } from "next/server";
+import { UserRoles } from "@/lib/definitions";
 
 export async function GetThreads() {
 	const supabase = await createClient();
@@ -125,6 +126,35 @@ export async function IncrementDailyCalls(limit: number): Promise<NextResponse> 
 			responseData.status = 201;
 			responseData.message = "Daily requests record created successfully";
 		}
+	}
+
+	return NextResponse.json(responseData);
+}
+
+
+export async function updateSubscription<UserRoles, K extends keyof UserRoles>(subscriptionData: {K: boolean}) {
+	const responseData = {
+		status: 500,
+		message: '',
+		data: null
+	}
+
+	try {
+		const supabase = await createClient();
+		const userId = await GetCurrentUserId();
+		if (userId) {
+			const { error } = await supabase
+				.from('user_roles')
+				.update({ K: subscriptionData.K })
+				.eq('id', userId)
+
+		} else {
+			responseData.message = 'The user cannot be found';
+			responseData.status = 404;
+		}
+	} catch (e: any) {
+		responseData.message = `The following error occurred: ${e}`;
+		responseData.data = e as any;
 	}
 
 	return NextResponse.json(responseData);

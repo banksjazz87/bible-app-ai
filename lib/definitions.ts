@@ -137,7 +137,8 @@ export type UserRoles = {
     id: number;
     user_id: string;
     super_admin: boolean;
-    subscribed: boolean;
+    standard_tier: boolean;
+    premiere_tier: boolean;
     free_tier: boolean;
     email_address: string;
 }

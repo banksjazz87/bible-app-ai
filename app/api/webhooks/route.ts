@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 				// Used to provision services after the trial has ended.
 				// The status of the invoice will show up as paid. Store the status in your
 				// database to reference when a user accesses your service to avoid hitting rate limits.
-				console.log('The payment has been processed correctly');
+				console.log('HERE HERE The payment has been processed correctly');
 				break;
 			case "invoice.payment_failed":
 				// If the payment fails or the customer doesn't have a valid payment method,

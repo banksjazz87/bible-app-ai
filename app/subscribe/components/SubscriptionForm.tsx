@@ -55,7 +55,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
 		try {
 			const customer = await searchCustomer(data, "email");
-
 			//If the customer data came back and the data array is empty, create new customer.
 			if (customer && customer.data.length === 0) {
 				try {
