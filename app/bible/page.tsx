@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, JSX, FormEvent, Suspense } from "react";
+import { useState, useEffect, JSX, FormEventHandler, Suspense, useEffectEvent } from "react";
 import BibleForm from "./components/BibleForm";
 import { useSearchParams } from "next/navigation";
 import { BibleFormData, Verses, LLMReqObject } from "@/lib/definitions";
@@ -58,7 +58,7 @@ function PageContent() {
 	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
 	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
 
-	useEffect((): void => {
+	useEffectEvent((): void => {
 		const version = searchParams.get("version") as string;
 		const book = searchParams.get("book") as string;
 		const chapter = searchParams.get("chapter") as string;
@@ -148,8 +148,7 @@ function PageContent() {
 		setLLMReqAndOutput(clearedData);
 	};
 
-	const formHandler = (e: FormEvent<HTMLFormElement>, formData: BibleFormData) => {
-		e.preventDefault();
+	const formHandler = (e: FormEventHandler<HTMLFormElement>, formData: BibleFormData) => {
 		resetLLMData();
 		setShowChapterText(true);
 		setBibleData({

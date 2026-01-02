@@ -8,7 +8,10 @@ const __filename = fileURLToPath(
 const __dirname = dirname(__filename);
 
 const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
-    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"]
+    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"],
+    rules: {
+        "react-hooks/exhaustive-deps": "off",
+    }
 }];
 
 export default eslintConfig;

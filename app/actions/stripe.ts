@@ -112,7 +112,7 @@ export async function searchCustomer(data: SubscribeFormSchema, field: keyof Sub
 			message: "Successfully requested the customers object",
 			data: customers.data,
 		};
-	} catch (e: any) {
+	} catch (e: unknown) {
 		console.log(`The following error occurred in retrieving the customer data: ${e}`);
 	}
 }
@@ -149,7 +149,7 @@ export async function getProducts(): Promise<ProductResponse> {
 			status: 200,
 			data: productArray,
 		};
-	} catch (e: any) {
+	} catch (e: unknown) {
 		return {
 			status: 500,
 			errorMessage: `The following error occurred in getting the products: ${e}`,

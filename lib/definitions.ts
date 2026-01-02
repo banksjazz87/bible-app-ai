@@ -1,7 +1,7 @@
 //Contains all of the definitions used in the app
 
-import { User } from "lucide-react";
 import { Stripe } from "stripe";
+import { FormEventHandler } from "react";
 
 export type BookAndChapters = {
     text: string;
@@ -17,7 +17,7 @@ export type BibleVersions = {
 
 export type BooksProps = {
     books: BookAndChapters[];
-    changeHandler: Function;
+    changeHandler: (value: string) => void;
     sectionTitle: string;
     optionsID: string;
     placeholder: string;
@@ -29,7 +29,7 @@ export type VersionsProps = {
     versions: BibleVersions[];
     sectionTitle: string;
     optionsID: string;
-    changeHandler: Function;
+    changeHandler: (value: string) => void;
 };
 
 export type SelectFields = {
@@ -38,7 +38,7 @@ export type SelectFields = {
 }
 
 export type OptionsProps = {
-    changeHandler: Function;
+    changeHandler: (value: string) => void;
     sectionTitle: string;
     options: SelectFields[];
     optionsID: string;
@@ -56,7 +56,7 @@ export type BibleFormData = {
 
 export type BibleFormProps = {
 	submitHandler: Function;
-	updateNeededChapter: Function;
+	updateNeededChapter: (data: Verses[]) => void;
 };
 
 export type Verses = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, JSX, FormEvent, useActionState } from "react";
+import { useState, useEffect, JSX, FormEventHandler, useActionState } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
@@ -38,7 +38,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
 					}
 				})
-				.catch((e: any) => console.warn("The following error occurred while updating the verse data ", e));
+				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
 		}
 	}, [bibleForm]);
 
@@ -72,7 +72,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
 					}
 				})
-				.catch((e: any) => console.warn("The following error occurred while updating the verse data ", e));
+				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
 		}
 	}, []);
 
@@ -89,7 +89,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			<Form {...form}>
 				<form
 					id="bible-form"
-					onSubmit={(e: FormEvent<HTMLFormElement>): void => submitHandler(e, bibleForm)}
+					onSubmit={(e: FormEventHandler<HTMLFormElement>): void => submitHandler(e, bibleForm)}
 					method={"/bible"}
 				>
 					<div className="flex flex-col gap-4">
