@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, JSX, FormEventHandler, useActionState } from "react";
+import { useState, useEffect, JSX, FormEventHandler, useEffectEvent } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
 import { SelectFields, BibleFormData, Verses, ChapterResponse, BibleFormProps } from "@/lib/definitions";
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { FormSubmitHandler, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue } from "@/lib/bible/bibleMethods";
 
@@ -50,7 +50,8 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 	};
 
-	useEffect((): void => {
+	
+	const updateBibleData = useEffectEvent((): void => {
 		setBibleForm({
 			...bibleForm,
 			version: returnSearchParamValues("bible-version"),
@@ -59,7 +60,10 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			startVerse: returnSearchParamValues("startVerse"),
 			endVerse: returnSearchParamValues("endVerse"),
 		});
+	});
 
+	useEffect((): void => {
+		updateBibleData();
 		const book = returnSearchParamValues("book");
 		const version = returnSearchParamValues("version");
 		const chapter = returnSearchParamValues("chapter");
@@ -89,7 +93,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			<Form {...form}>
 				<form
 					id="bible-form"
-					onSubmit={(e: FormEventHandler<HTMLFormElement>): void => submitHandler(e, bibleForm)}
+					onSubmit={form.handleSubmit(submitHandler)}
 					method={"/bible"}
 				>
 					<div className="flex flex-col gap-4">

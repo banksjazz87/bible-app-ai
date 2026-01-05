@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, JSX, FormEventHandler, Suspense, useEffectEvent } from "react";
+import { FieldValues, SubmitHandler } from "react-hook-form";
 import BibleForm from "./components/BibleForm";
 import { useSearchParams } from "next/navigation";
 import { BibleFormData, Verses, LLMReqObject } from "@/lib/definitions";
@@ -148,7 +149,7 @@ function PageContent() {
 		setLLMReqAndOutput(clearedData);
 	};
 
-	const formHandler = (e: FormEventHandler<HTMLFormElement>, formData: BibleFormData) => {
+	const formHandler = (formData: FieldValues) => {
 		resetLLMData();
 		setShowChapterText(true);
 		setBibleData({

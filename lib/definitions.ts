@@ -1,7 +1,7 @@
 //Contains all of the definitions used in the app
 
 import { Stripe } from "stripe";
-import { FormEventHandler } from "react";
+import { SubmitHandler, FieldValues } from "react-hook-form";
 
 export type BookAndChapters = {
     text: string;
@@ -55,7 +55,7 @@ export type BibleFormData = {
 };
 
 export type BibleFormProps = {
-	submitHandler: Function;
+	submitHandler: SubmitHandler<FieldValues>;
 	updateNeededChapter: (data: Verses[]) => void;
 };
 
