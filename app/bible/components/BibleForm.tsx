@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, JSX, FormEventHandler, useEffectEvent } from "react";
+import { useState, useEffect, JSX, useEffectEvent } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
-import { SelectFields, BibleFormData, Verses, ChapterResponse, BibleFormProps } from "@/lib/definitions";
+import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps } from "@/lib/definitions";
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
-import { FormSubmitHandler, useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
 import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue } from "@/lib/bible/bibleMethods";
 
 export default function BibleForm({ updateNeededChapter, submitHandler }: BibleFormProps): JSX.Element {

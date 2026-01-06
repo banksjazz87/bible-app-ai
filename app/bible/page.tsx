@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, JSX, FormEventHandler, Suspense, useEffectEvent } from "react";
-import { FieldValues, SubmitHandler } from "react-hook-form";
+import { useState, useEffect, JSX, Suspense, useEffectEvent } from "react";
+import { FieldValues } from "react-hook-form";
 import BibleForm from "./components/BibleForm";
 import { useSearchParams } from "next/navigation";
 import { BibleFormData, Verses, LLMReqObject } from "@/lib/definitions";
@@ -55,9 +55,10 @@ function PageContent() {
 	const [requestStatus, setRequestStatus] = useState<number>(200);
 
 	const router = useRouter();
+	const setLLMReqInit = useEffectEvent((): void => setLLMReqAndOutput(initLLMReqAndOutput));
 
 	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
-	useEffect((): void => setLLMReqAndOutput(initLLMReqAndOutput), []);
+	useEffect((): void => setLLMReqInit(), []);
 
 	useEffectEvent((): void => {
 		const version = searchParams.get("version") as string;
@@ -86,7 +87,7 @@ function PageContent() {
 				endVerse: endVerse,
 			});
 		}
-	}, []);
+	});
 
 
 	//Set our userRoles and maxRequests on initial load
@@ -120,16 +121,19 @@ function PageContent() {
 	}, []);
 
 
+	const updateAlertTitle = useEffectEvent((status: number): void => {
+		if (status === 401 || status === 500) {
+			setAlertTitle('Invalid User')
+		} else if (status === 400) {
+			setAlertTitle('Server Error')
+		} else if (status === 429) {
+			setAlertTitle('Too Many Requests')
+		}
+	});
 
 	//ADD USE EFFECT HERE TO UPDATE THE ALERT TITLE
 	useEffect((): void => {
-		if (requestStatus === 401 || requestStatus === 500) {
-			setAlertTitle('Invalid User')
-		} else if (requestStatus === 400) {
-			setAlertTitle('Server Error')
-		} else if (requestStatus === 429) {
-			setAlertTitle('Too Many Requests')
-		}
+		updateAlertTitle(requestStatus);
 	}, [requestStatus]);
 
 
@@ -137,7 +141,7 @@ function PageContent() {
 
 	//ADD CODE ABOVE 
 	const resetLLMData = (): void => {
-		const clearedData = LLMReqAndOutput.map((x: LLMReqObject, y: number) => {
+		const clearedData = LLMReqAndOutput.map((x: LLMReqObject) => {
 			const currentObj = {
 				heading: x.heading,
 				output: "",

@@ -1,13 +1,12 @@
 "use client";
 
-import { JSX, useEffect,  useState } from "react";
+import { JSX, useEffect,  useState, useEffectEvent, Suspense } from "react";
 import Alert from "@/app/ui/Alert";
 import LoginForm from "@/app/account/login/components/LoginForm";
 import { redirect } from 'next/navigation';
 import { useSearchParams } from "next/navigation";
 
-
-export default function Login(): JSX.Element {
+const LoginView = (): JSX.Element => {
 	const [alertMessage, setAlertMessage] = useState<string>('');
 	const [response, setResponse] = useState<number | null>(null);
 	const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -16,16 +15,20 @@ export default function Login(): JSX.Element {
 	const params = useSearchParams();
 	const optionValue = params.get('option') ? params.get('option') : null;
 
-	useEffect((): void => {
-		if (response !== null && response !== 200) {
+	const updateAlertTitle = useEffectEvent((httpCode: number | null): void => {
+		if (httpCode !== null && httpCode !== 200) {
 			setShowAlert(true);
-		} else if (response !== null && response === 200) {
+		} else if (httpCode !== null && httpCode === 200) {
 			if (optionValue) {
 				redirect(`/subscribe?option=${optionValue}`);
 			} else {
-				redirect('/bible');
+				redirect("/bible");
 			}
 		}
+	});
+
+	useEffect((): void => {
+		updateAlertTitle(response);
 	}, [response]);
 
 
@@ -52,4 +55,10 @@ export default function Login(): JSX.Element {
 			/>
 		</main>
 	);
+}
+
+export default function Login() {
+	<Suspense fallback={`Loading...`}>
+		<LoginView />
+	</Suspense>
 }
