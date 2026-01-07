@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { BibleFormData } from "@/lib/definitions";
 import OpenAI from "openai";
@@ -10,9 +10,9 @@ import { incrementRequests } from "@/app/bible/actions";
 
 type AIOptionsProps = {
     selectedBibleData: BibleFormData;
-    updateOutput: Function;
-    startLoading: Function;
-	stopLoading: Function;
+	updateOutput: (output: string, index: number) => void;
+	startLoading: () => void;
+	stopLoading: () => void;
 	userRole: string;
 	maxRequests: number;
 	updateErrorMessage(message: string, status: number): void;
@@ -28,7 +28,7 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
 	
 
     const client: OpenAI = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
-    const bibleSelection = endVerse.length > 0 ? `${book} ${chapter}:${startVerse} - ${endVerse}` : `${book} ${chapter}:${startVerse}`;
+    const bibleSelection = endVerse ? `${book} ${chapter}:${startVerse} - ${endVerse}` : `${book} ${chapter}:${startVerse}`;
     const definePrompt = `Summarize and simplify the meaning for the following bible verses ${bibleSelection}`;
     const createSermonPrompt = `Create a 20 minute sermon based on the following bible verses ${bibleSelection}`;
     const discussionPrompt = `Create 5 discussion questions that can be used in a group setting for the following bible verses ${bibleSelection}`;
@@ -94,24 +94,26 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
 						stopLoading();
 					} else {
 						completion(prompt)
-							.then((data: any): void => {
-								const output = data.choices[0].message.content;
+							.then((data: OpenAI.Chat.Completions.ChatCompletion & {
+								_request_id?: string | null
+							}): void => {
+								const output = data.choices[0].message.content as string;
 								processMarkdown(output)
 									.then((final: string) => {
 										updateOutput(final, index);
 									})
-									.catch((e: any) => {
+									.catch((e: unknown) => {
 										console.warn("The following error occurred while processing the markdown: ", e);
 									});
 							})
-							.catch((e: any): void => {
+							.catch((e: unknown): void => {
 								console.warn(e);
 							})
 							.finally(() => stopLoading());
 
 					}
 				})
-				.catch((e: any) => console.warn(`The following error occurred ${ e }`));
+				.catch((e: unknown) => console.warn(`The following error occurred ${ e }`));
         }
 	};
 

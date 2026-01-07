@@ -56,11 +56,7 @@ function PageContent() {
 
 	const router = useRouter();
 	const setLLMReqInit = useEffectEvent((): void => setLLMReqAndOutput(initLLMReqAndOutput));
-
-	//On initial render we will reset the LLM output data, if a user goes to a different view and comes back to this page, the data will reset.
-	useEffect((): void => setLLMReqInit(), []);
-
-	useEffectEvent((): void => {
+	const getBibleRequestData = useEffectEvent((): void => {
 		const version = searchParams.get("version") as string;
 		const book = searchParams.get("book") as string;
 		const chapter = searchParams.get("chapter") as string;
@@ -88,6 +84,16 @@ function PageContent() {
 			});
 		}
 	});
+
+	useEffect((): void => {
+		getBibleRequestData();
+		setLLMReqInit();
+	}, []);
+
+	useEffect((): void => {
+		getBibleRequestData();
+	}, [bibleData]);
+
 
 
 	//Set our userRoles and maxRequests on initial load
