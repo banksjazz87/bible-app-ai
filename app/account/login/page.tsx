@@ -57,8 +57,10 @@ const LoginView = (): JSX.Element => {
 	);
 }
 
-export default function Login() {
-	<Suspense fallback={`Loading...`}>
-		<LoginView />
-	</Suspense>
+export default function Login(): JSX.Element {
+	return (
+		<Suspense fallback={`Loading...`}>
+			<LoginView />
+		</Suspense>
+	);
 }

@@ -92,7 +92,7 @@ function PageContent() {
 
 	useEffect((): void => {
 		getBibleRequestData();
-	}, [bibleData]);
+	}, []);
 
 
 
