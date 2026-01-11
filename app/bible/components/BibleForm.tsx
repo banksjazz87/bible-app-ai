@@ -93,7 +93,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				<form
 					id="bible-form"
 					onSubmit={form.handleSubmit(submitHandler)}
-					method={"/bible"}
 				>
 					<div className="flex flex-col gap-4">
 						<h2 className="font-bold text-xl">Select your options:</h2>

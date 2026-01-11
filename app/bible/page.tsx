@@ -161,7 +161,6 @@ function PageContent() {
 
 	const formHandler = (formData: FieldValues) => {
 		resetLLMData();
-		setShowChapterText(true);
 		setBibleData({
 			...bibleData,
 			version: formData.version,
