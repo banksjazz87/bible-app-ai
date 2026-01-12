@@ -53,6 +53,7 @@ function PageContent() {
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertTitle, setAlertTitle] = useState<string>('Error');
 	const [requestStatus, setRequestStatus] = useState<number>(200);
+	const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
 
 	const router = useRouter();
 	const setLLMReqInit = useEffectEvent((): void => setLLMReqAndOutput(initLLMReqAndOutput));
@@ -90,9 +91,14 @@ function PageContent() {
 		setLLMReqInit();
 	}, []);
 
+	const resetFormStatus = useEffectEvent((): void => setFormSubmitted(!formSubmitted));
+
 	useEffect((): void => {
-		getBibleRequestData();
-	}, []);
+		if (formSubmitted) {
+			getBibleRequestData();
+			resetFormStatus();
+		}
+	}, [formSubmitted]);
 
 
 
@@ -160,6 +166,7 @@ function PageContent() {
 	};
 
 	const formHandler = (formData: FieldValues) => {
+		console.log('Fired form handler');
 		resetLLMData();
 		setBibleData({
 			...bibleData,
@@ -169,6 +176,8 @@ function PageContent() {
 			startVerse: formData.startVerse,
 			endVerse: formData.endVerse,
 		});
+
+		setFormSubmitted(true);
 	};
 
 	const updateLLMOutputData = (output: string, index: number): void => {

@@ -62,13 +62,13 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	});
 
 	useEffect((): void => {
-		updateBibleData();
 		const book = returnSearchParamValues("book");
 		const version = returnSearchParamValues("version");
 		const chapter = returnSearchParamValues("chapter");
 
 		const allDataPresent = version.length > 0 && book.length > 0 && chapter.length > 0;
 		if (allDataPresent) {
+			updateBibleData();
 			retrieveBibleChapter(version, book, chapter)
 				.then((data: ChapterResponse | undefined): void => {
 					if (data !== undefined) {
@@ -78,6 +78,8 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
 		}
 	}, []);
+
+
 
 	//Change handler for our select elements
 	const selectChangeHandler = (key: string, value: string): void => {

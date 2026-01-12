@@ -2,9 +2,6 @@
 import { APIResponse, ChatThread } from "@/lib/definitions";
 import CreateChatThread from "@/lib/dbClasses/CreateChatThread";
 import IncrementDailyRequests from "@/lib/dbClasses/IncrementDailyRequests";
-import { NextResponse } from 'next/server';
-
-
 
 
 /**
