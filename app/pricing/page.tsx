@@ -5,8 +5,6 @@ import { Suspense, JSX } from "react";
 import { getProducts } from "../actions/stripe";
 
 
-
-
 export default async function Pricing(): Promise<JSX.Element> {
 	return (
 		<Suspense fallback={pageFallBack()}>
