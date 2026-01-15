@@ -5,33 +5,38 @@ import { Suspense, JSX } from "react";
 import { getProducts } from "../actions/stripe";
 
 
-const products = await getProducts();
+
 
 export default async function Pricing(): Promise<JSX.Element> {
 	return (
-		<Suspense fallback={pageFallBack()}>{pageContent()}</Suspense>
+		<Suspense fallback={pageFallBack()}>
+			{pageContent()}
+		</Suspense>
 	);
 }
 
-const pricingDetails = new Map([
-	['Free', ["Limit of 5 AI queries per day", "Email notifications of all future updates"]],
-	['Basic', ["Limit of 20 AI queries per day", "Save Data for up to 2 Weeks", "Print PDF of notes", "Email notifications of all future updates"]],
-	['Premiere', ["Limit of 50 AI queries per day", "Save data for life", "Print PDF of notes", "Email notifications of all future updates"]]
-]);
 
-const pageContent = (): JSX.Element => {
-	console.log(products);
-	const allProducts = products.data?.map((x, y) => {
-		const details = pricingDetails.get(x.product.name);
-		return (
-			<PriceCard
-				key={`price_card_${y}`}
-				title={x.product.name}
-				details={details ? details : []}
-				value={x.product.default_price as string}
-				optionValue={`${x.product.default_price as string}`}
-			/>
-		);
+const pageContent = async(): Promise<JSX.Element> => {
+	const products = await getProducts();
+	const pricingDetails = new Map([
+		["Free", ["Limit of 5 AI queries per day", "Email notifications of all future updates"]],
+		["Basic", ["Limit of 20 AI queries per day", "Save Data for up to 2 Weeks", "Print PDF of notes", "Email notifications of all future updates"]],
+		["Premiere", ["Limit of 50 AI queries per day", "Save data for life", "Print PDF of notes", "Email notifications of all future updates"]],
+	]);
+
+	const displayPriceCards = products.data?.map((x, y) => {
+		if (x.product.active) {
+			const details = pricingDetails.get(x.product.name);
+			return (
+				<PriceCard
+					key={`price_card_${y}`}
+					title={x.product.name}
+					details={details ? details : []}
+					value={x.product.default_price as string}
+					optionValue={`${x.product.default_price as string}`}
+				/>
+			);
+		}
 	});
 
 	return (
@@ -47,7 +52,7 @@ const pageContent = (): JSX.Element => {
 						value="free"
 						optionValue="free"
 					/>
-					{allProducts}
+					{displayPriceCards}
 				</div>
 			</section>
 		</main>
