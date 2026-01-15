@@ -16,7 +16,10 @@ import Alert from "../ui/Alert";
 import { useRouter } from "next/navigation";
 
 
-const initLLMReqAndOutput = [
+const initLLMReqAndOutput: {
+	heading: string;
+	output: string;
+}[] = [
 	{
 		heading: "What is this about?",
 		output: "",
@@ -225,7 +228,7 @@ function PageContent() {
 			</section>
 
 			{showChapterText && (
-				<section className="flex flex-col gap-5 my-10 col-span-2">
+				<section id="output-content" className="flex flex-col gap-5 my-10 col-span-2">
 					
 					<Alert
 						isOpen={showAlert}
@@ -268,7 +271,7 @@ function PageContent() {
 						</div>
 					</div>
 
-					<div id="output-content">
+					<div>
 						<BibleVerses
 							versesArray={currentChapterText}
 							startVerse={bibleData.startVerse}

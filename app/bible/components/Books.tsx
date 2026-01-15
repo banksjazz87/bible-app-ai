@@ -4,8 +4,7 @@ import { useForm } from "react-hook-form";
 import { BooksProps, BookAndChapters } from "@/lib/definitions";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useCallback } from "react";
+import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 
 export default function Books({ books, sectionTitle, changeHandler, optionsID, placeholder, selectedValue }: BooksProps) {
 	const router = useRouter();
@@ -13,21 +12,18 @@ export default function Books({ books, sectionTitle, changeHandler, optionsID, p
 	const searchParams = useSearchParams();
 	const form = useForm();
 
-	const queryHandler = useCallback(
-		(value: string): string => {
-			const params = new URLSearchParams(searchParams.toString());
-			params.set(optionsID, value);
-			return params.toString();
-		},
-		[searchParams]
-	);
+	const queryHandler = (value: string): string => {
+		const params = new URLSearchParams(searchParams.toString());
+		params.set(optionsID, value);
+		return params.toString();
+	};
 
 	return (
 		<div className="d-flex flex-col gap-1 justify-start align-middle">
 			<FormField
 				control={form.control}
 				name={optionsID}
-				render={({ field }) => (
+				render={() => (
 					<FormItem>
 						<FormLabel>{sectionTitle}</FormLabel>
 						<Select

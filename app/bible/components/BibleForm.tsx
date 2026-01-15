@@ -49,7 +49,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 	};
 
-	
 	const updateBibleData = useEffectEvent((): void => {
 		setBibleForm({
 			...bibleForm,
@@ -78,7 +77,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
 		}
 	}, []);
-
 
 
 	//Change handler for our select elements
