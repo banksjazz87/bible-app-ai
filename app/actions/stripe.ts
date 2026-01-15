@@ -137,8 +137,10 @@ type ProductResponse = {
 
 export async function getProducts(): Promise<ProductResponse> {
 	try {
-		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({ expand: ["data.product"] }, 
-		);
+		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({
+			expand: ["data.product"],
+			active: true
+		});
 		const productArray = products.data as (Stripe.Price & { product: Stripe.Product })[];
 
 		if (productArray.length > 1) {

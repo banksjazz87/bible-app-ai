@@ -8,7 +8,9 @@ import { getProducts } from "../actions/stripe";
 const products = await getProducts();
 
 export default async function Pricing(): Promise<JSX.Element> {
-	return <Suspense fallback={pageFallBack()}>{pageContent()}</Suspense>;
+	return (
+		<Suspense fallback={pageFallBack()}>{pageContent()}</Suspense>
+	);
 }
 
 const pricingDetails = new Map([
@@ -18,7 +20,7 @@ const pricingDetails = new Map([
 ]);
 
 const pageContent = (): JSX.Element => {
-
+	console.log(products);
 	const allProducts = products.data?.map((x, y) => {
 		const details = pricingDetails.get(x.product.name);
 		return (

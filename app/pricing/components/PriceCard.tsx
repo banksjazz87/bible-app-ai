@@ -1,10 +1,9 @@
 "use client";
 
-import { JSX, use } from "react";
+import { JSX } from "react";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { SubscriptionData } from "@/lib/definitions";
 import Link from "next/link";
 import { useAppSelector } from "@/app/store/hooks";
 
@@ -15,7 +14,7 @@ type PriceCardProps = {
 	optionValue: string;
 };
 
-export default function PriceCard({ title, details, value, optionValue }: PriceCardProps) {
+export default function PriceCard({ title, details, value, optionValue }: PriceCardProps): JSX.Element {
 	const userLoggedIn = useAppSelector((state) => state.loggedInData.isLoggedIn);
 	const targetPage = userLoggedIn ? "/subscribe" : "/account/login";
 	const hrefLink = `${targetPage}?option=${optionValue}`;

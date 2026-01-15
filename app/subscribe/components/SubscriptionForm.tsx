@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -26,6 +26,8 @@ type SubscriptionFormProps = {
 	products: Promise<ProductResponse>;
 };
 
+
+
 export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const preSelectedSubscription: string = searchParams.get("option") ? searchParams.get("option") as string : "free";
@@ -42,16 +44,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		},
 	});
 
-	useEffect(() => console.log(products), [products]);
-
-	useEffect(() => {
-		if (userEmail && userEmail.length > 0) {
-			form.setValue("email", userEmail);
-			formAction(form.getValues());
-		}
-	}, [userEmail]);
-
-	
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
 		try {
 			const customer = await searchCustomer(data, "email");
@@ -63,23 +55,37 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 						try {
 							const customerID: string = newCustomer.customerId;
 							setCustomerId(customerID);
-						} catch (e) {
+						} catch (e: unknown) {
 							console.error("The following error occurred in creating a checkout session ", e);
 						}
 					}
-				} catch (e: any) {
+				} catch (e: unknown) {
 					console.error("The following error occured while creating the customer ", e);
 				}
 
-			//This will be executed if the customer already exists
+				//This will be executed if the customer already exists
 			} else {
 				const customerID: string = customer?.data[0].id as string;
 				setCustomerId(customerID);
 			}
-		} catch (e: any) {
+		} catch (e: unknown) {
 			console.warn("The following error occurred while searching for the customer ", e);
 		}
 	};
+
+	
+	const setUserEmail = useEffectEvent((): void => {
+		if(userEmail && userEmail.length > 0) {
+			form.setValue("email", userEmail);
+			formAction(form.getValues());
+		}
+	})
+
+	useEffect(() => console.log(products), [products]);
+
+	useEffect(() => {
+		setUserEmail();
+	}, [userEmail]);
 
 	
 	const fetchClientSecret = async (): Promise<string> => {
