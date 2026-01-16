@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, JSX, useRef } from "react";
+import { useEffect, JSX } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import next from "@/public/next.svg";
@@ -10,6 +10,7 @@ import { useAppSelector, useAppDispatch } from "@/app/store/hooks";
 import { APIResponse } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import ModeToggle from "./ModeToggle";
 
 type MenuItem = {
 	title: string;
@@ -135,6 +136,7 @@ export default function NavBar(): JSX.Element {
 						</DropdownMenu>
 					</>
 				)}
+				<ModeToggle />
 			</nav>
 		</header>
 	);

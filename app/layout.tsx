@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NavBar from "./ui/Navbar";
@@ -26,11 +27,21 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html
+			lang="en"
+			suppressHydrationWarning
+		>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<StoreProvider>
-					<NavBar />
-					{children}
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<NavBar />
+						{children}
+					</ThemeProvider>
 				</StoreProvider>
 			</body>
 		</html>
