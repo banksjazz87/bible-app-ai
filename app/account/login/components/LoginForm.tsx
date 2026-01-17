@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { APIDataResponse, APIResponse, LoginFormProps, UserData } from "@/lib/definitions";
-import { useAppDispatch } from "@/app/store/hooks";
-import { loginUser } from "@/app/store/features/account/loginSlice";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { loginUser } from "@/lib/store/features/account/loginSlice";
 import HideShowEye from "@/components/ui/hide-show-eye";
 
 

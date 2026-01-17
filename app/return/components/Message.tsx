@@ -1,8 +1,8 @@
 "use client";
 
 import { JSX, useEffect, useState } from "react";
-import { useAppDispatch } from "@/app/store/hooks";
-import { loginUser } from "@/app/store/features/account/loginSlice";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { loginUser } from "@/lib/store/features/account/loginSlice";
 
 type MessageProps = {
 	customerEmail: string | null | undefined;

@@ -13,7 +13,7 @@ import { useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer, getProducts } from "../../actions/stripe";
 import { ProductResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
-import { useAppSelector } from "@/app/store/hooks";
+import { useAppSelector } from "@/lib/store/hooks";
 
 
 

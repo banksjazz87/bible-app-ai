@@ -1,7 +1,7 @@
 "use client";
 
-import { getUserData } from "@/app/store/features/account/loginSlice";
-import { useAppSelector } from "@/app/store/hooks";
+import { getUserData } from "@/lib/store/features/account/loginSlice";
+import { useAppSelector } from "@/lib/store/hooks";
 import { PastThreads, PastThreadsSkeleton } from "./components/PastThreads";
 import { Suspense } from "react";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";

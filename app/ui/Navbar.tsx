@@ -5,8 +5,8 @@ import Image from "next/image";
 import next from "@/public/next.svg";
 import UserAvatar from "./UserAvatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { logoutUser, loginUser } from "@/app/store/features/account/loginSlice";
-import { useAppSelector, useAppDispatch } from "@/app/store/hooks";
+import { logoutUser, loginUser } from "@/lib/store/features/account/loginSlice";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { APIResponse } from "@/lib/definitions";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -66,6 +66,15 @@ export default function NavBar(): JSX.Element {
 			hrefValue: "/account/login",
 		}
 	];
+	const renderNavItems = () => navItems.map((x: MenuItem, y: number) => (
+		<Link
+			className="text-sm font-medium hover:text-neutral-500"
+			key={`menu_item_${y}`}
+			href={x.hrefValue}
+		>
+			{x.title}
+		</Link>
+	));
 
 
 	return (
@@ -80,16 +89,12 @@ export default function NavBar(): JSX.Element {
 			</Link>
 
 			<nav className="flex flex-row gap-4 justify-center align-middle items-center">
-				{!isLoggedIn &&
-					navItems.map((x: MenuItem, y: number) => (
-						<Link
-							className="text-sm font-medium hover:text-neutral-500"
-							key={`menu_item_${y}`}
-							href={x.hrefValue}
-						>
-							{x.title}
-						</Link>
-					))}
+				{!isLoggedIn && (
+					<>
+						{renderNavItems()}
+						<ModeToggle />
+					</>
+				)}
 				{isLoggedIn && (
 					<>
 						<Link
@@ -105,11 +110,10 @@ export default function NavBar(): JSX.Element {
 							Bible
 						</Link>
 
-						<Link
-							href="/pricing"
-						>
+						<Link href="/pricing">
 							<Button>Upgrade</Button>
 						</Link>
+						<ModeToggle />
 						<DropdownMenu>
 							<DropdownMenuTrigger>
 								<UserAvatar />
@@ -136,7 +140,6 @@ export default function NavBar(): JSX.Element {
 						</DropdownMenu>
 					</>
 				)}
-				<ModeToggle />
 			</nav>
 		</header>
 	);

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { useAppSelector } from "@/app/store/hooks";
+import { useAppSelector } from "@/lib/store/hooks";
 
 type PriceCardProps = {
 	title: string;
