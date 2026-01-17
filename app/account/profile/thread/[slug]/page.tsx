@@ -16,7 +16,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	const slug = params.slug;
 	const thread = await GetSingleThread(slug);
 	const threadJSON: APIDataResponse<ChatThread> = await thread.json();
-	const { thread_name, book, chapter, date_created, start_verse, end_verse, thread_slug, user_notes, llm_notes, bible_version } = threadJSON.data;
+	const { thread_name, book, chapter, date_created, start_verse, end_verse, user_notes, llm_notes, bible_version } = threadJSON.data;
 
 	const bibleText = await retrieveBibleChapter(bible_version, book, chapter);
 

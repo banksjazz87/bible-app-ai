@@ -20,7 +20,6 @@ export const metadata: Metadata = {
 	description: "Not another bible app.  Use this app to view bible verses and create sermons, using openAI.",
 };
 
-
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -34,13 +33,13 @@ export default function RootLayout({
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<StoreProvider>
 					<ThemeProvider
-						attribute="class"
-						defaultTheme="system"
-						enableSystem
-						disableTransitionOnChange
-					>
-						<NavBar />
-						{children}
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<NavBar />
+					{children}
 					</ThemeProvider>
 				</StoreProvider>
 			</body>
