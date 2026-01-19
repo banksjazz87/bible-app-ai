@@ -32,7 +32,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 					>
 						<h2 className="text-2xl font-extrabold">{x.heading}</h2>
 						<div
-							className="llm_content"
+							className="llm_content flex-col gap-4"
 							dangerouslySetInnerHTML={{ __html: x.output }}
 						></div>
 					</div>

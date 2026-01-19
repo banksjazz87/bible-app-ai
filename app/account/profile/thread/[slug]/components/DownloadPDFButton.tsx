@@ -16,6 +16,7 @@ export default function DownloadPDFButton({ pdfContentID, file }: DownloadPDFBut
 
 		doc.html(pdfContent, {
 			callback: function (doc: jsPDF) {
+				// doc.autoPrint({ variant: 'non-conform' });
 				doc.save(`${fileName}.pdf`);
 			},
 			x: 10,
