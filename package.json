@@ -39,6 +39,7 @@
         "dotenv": "^16.4.7",
         "file-saver": "^2.0.5",
         "google-one-tap": "^1.0.6",
+        "html2canvas": "^1.4.1",
         "jspdf": "^3.0.1",
         "lucide-react": "^0.475.0",
         "next": "16.1.1",

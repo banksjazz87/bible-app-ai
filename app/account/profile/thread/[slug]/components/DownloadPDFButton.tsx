@@ -17,11 +17,14 @@ export default function DownloadPDFButton({ pdfContentID, file }: DownloadPDFBut
 		doc.html(pdfContent, {
 			callback: function (doc: jsPDF) {
 				// doc.autoPrint({ variant: 'non-conform' });
+				doc.setFont("helvetica", "normal");
+				doc.setFontSize(12);
+				doc.setLineHeightFactor(1.5);
 				doc.save(`${fileName}.pdf`);
 			},
 			x: 10,
 			y: 10,
-			autoPaging: "text",
+			// autoPaging: "text",
 			width: 550,
 			windowWidth: 700,
 			margin: 20,

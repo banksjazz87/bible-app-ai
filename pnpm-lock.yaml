@@ -99,6 +99,9 @@ importers:
       google-one-tap:
         specifier: ^1.0.6
         version: 1.0.6
+      html2canvas:
+        specifier: ^1.4.1
+        version: 1.4.1
       jspdf:
         specifier: ^3.0.1
         version: 3.0.3
@@ -4705,8 +4708,7 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
-  base64-arraybuffer@1.0.2:
-    optional: true
+  base64-arraybuffer@1.0.2: {}
 
   baseline-browser-mapping@2.8.28: {}
 
@@ -4838,7 +4840,6 @@ snapshots:
   css-line-break@2.1.0:
     dependencies:
       utrie: 1.0.2
-    optional: true
 
   csstype@3.2.1: {}
 
@@ -5496,7 +5497,6 @@ snapshots:
     dependencies:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3
-    optional: true
 
   htmlparser2@10.0.0:
     dependencies:
@@ -6631,7 +6631,6 @@ snapshots:
   text-segmentation@1.0.3:
     dependencies:
       utrie: 1.0.2
-    optional: true
 
   tinyglobby@0.2.15:
     dependencies:
@@ -6815,7 +6814,6 @@ snapshots:
   utrie@1.0.2:
     dependencies:
       base64-arraybuffer: 1.0.2
-    optional: true
 
   vfile-message@4.0.3:
     dependencies:

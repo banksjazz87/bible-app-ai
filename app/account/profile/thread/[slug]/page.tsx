@@ -60,12 +60,11 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 						<div className="flex flex-col gap-2">
 							<div className="flex flex-row justify-between">
 								<h1 className="capitalize font-extrabold text-3xl">{thread_name}</h1>
-								<div className="flex flex-row gap-2">
+								<div data-html2canvas-ignore className="flex flex-row gap-2">
 									<DownloadPDFButton
 										pdfContentID={"pdf-content"}
 										file={thread_name}
 									/>
-									<Button>Print</Button>
 									<Button>Edit</Button>
 								</div>
 							</div>
