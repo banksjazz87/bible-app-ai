@@ -13,7 +13,7 @@ export async function GET(): Promise<NextResponse<ChatThreadResponse>> {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
 
-    let responseData: APIDataResponse<ChatThread[] | null> = {
+    const responseData: APIDataResponse<ChatThread[] | null> = {
 			status: 500,
 			message: "This user is not found",
 			data: null,

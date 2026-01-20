@@ -12,7 +12,7 @@ export default function ProfilePage() {
 	if (!loggedInDetails.isLoggedIn) {
 		return (
 			<main>
-				<h1>You're currently not logged in.</h1>
+				<h1>{`You're currently not logged in.`}</h1>
 			</main>
 		);
     }
