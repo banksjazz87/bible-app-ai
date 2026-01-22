@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useState, useEffectEvent } from "react";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { loginUser } from "@/lib/store/features/account/loginSlice";
 
@@ -13,10 +13,14 @@ export default function Message({ customerEmail, customerName }: MessageProps): 
     const dispatch = useAppDispatch();
     const [isValid, setIsValid] = useState<boolean>(false);
 
+    const setLoggedInState = useEffectEvent((): void => {
+        setIsValid(true);
+    });
+
     //Update our redux state, as it clears after a transaction has been processed with Stripe
     useEffect(() => {
         if (customerEmail && customerName) {
-            setIsValid(true);
+            setLoggedInState();
             const userName = customerEmail.split('@')[0];
             dispatch(loginUser({
                 isLoggedIn: true,

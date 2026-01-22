@@ -111,6 +111,7 @@ function PageContent() {
 			try {
 				const response = await fetch('/api/user-roles');
 				const data = await response.json();
+				console.log('USER ROLES: ', data);
 			
 				if (data.status === 200 && data.data) {
 					const userData = data.data[0];
