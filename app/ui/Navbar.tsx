@@ -33,8 +33,10 @@ export default function NavBar(): JSX.Element {
 		} else {
 			dispatch(loginUser({
 				isLoggedIn: false,
-				email: '', 
-				userName: ''
+				email: null, 
+				userName: null,
+				userRole: null,
+				maxRequests: 0
 			}));
 		}
 	}, []);
