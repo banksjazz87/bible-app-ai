@@ -26,7 +26,6 @@ export default function ProfilePage() {
 
 	return (
 		<main>
-			<p className="py-4">{`Welcome ${loggedInDetails.userName}`}</p>
 			<section className="mt-16 flex flex-col gap-4">
 				<h2 className="font-bold text-2xl">Chat History</h2>
 				<Suspense fallback={<PastThreadsSkeleton />}>

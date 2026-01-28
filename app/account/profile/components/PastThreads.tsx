@@ -13,44 +13,9 @@ type PastThreadsProps = {
 	threads: Promise<APIDataResponse<ChatThread[] | null>>;
 };
 
-const defaultThread: ChatThread = {
-	id: -1,
-	date_created: "",
-	last_modified: "",
-	thread_name: "",
-	bible_version: "",
-	book: "",
-	chapter: "",
-	start_verse: "",
-	end_verse: "",
-	llm_notes: [],
-	user_notes: "",
-    user_id: "",
-    thread_slug: ''
-};
-
 
 function PastThreads({ threads }: PastThreadsProps) {
 	const pastThreads = use(threads);
-	const [selectedForView, setSelectedForView] = useState<ChatThread>(defaultThread);
-
-	const viewClickHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, threadData: ChatThread) => {
-		setSelectedForView({
-			...selectedForView,
-			id: threadData.id,
-			date_created: threadData.date_created,
-			last_modified: threadData.last_modified,
-			thread_name: threadData.thread_name,
-			bible_version: threadData.bible_version,
-			book: threadData.book,
-			chapter: threadData.chapter,
-			start_verse: threadData.start_verse,
-			end_verse: threadData.end_verse,
-			llm_notes: threadData.llm_notes,
-			user_notes: threadData.user_notes,
-			user_id: threadData.user_id,
-		});
-	};
 
 	return (
 		<Table>
@@ -61,8 +26,7 @@ function PastThreads({ threads }: PastThreadsProps) {
 					<TableHead>Date Created</TableHead>
 					<TableHead>Thread Name</TableHead>
 					<TableHead>Bible Selection</TableHead>
-					<TableHead className="center">View</TableHead>
-					<TableHead className="center">Download</TableHead>
+					<TableHead className="center"></TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -75,9 +39,6 @@ function PastThreads({ threads }: PastThreadsProps) {
 							<TableCell className="capitalize">{`${thread.book} ${thread.chapter}:${thread.start_verse} - ${thread.end_verse}`}</TableCell>
 							<TableCell>
                                 <Link href={`/account/profile/thread/${thread.thread_slug}` } ><Button>View</Button></Link>
-							</TableCell>
-							<TableCell>
-								<Button onClick={(e) => viewClickHandler(e, thread)}>Download</Button>
 							</TableCell>
 						</TableRow>
 					))}
@@ -98,7 +59,6 @@ function PastThreadsSkeleton() {
 						<TableHead>Thread Name</TableHead>
 						<TableHead>Bible Selection</TableHead>
 						<TableHead className="center">View</TableHead>
-						<TableHead className="center">Download</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>

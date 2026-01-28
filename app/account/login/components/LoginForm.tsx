@@ -42,7 +42,9 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 				dispatch(loginUser({
 					isLoggedIn: true,
 					email: userData.data.email,
-					userName: userName
+					userName: userName, 
+					userRole: '',
+					maxRequests: 5
 				}));
 			}
 

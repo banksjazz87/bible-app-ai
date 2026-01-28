@@ -10,6 +10,7 @@ import { retrieveBibleChapter } from "@/lib/bible/bibleMethods";
 import BibleVerses from "@/app/bible/components/BibleVerses";
 import { Button } from "@/components/ui/button";
 import DownloadPDFButton from './components/DownloadPDFButton';
+import EditorModal from "../../components/EditorModal";
 
 export default async function Page(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
@@ -52,6 +53,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
 			<main>
+				<EditorModal />
 				<section className="pt-16 pb-16">
 					<div
 						id="pdf-content"
