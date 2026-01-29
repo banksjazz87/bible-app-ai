@@ -44,7 +44,7 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 					email: userData.data.email,
 					userName: userName, 
 					userRole: '',
-					maxRequests: 5
+					maxRequests: 0
 				}));
 			}
 

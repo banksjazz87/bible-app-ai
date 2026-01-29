@@ -17,7 +17,7 @@ export async function GetSingleThread(slugName: string): Promise<NextResponse> {
 		error,
 	} = await supabase.auth.getUser();
 
-	let responseData: APIDataResponse<ChatThread | null> = {
+	const responseData: APIDataResponse<ChatThread | null> = {
 		status: 500,
 		message: "This user is not found",
 		data: null,
@@ -41,7 +41,7 @@ export async function GetSingleThread(slugName: string): Promise<NextResponse> {
 }
 
 
-export async function GetUserRoles(userId: string): Promise<APIDataResponse<any[] | null>> {
+export async function GetUserRoles(userId: string): Promise<APIDataResponse<unknown[] | null>> {
 	const supabase = await createClient();
 	const { data, error } = await supabase.from("user_roles").select("*").eq("user_id", userId);
 
@@ -146,15 +146,15 @@ export async function updateSubscription<UserRoles, K extends keyof UserRoles>(s
 			const { error } = await supabase
 				.from('user_roles')
 				.update({ K: subscriptionData.K })
-				.eq('id', userId)
+				.eq('id', userId);
 
 		} else {
 			responseData.message = 'The user cannot be found';
 			responseData.status = 404;
 		}
-	} catch (e: any) {
+	} catch (e: unknown) {
 		responseData.message = `The following error occurred: ${e}`;
-		responseData.data = e as any;
+		responseData.data = null
 	}
 
 	return NextResponse.json(responseData);

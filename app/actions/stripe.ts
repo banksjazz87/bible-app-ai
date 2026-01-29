@@ -1,7 +1,6 @@
 "use server";
 
 import type { Stripe } from "stripe";
-import { headers } from "next/headers";
 import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";

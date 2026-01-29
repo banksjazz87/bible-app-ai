@@ -1,4 +1,4 @@
-import { UserResponse, SupabaseClient, PostgrestSingleResponse } from "@supabase/supabase-js";
+import { UserResponse, SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
 import { APIResponse, ChatThread } from "@/lib/definitions";
 
@@ -24,7 +24,7 @@ export default class CreateChatThread {
      * @returns boolean
      * @description checks if the currently passed thread name already exists in the database, along with the passed userId.
      */
-    async chatExists(userId: string, supabase: SupabaseClient): Promise<Boolean> {
+    async chatExists(userId: string, supabase: SupabaseClient): Promise<boolean> {
         const slugOfThreadName = this.createSlug(this.threadName);
         const chatData = await supabase.from("chat_threads").select().match({
             user_id: userId,

@@ -9,10 +9,13 @@ import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData } from "@/l
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue } from "@/lib/bible/bibleMethods";
+import { getUserData } from "@/lib/store/features/account/loginSlice";
+import { useAppSelector } from "@/lib/store/hooks";
 
 export default function BibleForm({ updateNeededChapter, submitHandler }: BibleFormProps): JSX.Element {
 	const searchParams = useSearchParams();
 	const form = useForm();
+	const loggedInDetails = useAppSelector(getUserData);
 
 	//Use stat definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
@@ -95,6 +98,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 					onSubmit={form.handleSubmit(submitHandler)}
 				>
 					<div className="flex flex-col gap-4">
+						<p>{`Max requests: ${loggedInDetails.maxRequests}` }</p>
 						<h2 className="font-bold text-xl">Select your options:</h2>
 						<Options
 							options={EnglishBibleVersions}
