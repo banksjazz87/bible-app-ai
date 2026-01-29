@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useState } from "react";
+import { JSX, useState, use } from 'react';
 import HyperLink from "@/app/ui/HyperLink";
 import { login } from "@/app/account/login/actions";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,7 @@ import { APIDataResponse, APIResponse, LoginFormProps, UserData } from "@/lib/de
 import { useAppDispatch } from "@/lib/store/hooks";
 import { loginUser } from "@/lib/store/features/account/loginSlice";
 import HideShowEye from "@/components/ui/hide-show-eye";
+import User from "@/lib/classes/User";
 
 
 //Define our Form schema
@@ -33,21 +34,42 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 		},
 	});
 
+	/**
+	 * 
+	 * @returns void
+	 * @description Loads the user roles upon successful login.
+	 */
+	const loadUserRoles = async () => {
+		const user = new User();
+		const result = await user.getUserDetails();
+		console.warn(`The user details are the following: ${result}`);
+
+		if (result && result.status === 200) {
+			const { userRole, maxRequests } = user.getUserRoles(result.data[0]);
+			dispatch(
+				loginUser({
+					isLoggedIn: true,
+					email: result.data[0].email_address,
+					userName: result.data[0].email_address.split("@")[0],
+					userRole: userRole,
+					maxRequests: maxRequests,
+				})
+			);
+		} else {
+			console.warn("User details could not be loaded.");
+		}
+	};
+
+	/**
+	 * 
+	 * @param values 
+	 */
 	function onSubmit(values: z.infer<typeof loginFormSchema>) {
 		login(values).then((data: APIResponse | APIDataResponse<UserData>): void => {
 
 			if (data.status && data.status === 200) {
-				const userData = data as APIDataResponse<UserData>;
-				const userName = userData.data.email.split('@')[0];
-				dispatch(loginUser({
-					isLoggedIn: true,
-					email: userData.data.email,
-					userName: userName, 
-					userRole: '',
-					maxRequests: 0
-				}));
+				loadUserRoles();
 			}
-
 			responseHandler(data.status);
 			alertMessageHandler(data.message);
 			alertTitleHandler("Error");

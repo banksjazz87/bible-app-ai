@@ -51,7 +51,8 @@ export default function StoreProvider({ children }: { children: React.ReactNode 
             return data;
 		};
 
-		const loadUserRoles = async () => {
+        const loadUserRoles = async () => {
+
 			const result = await getUserDetails();
 			console.warn(`The user details are the following: ${result}`);
 
