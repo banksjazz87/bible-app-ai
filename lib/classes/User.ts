@@ -5,6 +5,13 @@ import { UserRoles, APIDataResponse } from "../definitions";
  */
 
 export default class User {
+
+    userData: UserRoles;
+
+    constructor(userData: UserRoles) {
+        this.userData = userData;
+    }
+    
 	async getUserDetails(): Promise<APIDataResponse<UserRoles[]> | undefined> {
 		try {
 			const response = await fetch("/api/user-roles");
