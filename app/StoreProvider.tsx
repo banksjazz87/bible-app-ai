@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Provider } from "react-redux";
 import { makeStore, AppStore } from "@/lib/store";
 import { APIDataResponse, UserRoles } from "@/lib/definitions";
 import { loginUser } from "@/lib/store/features/account/loginSlice";
 
 export default function StoreProvider({ children }: { children: React.ReactNode }) {
-	const storeRef = useRef<AppStore | null>(null);
+    const storeRef = useRef<AppStore | null>(null);
 
 	if (!storeRef.current) {
 		storeRef.current = makeStore();
 	}
 
-	useEffect(() => {
+    useEffect(() => {
 		const getUserDetails = async (): Promise<APIDataResponse<UserRoles[]> | undefined> => {
 			try {
 				const response = await fetch("/api/user-roles");

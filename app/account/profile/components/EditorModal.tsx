@@ -1,15 +1,27 @@
 "use client";
 
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"; 
+import '@mdxeditor/editor/style.css';
+import { MDXEditor, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CreateLink, ListsToggle } from "@mdxeditor/editor";
+import "@mdxeditor/editor/style.css";
 
-
-
-
-export default function EditorModal() {
-    return (
-        <Editor
-            
-        />
-    )
+export default function EditorModal({editorContent}: {editorContent: string}) {
+	 return (
+			<MDXEditor
+				markdown={editorContent}
+				plugins={[
+					toolbarPlugin({
+						toolbarClassName: "my-classname",
+						toolbarContents: () => (
+							<>
+								<UndoRedo />
+								<BoldItalicUnderlineToggles />
+								<ListsToggle />
+								<CreateLink />
+								<BlockTypeSelect />
+							</>
+						),
+					}),
+				]}
+			/>
+		);
 }

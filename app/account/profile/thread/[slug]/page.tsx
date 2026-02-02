@@ -53,7 +53,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
 			<main>
-				<EditorModal />
+				<EditorModal editorContent={llm_notes[0].output} />
 				<section className="pt-16 pb-16">
 					<div
 						id="pdf-content"
