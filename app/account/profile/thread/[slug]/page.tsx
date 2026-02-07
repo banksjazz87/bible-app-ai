@@ -10,7 +10,7 @@ import { retrieveBibleChapter } from "@/lib/bible/bibleMethods";
 import BibleVerses from "@/app/bible/components/BibleVerses";
 import { Button } from "@/components/ui/button";
 import DownloadPDFButton from './components/DownloadPDFButton';
-import EditorModal from "../../components/EditorModal";
+import EditorModal from "./components/EditorModal";
 
 export default async function Page(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
@@ -61,15 +61,27 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 						<div className="flex flex-col gap-2">
 							<div className="flex flex-row justify-between">
 								<h1 className="capitalize font-extrabold text-3xl">{thread_name}</h1>
-								<div data-html2canvas-ignore className="flex flex-row gap-2">
+								<div
+									data-html2canvas-ignore
+									className="flex flex-row gap-2"
+								>
 									<DownloadPDFButton
 										pdfContentID={"pdf-content"}
 										file={thread_name}
 									/>
-									<Button>Edit</Button>
+									<EditorModal
+										editorContent={user_notes}
+										drawerDirection="left"
+										ModalTrigger={<Button>Edit</Button>}
+									/>
 								</div>
 							</div>
-							<p className="font-extrabold" suppressHydrationWarning>{date}</p>
+							<p
+								className="font-extrabold"
+								suppressHydrationWarning
+							>
+								{date}
+							</p>
 						</div>
 						<div className="flex flex-col gap-2">
 							<h2 className="capitalize font-extrabold text-2xl">{`${book} ${chapter}:${start_verse} - ${end_verse}`}</h2>
