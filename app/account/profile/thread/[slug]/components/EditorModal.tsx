@@ -18,13 +18,14 @@ export default function EditorModal({ editorContent, drawerDirection, ModalTrigg
 		<div className="flex flex-wrap gap-2">
 			<Drawer direction={drawerDirection ? drawerDirection : "right"}>
 				<DrawerTrigger asChild>{ModalTrigger}</DrawerTrigger>
-				<DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[50vh] data-[vaul-drawer-direction=top]:max-h-[50vh] z-50">
+				<DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[50vh] data-[vaul-drawer-direction=top]:max-h-[50vh]">
 					<DrawerHeader>
 						<DrawerTitle>Edit Sermon Notes</DrawerTitle>
 						<DrawerDescription>Date last edited</DrawerDescription>
 					</DrawerHeader>
 					<div className="no-scrollbar overflow-y-auto px-4 z-100">
 						<MDXEditor
+							className="[&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_h6]: text-large"
 							markdown={editorContent}
 							plugins={[
 								headingsPlugin(),
