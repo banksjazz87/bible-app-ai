@@ -1,7 +1,7 @@
 "use server";
 
 import { JSX } from "react";
-import { ChatThread, APIDataResponse } from "@/lib/definitions";
+import { ChatThread, APIDataResponse, Verses, ChapterResponse} from "@/lib/definitions";
 import { GetSingleThread } from "@/lib/data";
 import { Suspense } from "react";
 import { convertDateTime } from "@/lib/utils";
@@ -20,6 +20,18 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	const { thread_name, book, chapter, date_created, start_verse, end_verse, user_notes, llm_notes, bible_version } = threadJSON.data;
 
 	const bibleText = await retrieveBibleChapter(bible_version, book, chapter);
+
+	const bibleTextString = (text: ChapterResponse | undefined): string => {
+
+		if (text) {
+			const textArray = text.data.map((bibleText: Verses) => {
+				return `${bibleText.verse}. ${bibleText.text}`;
+			});
+			return textArray.toString();
+		} else {
+			return 'none found';
+		}
+	}
 
 	const date = convertDateTime(date_created as string);
 
@@ -42,6 +54,16 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 		});
 	};
 
+	// const llmNotesString = llm_notes ? llm_notes.join('') : '';
+	const editModalText = `${bibleTextString(bibleText)}`;
+
+	console.log(typeof (editModalText));
+	console.log(editModalText.length);
+
+	console.log(editModalText);
+
+
+
 	if (!thread) {
 		return (
 			<Suspense fallback={<div>Loading...</div>}>
@@ -54,7 +76,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 		<Suspense fallback={<div>Loading...</div>}>
 			<main>
 				<EditorModal
-					editorContent={user_notes}
+					editorContent={`"${editModalText}"`}
 					drawerDirection="left"
 					ModalTrigger={<Button>Edit</Button>}
 				/>
