@@ -55,12 +55,11 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	};
 
 	// const llmNotesString = llm_notes ? llm_notes.join('') : '';
+	const chapterVerse = `## ${book.split("")[0].toUpperCase()}${book.substring(1)} ${chapter}:${start_verse} - ${end_verse}`;
 	const editModalText = `${bibleTextString(bibleText)}`;
+	const bibleTextTemplate = `${chapterVerse}\n"${editModalText}"`;
 
-	console.log(typeof (editModalText));
-	console.log(editModalText.length);
-
-	console.log(editModalText);
+	console.log("llm notes here: ", llm_notes);
 
 
 
@@ -76,7 +75,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 		<Suspense fallback={<div>Loading...</div>}>
 			<main>
 				<EditorModal
-					editorContent={`"${editModalText}"`}
+					editorContent={bibleTextTemplate}
 					drawerDirection="left"
 					ModalTrigger={<Button>Edit</Button>}
 				/>

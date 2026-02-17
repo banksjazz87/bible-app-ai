@@ -1,9 +1,18 @@
 "use client";
 
 import { JSX } from "react";
+import {
+	MDXEditor,
+	UndoRedo,
+	BoldItalicUnderlineToggles,
+	toolbarPlugin,
+	BlockTypeSelect,
+	CreateLink,
+	ListsToggle,
+	headingsPlugin, 
+} from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import { MDXEditor, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CreateLink, ListsToggle, headingsPlugin } from "@mdxeditor/editor";
-import "@mdxeditor/editor/style.css";
+
 
 type EditorProps = {
 	editorContent: string;
