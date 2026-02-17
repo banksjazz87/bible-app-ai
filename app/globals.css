@@ -143,3 +143,11 @@ li {
     @apply bg-background text-foreground;
   }
 }
+
+.markdown_editor h1, 
+.markdown_editor h2, 
+.markdown_editor h3, 
+.markdown_editor li {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}

@@ -29,7 +29,7 @@ export default function EditorModal({ editorContent }: EditorProps): JSX.Element
 					<p className="text-white text-center">Last Edited: </p>
 				</div>
 				<MDXEditor
-					className="[&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_h6]: text-large"
+					className="markdown_editor [&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_h6]: text-large"
 					markdown={editorContent}
 					plugins={[
 						headingsPlugin(),
