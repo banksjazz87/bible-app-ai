@@ -23,7 +23,7 @@ type EditorProps = {
 
 export default function EditorModal({ editorContent }: EditorProps): JSX.Element {
 	return (
-		<section className="flex flex-wrap absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] bg-white shadow-lg rounded-2xl border-slate-800 border">
+		<section className="flex flex-wrap absolute top-20 mt-10 left-7 w-[60vw] bg-white shadow-lg rounded-2xl border-slate-800 border">
 			<div className="w-full h-[70dvh] overflow-y-auto">
 				<div className="px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg relative">
 					<h2 className="text-2xl font-extrabold text-white text-center">Edit Sermon</h2>
