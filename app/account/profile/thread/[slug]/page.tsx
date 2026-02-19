@@ -53,11 +53,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 			}
 		});
 	};
-
-	// const llmNotesString = llm_notes ? llm_notes.join('') : '';
 	
-
-	console.log("llm notes here: ", llm_notes);
 
 	function getEditorText(): string {
 		const chapterVerse = `## ${book.split("")[0].toUpperCase()}${book.substring(1)} ${chapter}:${start_verse} - ${end_verse}`;
@@ -70,9 +66,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 				llmNotesString += `${llm_notes[i].output}`;
 			}
 		}
-
-		const bibleTextTemplate = `${chapterVerse}\n "${editModalText}" \n ${llmNotesString}`;
-
+		const bibleTextTemplate = `${chapterVerse}\n "${editModalText}" \n ${llmNotesString} \n ## Notes \n ${user_notes}`;
 		return bibleTextTemplate
 	}
 
