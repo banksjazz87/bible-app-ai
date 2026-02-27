@@ -83,11 +83,6 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
 			<main>
-				<EditorModal
-					editorContent={getEditorText()}
-					drawerDirection="left"
-					ModalTrigger={<Button>Edit</Button>}
-				/>
 				<section className="pt-16 pb-16">
 					<div
 						id="pdf-content"
@@ -104,6 +99,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 										pdfContentID={"pdf-content"}
 										file={thread_name}
 									/>
+									<EditorModal editorContent={getEditorText()} />
 								</div>
 							</div>
 							<p
