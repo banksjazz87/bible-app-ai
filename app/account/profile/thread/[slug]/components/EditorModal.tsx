@@ -4,8 +4,6 @@ import { JSX, useState } from "react";
 import { MDXEditor, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CreateLink, ListsToggle, headingsPlugin } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import { Button } from "@/components/ui/button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose } from "@fortawesome/free-solid-svg-icons";
 
 type EditorProps = {
 	editorContent: string;
@@ -13,51 +11,48 @@ type EditorProps = {
 
 export default function EditorModal({ editorContent }: EditorProps): JSX.Element {
 	const [isVisible, setIsVisible] = useState<boolean>(false);
-		return (
-			<div>
-				<Button onClick={(): void => setIsVisible(!isVisible)}>Edit</Button>
+	return (
+		<div>
+			<Button onClick={(): void => setIsVisible(!isVisible)}>Edit</Button>
 
-				{isVisible && (
-					<div className="flex flex-wrap absolute top-20 mt-10 left-7 w-[60vw] bg-white shadow-lg rounded-2xl border-slate-800 border">
-						<div className="w-full h-[70dvh] overflow-y-auto">
-							<div className="px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg relative">
-								<h2 className="text-2xl font-extrabold text-white text-center">Edit Sermon</h2>
-								<p className="text-white text-center">Last Edited: </p>
+			{isVisible && (
+				<div className="flex flex-wrap absolute top-20 mt-10 left-7 w-[60vw] bg-white shadow-lg rounded-2xl border-slate-800 border">
+					<div className="w-full h-[70dvh] overflow-y-auto">
+						<div className="px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg relative">
+							<h2 className="text-2xl font-extrabold text-white text-center">Edit Sermon</h2>
+							<p className="text-white text-center">Last Edited: </p>
+							<div className="flex flex-row justify-end absolute top-9 right-8 gap-4">
 								<Button
-									variant="outline"
-									className="absolute top-6 right-12"
+									variant="destructive"
+									onClick={(): void => setIsVisible(false)}
 								>
-									Save
+									Cancel
 								</Button>
-								<button>
-									<FontAwesomeIcon
-										icon={faClose}
-										className="size-4 text-white"
-									/>
-								</button>
+								<Button variant="outline">Save</Button>
 							</div>
-							<MDXEditor
-								className="markdown_editor [&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_h6]: text-large"
-								markdown={editorContent}
-								plugins={[
-									headingsPlugin(),
-									toolbarPlugin({
-										toolbarClassName: "my-classname",
-										toolbarContents: () => (
-											<>
-												<UndoRedo />
-												<BlockTypeSelect />
-												<BoldItalicUnderlineToggles />
-												<ListsToggle />
-												<CreateLink />
-											</>
-										),
-									}),
-								]}
-							/>
 						</div>
+						<MDXEditor
+							className="markdown_editor [&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_h6]: text-large"
+							markdown={editorContent}
+							plugins={[
+								headingsPlugin(),
+								toolbarPlugin({
+									toolbarClassName: "my-classname",
+									toolbarContents: () => (
+										<>
+											<UndoRedo />
+											<BlockTypeSelect />
+											<BoldItalicUnderlineToggles />
+											<ListsToggle />
+											<CreateLink />
+										</>
+									),
+								}),
+							]}
+						/>
 					</div>
-				)}
-			</div>
-		);
+				</div>
+			)}
+		</div>
+	);
 }
