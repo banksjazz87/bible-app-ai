@@ -21,7 +21,7 @@ export default function EditorModal({ editorContent }: EditorProps): JSX.Element
 						<div className="px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg relative">
 							<h2 className="text-2xl font-extrabold text-white text-center">Edit Sermon</h2>
 							<p className="text-white text-center">Last Edited: </p>
-							<div className="flex flex-row justify-end absolute top-9 right-8 gap-4">
+							<div className="flex flex-row justify-end absolute top-1/2 trasform -translate-y-1/2 right-8 gap-4">
 								<Button
 									variant="destructive"
 									onClick={(): void => setIsVisible(false)}
