@@ -4,30 +4,42 @@ import { JSX, useState } from "react";
 import { MDXEditor, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CreateLink, ListsToggle, headingsPlugin } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import { Button } from "@/components/ui/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
 type EditorProps = {
 	editorContent: string;
-	displayedContent: (JSX.Element | undefined)[] | JSX.Element | JSX.Element[]
+	displayedTextContent: (JSX.Element | undefined)[] | JSX.Element | JSX.Element[];
+	editorHeading: string;
+	editorSubHeading: string;
 };
 
-export default function EditorModal({ editorContent, displayedContent}: EditorProps): JSX.Element {
-	const [isVisible, setIsVisible] = useState<boolean>(false);
+export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading}: EditorProps): JSX.Element {
+	const [editorIsVisible, setEditorIsVisible] = useState<boolean>(false);
 	return (
-		<div>
-			<Button onClick={(): void => setIsVisible(!isVisible)}>Edit</Button>
+		<div className="flex flex-wrap justify-end gap-8">
+			<Button
+				onClick={(): void => setEditorIsVisible(!editorIsVisible)}
+				className="rounded-full size-9 shadow-2xl"
+			>
+				<FontAwesomeIcon 
+					icon={faPencil}
+					className="size-4"
+				/>
+			</Button>
 
-			{!isVisible && displayedContent}
+			{!editorIsVisible && displayedTextContent}
 
-			{isVisible && (
-				<div className="flex flex-wrap absolute top-20 mt-10 left-7 w-[60vw] bg-white shadow-lg rounded-2xl border-slate-800 border">
-					<div className="w-full h-[70dvh] overflow-y-auto">
+			{editorIsVisible && (
+				<div className="flex flex-wrap bg-white shadow-lg rounded-2xl">
+					<div className="w-full">
 						<div className="px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg relative">
-							<h2 className="text-2xl font-extrabold text-white text-center">Edit Sermon</h2>
-							<p className="text-white text-center">Last Edited: </p>
+							<h2 className="text-2xl font-extrabold text-white text-center">{editorHeading}</h2>
+							<p className="text-white text-center">{editorSubHeading}</p>
 							<div className="flex flex-row justify-end absolute top-1/2 trasform -translate-y-1/2 right-8 gap-4">
 								<Button
 									variant="destructive"
-									onClick={(): void => setIsVisible(false)}
+									onClick={(): void => setEditorIsVisible(false)}
 								>
 									Cancel
 								</Button>
@@ -40,7 +52,7 @@ export default function EditorModal({ editorContent, displayedContent}: EditorPr
 							plugins={[
 								headingsPlugin(),
 								toolbarPlugin({
-									toolbarClassName: "my-classname",
+									toolbarClassName: "md-editor",
 									toolbarContents: () => (
 										<>
 											<UndoRedo />

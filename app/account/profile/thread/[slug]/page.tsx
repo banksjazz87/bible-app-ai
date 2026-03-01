@@ -142,7 +142,9 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 						</div>
 						<EditorModal
 							editorContent={getLLMString(llm_notes)}
-							displayedContent={LLMNotes(llm_notes) }
+							displayedTextContent={LLMNotes(llm_notes)}
+							editorHeading={"Edit LLM Notes"}
+							editorSubHeading={"Make changes to the LLM generated notes here."}
 						/>
 						<div>
 							{user_notes.length > 0 && (
