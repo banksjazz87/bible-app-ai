@@ -50,7 +50,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 						></div>
 					</div>
 				);
-			}
+			} 
 		});
 	};
 	
@@ -68,6 +68,20 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 		}
 		const bibleTextTemplate = `${chapterVerse}\n "${editModalText}" \n ${llmNotesString} \n ## Notes \n ${user_notes}`;
 		return bibleTextTemplate
+	}
+
+	function getLLMString(notes: LLMReqObject[]): string {
+		if (notes.length === 0) {
+			return '';
+		}
+		let llmString = '';
+		for (let i = 0; i < notes.length; i++) {
+			if (llm_notes[i].output.length > 0) {
+				llmString += `### ${llm_notes[i].heading} \n`;
+				llmString += `${llm_notes[i].output}`;
+			}
+		}
+		return llmString;
 	}
 
 
@@ -99,7 +113,6 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 										pdfContentID={"pdf-content"}
 										file={thread_name}
 									/>
-									<EditorModal editorContent={getEditorText()} />
 								</div>
 							</div>
 							<p
@@ -127,6 +140,10 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 								)}
 							</Suspense>
 						</div>
+						<EditorModal
+							editorContent={getLLMString(llm_notes)}
+							displayedContent={LLMNotes(llm_notes) }
+						/>
 						<div>
 							{user_notes.length > 0 && (
 								<div className="flex flex-col gap-2">
@@ -135,7 +152,6 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 								</div>
 							)}
 						</div>
-						<div>{LLMNotes(llm_notes)}</div>
 					</div>
 				</section>
 			</main>

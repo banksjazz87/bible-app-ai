@@ -7,13 +7,16 @@ import { Button } from "@/components/ui/button";
 
 type EditorProps = {
 	editorContent: string;
+	displayedContent: (JSX.Element | undefined)[] | JSX.Element | JSX.Element[]
 };
 
-export default function EditorModal({ editorContent }: EditorProps): JSX.Element {
+export default function EditorModal({ editorContent, displayedContent}: EditorProps): JSX.Element {
 	const [isVisible, setIsVisible] = useState<boolean>(false);
 	return (
 		<div>
 			<Button onClick={(): void => setIsVisible(!isVisible)}>Edit</Button>
+
+			{!isVisible && displayedContent}
 
 			{isVisible && (
 				<div className="flex flex-wrap absolute top-20 mt-10 left-7 w-[60vw] bg-white shadow-lg rounded-2xl border-slate-800 border">
