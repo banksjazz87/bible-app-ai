@@ -1,15 +1,14 @@
 "use server";
 
 import { JSX } from "react";
-import { ChatThread, APIDataResponse, Verses, ChapterResponse} from "@/lib/definitions";
+import { ChatThread, APIDataResponse, Verses, ChapterResponse } from "@/lib/definitions";
 import { GetSingleThread } from "@/lib/data";
 import { Suspense } from "react";
 import { convertDateTime } from "@/lib/utils";
 import { LLMReqObject } from "../../../../../lib/definitions";
 import { retrieveBibleChapter } from "@/lib/bible/bibleMethods";
 import BibleVerses from "@/app/bible/components/BibleVerses";
-import { Button } from "@/components/ui/button";
-import DownloadPDFButton from './components/DownloadPDFButton';
+import DownloadPDFButton from "./components/DownloadPDFButton";
 import EditorModal from "./components/EditorModal";
 
 export default async function Page(props: { params: Promise<{ slug: string }> }) {
@@ -22,69 +21,53 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	const bibleText = await retrieveBibleChapter(bible_version, book, chapter);
 
 	const bibleTextString = (text: ChapterResponse | undefined): string => {
-
 		if (text) {
 			const textArray = text.data.map((bibleText: Verses) => {
 				return `${bibleText.verse}. ${bibleText.text}`;
 			});
 			return textArray.toString();
 		} else {
-			return 'none found';
+			return "none found";
 		}
-	}
+	};
 
 	const date = convertDateTime(date_created as string);
 
-	const LLMNotes = (llmNotes: LLMReqObject[]): (JSX.Element | undefined)[] => {
-		return llmNotes.map((x: LLMReqObject, y: number): JSX.Element | undefined => {
+	
+	function getLLMString(heading: string, body: string): string {
+		const formattedString = `${heading} \n ${body}`;
+		return formattedString;
+	}
+
+	function llmDisplayedNotes(heading: string, body: string): JSX.Element {
+		return (
+			<div
+				className="flex flex-col gap-2"
+			>
+				<h2 className="text-2xl font-extrabold">{heading}</h2>
+				<div
+					className="llm_content flex-col gap-4"
+					dangerouslySetInnerHTML={{ __html: body }}
+				></div>
+			</div>
+		);
+	}	
+
+	function LLMNotes(notes: LLMReqObject[]): (JSX.Element | undefined)[] {
+		return notes.map((x: LLMReqObject, y: number) => {
 			if (x.output.length > 0) {
 				return (
-					<div
-						key={`llm_heading_${y}`}
-						className="flex flex-col gap-2"
-					>
-						<h2 className="text-2xl font-extrabold">{x.heading}</h2>
-						<div
-							className="llm_content flex-col gap-4"
-							dangerouslySetInnerHTML={{ __html: x.output }}
-						></div>
-					</div>
+					<EditorModal
+						key={`editor_modal_${y}`}
+						editorContent={getLLMString(x.heading, x.output)}
+						displayedTextContent={llmDisplayedNotes(x.heading, x.output)}
+						editorHeading={"Edit LLM Notes"}
+						editorSubHeading={"Make changes to the LLM generated notes here."}
+					/>
 				);
-			} 
+			}
 		});
-	};
-	
-
-	function getEditorText(): string {
-		const chapterVerse = `## ${book.split("")[0].toUpperCase()}${book.substring(1)} ${chapter}:${start_verse} - ${end_verse}`;
-		const editModalText = `${bibleTextString(bibleText)}`;
-
-		let llmNotesString = '';
-		for (let i = 0; i < llm_notes.length; i++) {
-			if (llm_notes[i].output.length > 0) {
-				llmNotesString += `### ${llm_notes[i].heading} \n`;
-				llmNotesString += `${llm_notes[i].output}`;
-			}
-		}
-		const bibleTextTemplate = `${chapterVerse}\n "${editModalText}" \n ${llmNotesString} \n ## Notes \n ${user_notes}`;
-		return bibleTextTemplate
 	}
-
-	function getLLMString(notes: LLMReqObject[]): string {
-		if (notes.length === 0) {
-			return '';
-		}
-		let llmString = '';
-		for (let i = 0; i < notes.length; i++) {
-			if (llm_notes[i].output.length > 0) {
-				llmString += `### ${llm_notes[i].heading} \n`;
-				llmString += `${llm_notes[i].output}`;
-			}
-		}
-		return llmString;
-	}
-
-
 
 	if (!thread) {
 		return (
@@ -140,12 +123,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 								)}
 							</Suspense>
 						</div>
-						<EditorModal
-							editorContent={getLLMString(llm_notes)}
-							displayedTextContent={LLMNotes(llm_notes)}
-							editorHeading={"Edit LLM Notes"}
-							editorSubHeading={"Make changes to the LLM generated notes here."}
-						/>
+						{LLMNotes(llm_notes)}
 						<div>
 							{user_notes.length > 0 && (
 								<div className="flex flex-col gap-2">
