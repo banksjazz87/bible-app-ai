@@ -17,7 +17,7 @@ type EditorProps = {
 export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading}: EditorProps): JSX.Element {
 	const [editorIsVisible, setEditorIsVisible] = useState<boolean>(false);
 	return (
-		<div className="flex flex-wrap justify-end gap-8">
+		<div className="flex flex-wrap justify-end align-middle gap-0">
 			<Button
 				onClick={(): void => setEditorIsVisible(!editorIsVisible)}
 				className="rounded-full size-9 shadow-2xl"
