@@ -5,11 +5,10 @@ import { ChatThread, APIDataResponse, Verses, ChapterResponse } from "@/lib/defi
 import { GetSingleThread } from "@/lib/data";
 import { Suspense } from "react";
 import { convertDateTime } from "@/lib/utils";
-import { LLMReqObject } from "../../../../../lib/definitions";
 import { retrieveBibleChapter } from "@/lib/bible/bibleMethods";
 import BibleVerses from "@/app/bible/components/BibleVerses";
 import DownloadPDFButton from "./components/DownloadPDFButton";
-import EditorModal from "./components/EditorModal";
+import LLMNotes from "./components/LLMNotes";
 
 export default async function Page(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
@@ -32,42 +31,6 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	};
 
 	const date = convertDateTime(date_created as string);
-
-	
-	function getLLMString(heading: string, body: string): string {
-		const formattedString = `${heading} \n ${body}`;
-		return formattedString;
-	}
-
-	function llmDisplayedNotes(heading: string, body: string): JSX.Element {
-		return (
-			<div
-				className="flex flex-col gap-2"
-			>
-				<h2 className="text-2xl font-extrabold">{heading}</h2>
-				<div
-					className="llm_content flex-col gap-4"
-					dangerouslySetInnerHTML={{ __html: body }}
-				></div>
-			</div>
-		);
-	}	
-
-	function LLMNotes(notes: LLMReqObject[]): (JSX.Element | undefined)[] {
-		return notes.map((x: LLMReqObject, y: number) => {
-			if (x.output.length > 0) {
-				return (
-					<EditorModal
-						key={`editor_modal_${y}`}
-						editorContent={getLLMString(x.heading, x.output)}
-						displayedTextContent={llmDisplayedNotes(x.heading, x.output)}
-						editorHeading={"Edit LLM Notes"}
-						editorSubHeading={"Make changes to the LLM generated notes here."}
-					/>
-				);
-			}
-		});
-	}
 
 	if (!thread) {
 		return (
@@ -123,7 +86,9 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 								)}
 							</Suspense>
 						</div>
-						{LLMNotes(llm_notes)}
+						<LLMNotes
+							llmData={llm_notes}
+						/>
 						<div>
 							{user_notes.length > 0 && (
 								<div className="flex flex-col gap-2">
