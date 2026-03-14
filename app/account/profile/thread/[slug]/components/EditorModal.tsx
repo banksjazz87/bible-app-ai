@@ -6,15 +6,17 @@ import "@mdxeditor/editor/style.css";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { LLMReqObject } from "@/lib/definitions";
 
 type EditorProps = {
 	editorContent: string;
 	displayedTextContent: (JSX.Element | undefined)[] | JSX.Element | JSX.Element[];
 	editorHeading: string;
 	editorSubHeading: string;
+	saveHandler: () => void;
 };
 
-export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading}: EditorProps): JSX.Element {
+export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, saveHandler}: EditorProps): JSX.Element {
 	const [editorIsVisible, setEditorIsVisible] = useState<boolean>(false);
 	return (
 		<div className="flex flex-wrap justify-end align-middle gap-0">
@@ -43,7 +45,7 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 								>
 									Cancel
 								</Button>
-								<Button variant="outline">Save</Button>
+								<Button variant="outline" onClick={saveHandler}>Save</Button>
 							</div>
 						</div>
 						<MDXEditor
