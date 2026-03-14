@@ -51,7 +51,7 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 					<EditorModal
 						key={`editor_modal_${y}`}
 						editorContent={getLLMString(x.heading, x.output)}
-						displayedTextContent={llmDisplayedNotes(x.heading, x.output)}
+						displayedTextContent={llmDisplayedNotes(x.heading, x.output, y.toString())}
 						editorHeading={"Edit LLM Notes"}
                         editorSubHeading={"Make changes to the LLM generated notes here."}
                         saveHandler={() => saveHandler(y, x)}
