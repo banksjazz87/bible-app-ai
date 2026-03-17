@@ -1,7 +1,7 @@
 "use client";
 
-import { JSX, useState } from "react";
-import { MDXEditor, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CreateLink, ListsToggle, headingsPlugin } from "@mdxeditor/editor";
+import { JSX, useState, useRef } from "react";
+import { MDXEditor, MDXEditorMethods, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CreateLink, ListsToggle, headingsPlugin } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,6 +18,8 @@ type EditorProps = {
 
 export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, saveHandler}: EditorProps): JSX.Element {
 	const [editorIsVisible, setEditorIsVisible] = useState<boolean>(false);
+	const [editorData, setEditorData] = useState<string>('');
+	const ref = useRef<MDXEditorMethods>(null);
 	return (
 		<div className="flex flex-wrap justify-end align-middle gap-0">
 			<Button
@@ -49,8 +51,14 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 							</div>
 						</div>
 						<MDXEditor
+							ref={ref}
 							className="markdown_editor [&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_h6]: text-large"
 							markdown={editorContent}
+							onChange={(editorContent) => {
+								setEditorData(editorContent);
+								console.log("HEREEEE ", editorData);
+							}
+							}
 							plugins={[
 								headingsPlugin(),
 								toolbarPlugin({

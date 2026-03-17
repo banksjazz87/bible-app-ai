@@ -18,31 +18,37 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 
 	function llmDisplayedNotes(heading: string, body: string, id: string): JSX.Element {
 		return (
-			<div className="flex flex-col gap-2" data-llm-id={id}>
-				<h2 className="text-2xl font-extrabold">{heading}</h2>
+			<div
+				id={`llm_${id}`}
+				className="flex flex-col gap-2"
+				data-llm-id={id}
+			>
+				<h2 className="llm_heading text-2xl font-extrabold">{heading}</h2>
 				<div
 					className="llm_content flex-col gap-4"
 					dangerouslySetInnerHTML={{ __html: body }}
 				></div>
 			</div>
 		);
-    }
-    
-    function updateLLMData(index: number, data: LLMReqObject): void {
-        setLLMData([
-					...LLMData,
-					LLMData[index],
-					{
-						heading: data.heading,
-						output: data.output,
-					},
-				]);
-    }
+	}
 
-    function saveHandler(index: number, data: LLMReqObject): void {
-        updateLLMData(index, data);
-        console.log(data);
-    }
+    function updateLLMData(index: number, bodyContent: string): void {
+        console.log(bodyContent);
+		setLLMData([
+			...LLMData,
+			LLMData[index],
+			{
+				heading: "",
+				output: bodyContent,
+			},
+		]);
+	}
+
+	function saveHandler(index: number, elementID: string): void {
+		updateLLMData(index, elementID);
+		console.log(elementID);
+		console.log("Data here: ", llmData);
+	}
 
 	function LLMNotes(): (JSX.Element | undefined)[] {
 		return llmData.map((x: LLMReqObject, y: number) => {
@@ -53,8 +59,8 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 						editorContent={getLLMString(x.heading, x.output)}
 						displayedTextContent={llmDisplayedNotes(x.heading, x.output, y.toString())}
 						editorHeading={"Edit LLM Notes"}
-                        editorSubHeading={"Make changes to the LLM generated notes here."}
-                        saveHandler={() => saveHandler(y, x)}
+						editorSubHeading={"Make changes to the LLM generated notes here."}
+						saveHandler={() => saveHandler(y, `llm_${y.toString()}`)}
 					/>
 				);
 			}
