@@ -44,10 +44,14 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 		]);
 	}
 
-	function saveHandler(index: number, elementID: string): void {
-		updateLLMData(index, elementID);
-		console.log(elementID);
-		console.log("Data here: ", llmData);
+    function saveHandler(index: number, editorText: string): void {
+        const newEditorText: LLMReqObject[] = LLMData.map((x: LLMReqObject, y: number): LLMReqObject => {
+            if (y === index) {
+                x.output = editorText;
+            }
+            return x;
+        });
+        setLLMData(newEditorText);
 	}
 
 	function LLMNotes(): (JSX.Element | undefined)[] {

@@ -16,9 +16,9 @@ type EditorProps = {
 	saveHandler: () => void;
 };
 
-export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, saveHandler}: EditorProps): JSX.Element {
+export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, saveHandler }: EditorProps): JSX.Element {
 	const [editorIsVisible, setEditorIsVisible] = useState<boolean>(false);
-	const [editorData, setEditorData] = useState<string>('');
+	const [editorData, setEditorData] = useState<string>("");
 	const ref = useRef<MDXEditorMethods>(null);
 	return (
 		<div className="flex flex-wrap justify-end align-middle gap-0">
@@ -26,7 +26,7 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 				onClick={(): void => setEditorIsVisible(!editorIsVisible)}
 				className="rounded-full size-9 shadow-2xl"
 			>
-				<FontAwesomeIcon 
+				<FontAwesomeIcon
 					icon={faPencil}
 					className="size-4"
 				/>
@@ -47,18 +47,23 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 								>
 									Cancel
 								</Button>
-								<Button variant="outline" onClick={saveHandler}>Save</Button>
+								{/* <Button variant="outline" onClick={saveHandler}>Save</Button> */}
+								<Button
+									variant="outline"
+									onClick={(): void => {
+										console.log('The save method has been executed! The current data = ', ref.current?.getMarkdown());
+										ref.current?.setMarkdown(ref.current?.getMarkdown());
+									}}
+								>
+									Save
+								</Button>
 							</div>
 						</div>
 						<MDXEditor
 							ref={ref}
 							className="markdown_editor [&_h1]:text-5xl [&_h2]:text-4xl [&_h3]:text-3xl [&_h4]:text-2xl [&_h5]:text-xl [&_h6]: text-large"
 							markdown={editorContent}
-							onChange={(editorContent) => {
-								setEditorData(editorContent);
-								console.log("HEREEEE ", editorData);
-							}
-							}
+							onChange={console.log}
 							plugins={[
 								headingsPlugin(),
 								toolbarPlugin({
