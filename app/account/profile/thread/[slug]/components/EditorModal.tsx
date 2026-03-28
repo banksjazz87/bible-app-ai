@@ -13,7 +13,7 @@ type EditorProps = {
 	displayedTextContent: (JSX.Element | undefined)[] | JSX.Element | JSX.Element[];
 	editorHeading: string;
 	editorSubHeading: string;
-	saveHandler: () => void;
+	saveHandler: (data: string) => void;
 };
 
 export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, saveHandler }: EditorProps): JSX.Element {
@@ -47,12 +47,12 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 								>
 									Cancel
 								</Button>
-								{/* <Button variant="outline" onClick={saveHandler}>Save</Button> */}
 								<Button
 									variant="outline"
 									onClick={(): void => {
 										console.log('The save method has been executed! The current data = ', ref.current?.getMarkdown());
 										ref.current?.setMarkdown(ref.current?.getMarkdown());
+										saveHandler(ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : '');
 									}}
 								>
 									Save

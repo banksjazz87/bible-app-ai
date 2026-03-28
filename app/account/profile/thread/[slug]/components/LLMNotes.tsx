@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, JSX } from "react";
+import { useState, JSX, useEffect } from "react";
 import { LLMReqObject } from "@/lib/definitions";
 import EditorModal from "./EditorModal";
 
@@ -9,10 +9,10 @@ type LLMNotesProps = {
 };
 
 export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
-	const [LLMData, setLLMData] = useState<LLMReqObject[]>(llmData);
+    const [LLMData, setLLMData] = useState<LLMReqObject[]>(llmData);
 
 	function getLLMString(heading: string, body: string): string {
-		const formattedString = `${heading} \n ${body}`;
+		const formattedString = `<h2>${heading}</h2>\n\n ${body}`;
 		return formattedString;
 	}
 
@@ -23,7 +23,7 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 				className="flex flex-col gap-2"
 				data-llm-id={id}
 			>
-				<h2 className="llm_heading text-2xl font-extrabold">{heading}</h2>
+                <h2 className="llm_heading text-2xl font-extrabold">{heading}</h2>
 				<div
 					className="llm_content flex-col gap-4"
 					dangerouslySetInnerHTML={{ __html: body }}
@@ -32,21 +32,11 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 		);
 	}
 
-    function updateLLMData(index: number, bodyContent: string): void {
-        console.log(bodyContent);
-		setLLMData([
-			...LLMData,
-			LLMData[index],
-			{
-				heading: "",
-				output: bodyContent,
-			},
-		]);
-	}
 
     function saveHandler(index: number, editorText: string): void {
         const newEditorText: LLMReqObject[] = LLMData.map((x: LLMReqObject, y: number): LLMReqObject => {
             if (y === index) {
+                x.heading = '';
                 x.output = editorText;
             }
             return x;
@@ -64,7 +54,7 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 						displayedTextContent={llmDisplayedNotes(x.heading, x.output, y.toString())}
 						editorHeading={"Edit LLM Notes"}
 						editorSubHeading={"Make changes to the LLM generated notes here."}
-						saveHandler={() => saveHandler(y, `llm_${y.toString()}`)}
+						saveHandler={(editorData: string) => saveHandler(y, editorData)}
 					/>
 				);
 			}
