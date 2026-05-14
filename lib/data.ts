@@ -147,6 +147,11 @@ export async function updateSubscription<UserRoles, K extends keyof UserRoles>(s
 				.from('user_roles')
 				.update({ K: subscriptionData.K })
 				.eq('id', userId);
+			
+			if (error) {
+				responseData.message = 'The user roles cannot be found';
+				responseData.status = 404;
+			}
 
 		} else {
 			responseData.message = 'The user cannot be found';
@@ -159,3 +164,45 @@ export async function updateSubscription<UserRoles, K extends keyof UserRoles>(s
 
 	return NextResponse.json(responseData);
 }
+
+
+/**
+	 *
+	 * @param {string} data
+	 * @param {string} column
+	 * @param {string} slug
+	 * @returns Promise<APIResponse>
+	 * @description used to update an already existing chat thread.
+	 */
+export async function updateChatThread(data: string, column: string, slug: string): Promise<NextResponse<{
+	status: number,
+	message: string,
+	data: null
+	}>> {
+		const response = {
+			status: 200,
+			message: "The record has been updated successfully!",
+			data: null,
+		};
+		try {
+			const supabase = await createClient();
+			const userID: string | null = await GetCurrentUserId();
+
+			const { error } = await supabase
+				.from("chat_threads")
+				.update({ [column]: data })
+				.eq("user_id", userID)
+				.eq("thread_slug", slug);
+
+			if (error) {
+				response.status = 404;
+				response.message = `The user's updated chat thread could not be saved, due to the following: ${error}`;
+			}
+		} catch (error: unknown) {
+			console.warn(`The following error occurred in updating the chat thread data: ${error}`);
+			response.status = 404;
+			response.message = `The user's updated chat thread could not be saved, due to the following: ${error}`;
+		}
+
+		return NextResponse.json(response);
+	}

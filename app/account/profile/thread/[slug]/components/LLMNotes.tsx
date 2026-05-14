@@ -5,10 +5,11 @@ import { LLMReqObject } from "@/lib/definitions";
 import EditorModal from "./EditorModal";
 
 type LLMNotesProps = {
-	llmData: LLMReqObject[];
+    llmData: LLMReqObject[];
+    updateHandler: (data: string, column: string) => Promise<void>
 };
 
-export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
+export default function LLMNotes({ llmData, updateHandler }: LLMNotesProps): JSX.Element {
     const [LLMData, setLLMData] = useState<LLMReqObject[]>(llmData);
 
 	function getLLMString(heading: string, body: string): string {
@@ -33,7 +34,7 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 	}
 
 
-    function saveHandler(index: number, editorText: string): void {
+    function saveHandler(index: number, editorText: string, columnName: string): void {
         const newEditorText: LLMReqObject[] = LLMData.map((x: LLMReqObject, y: number): LLMReqObject => {
             if (y === index) {
                 x.heading = '';
@@ -42,6 +43,7 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
             return x;
         });
         setLLMData(newEditorText);
+        updateHandler(editorText, columnName);
 	}
 
 	function LLMNotes(): (JSX.Element | undefined)[] {
@@ -54,7 +56,7 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 						displayedTextContent={llmDisplayedNotes(x.heading, x.output, y.toString())}
 						editorHeading={"Edit LLM Notes"}
 						editorSubHeading={"Make changes to the LLM generated notes here."}
-						saveHandler={(editorData: string) => saveHandler(y, editorData)}
+						saveHandler={(editorData: string, columnName: string) => saveHandler(y, editorData, columnName)}
 					/>
 				);
 			}

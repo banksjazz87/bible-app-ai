@@ -13,7 +13,7 @@ type EditorProps = {
 	displayedTextContent: (JSX.Element | undefined)[] | JSX.Element | JSX.Element[];
 	editorHeading: string;
 	editorSubHeading: string;
-	saveHandler: (data: string) => void;
+	saveHandler: (data: string, columnName: string) => void;
 };
 
 export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, saveHandler }: EditorProps): JSX.Element {
@@ -55,7 +55,8 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 									onClick={(): void => {
 										console.log("The save method has been executed! The current data = ", ref.current?.getMarkdown());
 										ref.current?.setMarkdown(ref.current?.getMarkdown());
-										saveHandler(ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "");
+										const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";
+										saveHandler(markdownData, "llm_notes");
 									}}
 								>
 									Save
