@@ -61,5 +61,5 @@ export default function LLMNotes({ llmData }: LLMNotesProps): JSX.Element {
 		});
 	}
 
-	return <div className="llm_notes">{LLMNotes()}</div>;
+	return <div className="llm_notes flex justify-start">{LLMNotes()}</div>;
 }

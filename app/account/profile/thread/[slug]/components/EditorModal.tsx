@@ -21,7 +21,10 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 	const [editorData, setEditorData] = useState<string>("");
 	const ref = useRef<MDXEditorMethods>(null);
 	return (
-		<div className="flex flex-wrap justify-end align-middle gap-0">
+		<div
+			data-html2canvas-ignore
+			className="flex flex-wrap justify-start flex-row-reverse align-middle gap-0 position-relative"
+		>
 			<Button
 				onClick={(): void => setEditorIsVisible(!editorIsVisible)}
 				className="rounded-full size-9 shadow-2xl"
@@ -50,9 +53,9 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 								<Button
 									variant="outline"
 									onClick={(): void => {
-										console.log('The save method has been executed! The current data = ', ref.current?.getMarkdown());
+										console.log("The save method has been executed! The current data = ", ref.current?.getMarkdown());
 										ref.current?.setMarkdown(ref.current?.getMarkdown());
-										saveHandler(ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : '');
+										saveHandler(ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "");
 									}}
 								>
 									Save

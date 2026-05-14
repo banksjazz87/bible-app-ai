@@ -29,7 +29,7 @@ export default function AIOptions({ selectedBibleData, updateOutput, startLoadin
 
     const client: OpenAI = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
     const bibleSelection = endVerse ? `${book} ${chapter}:${startVerse} - ${endVerse}` : `${book} ${chapter}:${startVerse}`;
-    const definePrompt = `Summarize and simplify the meaning for the following bible verses ${bibleSelection}`;
+    const definePrompt = `Summarize and simplify the meaning for the following bible verses ${bibleSelection} use bullet points if necessary to make the summary more readable.`;
     const createSermonPrompt = `Create a 20 minute sermon based on the following bible verses ${bibleSelection}`;
     const discussionPrompt = `Create 5 discussion questions that can be used in a group setting for the following bible verses ${bibleSelection}`;
 
