@@ -9,21 +9,7 @@ import { retrieveBibleChapter } from "@/lib/bible/bibleMethods";
 import BibleVerses from "@/app/bible/components/BibleVerses";
 import DownloadPDFButton from "./components/DownloadPDFButton";
 import LLMNotes from "./components/LLMNotes";
-import { createClient } from "@/utils/supabase/server";
 
-
-
-const getUserID = async (): Promise<void | string> => {
-	const supabase = await createClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-	
-	if (!user) {
-		throw new Error("No user id found");
-	}
-	return user.id;
-};
 
 export default async function Page(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
@@ -33,7 +19,8 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 	const { thread_name, book, chapter, date_created, start_verse, end_verse, user_notes, llm_notes, bible_version } = threadJSON.data;
 
 	const bibleText = await retrieveBibleChapter(bible_version, book, chapter);
-	const userID = await getUserID();
+
+	console.log('Thread data:', typeof llm_notes);
 
 	const bibleTextString = (text: ChapterResponse | undefined): string => {
 		if (text) {
@@ -56,20 +43,6 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 		);
 	}
 
-	const updateNotes = async (data: string, column: string): Promise<void> => {
-		const supabase = await createClient();
-		const { error } = await supabase
-			.from('chat_threads')
-			.update({ [column]: data })
-			.eq('user_id', userID)
-			.eq('thread_slug', slug);
-		
-		if (error) {
-			console.error("The following error occurred in saving the data ", error);
-		} else {
-			console.log("You're data has been saved.")
-		}
-	}
 
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
@@ -119,7 +92,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 						</div>
 						<LLMNotes
 							llmData={llm_notes}
-							updateHandler={updateNotes}
+							chatSlug={slug}
 						/>
 						<div>
 							{user_notes.length > 0 && (
