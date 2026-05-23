@@ -15,11 +15,10 @@ type EditorProps = {
 	editorHeading: string;
 	editorSubHeading: string;
 	chatSlug: string;
-	llmData: LLMReqObject[];
 	getNewEditorText: (content: string) => LLMReqObject[]
 };
 
-export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, chatSlug, llmData, getNewEditorText }: EditorProps): JSX.Element {
+export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, chatSlug, getNewEditorText }: EditorProps): JSX.Element {
 	const [editorIsVisible, setEditorIsVisible] = useState<boolean>(false);
 	const [editorData, setEditorData] = useState<string>("");
 	const ref = useRef<MDXEditorMethods>(null);
@@ -65,10 +64,10 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 											const columnName = editorHeading.toLowerCase().includes("llm") ? "llm_notes" : "user_notes";
 											const newData: LLMReqObject[] = getNewEditorText(markdownData);
 											const updateChat = await updateChatThreadHandler(newData, columnName, chatSlug);
-											const data = await updateChat.json();
+											// const data = await updateChat.json();
 
-											if (data.status !== 200) {
-												console.error('The following error: ', data.message);
+											if (updateChat.status !== 200) {
+												console.error('The following error: ', updateChat.message);
 											}
 											setEditorIsVisible(false);
 

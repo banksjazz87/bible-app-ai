@@ -174,11 +174,11 @@ export async function updateSubscription<UserRoles, K extends keyof UserRoles>(s
 	 * @returns Promise<APIResponse>
 	 * @description used to update an already existing chat thread.
 	 */
-export async function updateChatThread(data: LLMReqObject[], column: string, slug: string): Promise<NextResponse<{
+export async function updateChatThread(data: LLMReqObject[], column: string, slug: string): Promise<{
 	status: number,
 	message: string,
 	data: null
-	}>> {
+	}> {
 		const response = {
 			status: 200,
 			message: "The record has been updated successfully!",
@@ -204,5 +204,5 @@ export async function updateChatThread(data: LLMReqObject[], column: string, slu
 			response.message = `The user's updated chat thread could not be saved, due to the following: ${error}`;
 		}
 
-		return NextResponse.json(response);
+		return response;
 	}

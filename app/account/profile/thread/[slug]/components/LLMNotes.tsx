@@ -21,7 +21,7 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		return (
 			<div
 				id={`llm_${id}`}
-				className="flex flex-col gap-2"
+				className="flex flex-col gap-2 w-full"
 				data-llm-id={id}
 			>
 				<h2 className="llm_heading text-2xl font-extrabold">{heading}</h2>
@@ -56,7 +56,6 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 						editorHeading={"Edit LLM Notes"}
 						editorSubHeading={"Make changes to the LLM generated notes here."}
 						chatSlug={chatSlug}
-						llmData={llmData}
 						getNewEditorText={(editorText: string) => getNewEditorText(y, editorText)}
 					/>
 				);

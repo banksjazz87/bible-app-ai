@@ -12,10 +12,10 @@ import { NextResponse } from "next/server";
  * @returns NextResponse
  * @description used to update the thread data associated with the current chat thread.
  */
-export async function updateChatThreadHandler(data: LLMReqObject[], column: string, slug: string): Promise<NextResponse<{
+export async function updateChatThreadHandler(data: LLMReqObject[], column: string, slug: string): Promise<{
     status: number,
     message: string,
     data: null
-}>> {
+}> {
     return await updateChatThread(data, column, slug);
 }
