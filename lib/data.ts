@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { NextResponse } from "next/server";
-import { UserRoles } from "@/lib/definitions";
+import { UserRoles, LLMReqObject } from "@/lib/definitions";
 
 export async function GetThreads() {
 	const supabase = await createClient();
@@ -174,7 +174,7 @@ export async function updateSubscription<UserRoles, K extends keyof UserRoles>(s
 	 * @returns Promise<APIResponse>
 	 * @description used to update an already existing chat thread.
 	 */
-export async function updateChatThread(data: string, column: string, slug: string): Promise<NextResponse<{
+export async function updateChatThread(data: LLMReqObject[], column: string, slug: string): Promise<NextResponse<{
 	status: number,
 	message: string,
 	data: null

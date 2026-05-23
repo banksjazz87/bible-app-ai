@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { updateChatThreadHandler } from "../../actions";
+import { LLMReqObject } from "@/lib/definitions";
 
 type EditorProps = {
 	editorContent: string;
@@ -14,9 +15,11 @@ type EditorProps = {
 	editorHeading: string;
 	editorSubHeading: string;
 	chatSlug: string;
+	llmData: LLMReqObject[];
+	getNewEditorText: (content: string) => LLMReqObject[]
 };
 
-export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, chatSlug }: EditorProps): JSX.Element {
+export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, chatSlug, llmData, getNewEditorText }: EditorProps): JSX.Element {
 	const [editorIsVisible, setEditorIsVisible] = useState<boolean>(false);
 	const [editorData, setEditorData] = useState<string>("");
 	const ref = useRef<MDXEditorMethods>(null);
@@ -58,17 +61,16 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 										const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";						
 										setEditorData(markdownData);
 
-										console.log(typeof markdownData);
-
 										try {
 											const columnName = editorHeading.toLowerCase().includes("llm") ? "llm_notes" : "user_notes";
-											const updateChat = await updateChatThreadHandler(markdownData, columnName, chatSlug);
+											const newData: LLMReqObject[] = getNewEditorText(markdownData);
+											const updateChat = await updateChatThreadHandler(newData, columnName, chatSlug);
 											const data = await updateChat.json();
 
 											if (data.status !== 200) {
-												console.error('The following error occurred while updating the chat thread: ', data.message);
+												console.error('The following error: ', data.message);
 											}
-											console.log(data.message);
+											setEditorIsVisible(false);
 
 										} catch (e: unknown) {
 											console.error(`The following error occurred while updating the chat thread: `, e);

@@ -33,15 +33,16 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		);
 	}
 
-	function saveHandler(index: number, editorText: string, columnName: string): void {
+
+	function getNewEditorText(index: number, editorText: string): LLMReqObject[] {
 		const newEditorText: LLMReqObject[] = LLMData.map((x: LLMReqObject, y: number): LLMReqObject => {
 			if (y === index) {
-				x.heading = "";
 				x.output = editorText;
 			}
 			return x;
 		});
 		setLLMData(newEditorText);
+		return newEditorText;
 	}
 
 	function LLMNotes(): (JSX.Element | undefined)[] {
@@ -55,6 +56,8 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 						editorHeading={"Edit LLM Notes"}
 						editorSubHeading={"Make changes to the LLM generated notes here."}
 						chatSlug={chatSlug}
+						llmData={llmData}
+						getNewEditorText={(editorText: string) => getNewEditorText(y, editorText)}
 					/>
 				);
 			}
@@ -62,5 +65,5 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		return notes;
 	}
 
-	return <div className="llm_notes flex justify-start">{LLMNotes()}</div>;
+	return <div className="llm_notes flex flex-col justify-start">{LLMNotes()}</div>;
 }
