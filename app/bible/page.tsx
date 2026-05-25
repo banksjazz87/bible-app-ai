@@ -19,18 +19,22 @@ import { useRouter } from "next/navigation";
 const initLLMReqAndOutput: {
 	heading: string;
 	output: string;
+	isEdited: boolean;
 }[] = [
 	{
 		heading: "What is this about?",
 		output: "",
+		isEdited: false,
 	},
 	{
 		heading: "Suggested Sermon",
 		output: "",
+		isEdited: false,
 	},
 	{
 		heading: "Discussion Questions",
 		output: "",
+		isEdited: false,
 	},
 ];
 
@@ -161,6 +165,7 @@ function PageContent() {
 			const currentObj = {
 				heading: x.heading,
 				output: "",
+				isEdited: false
 			};
 
 			return currentObj;

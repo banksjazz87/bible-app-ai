@@ -73,6 +73,7 @@ export type ChapterResponse = {
 export type LLMReqObject = {
 	heading: string;
 	output: string;
+    isEdited: boolean;
 }
 
 export type LoginForm = {

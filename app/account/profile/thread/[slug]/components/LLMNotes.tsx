@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, JSX, useEffect } from "react";
+import { useState, JSX } from "react";
 import { LLMReqObject } from "@/lib/definitions";
 import EditorModal from "./EditorModal";
 
@@ -17,14 +17,14 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		return formattedString;
 	}
 
-	function llmDisplayedNotes(heading: string, body: string, id: string): JSX.Element {
+	function llmDisplayedNotes(heading: string, body: string, isEdited: boolean, id: string): JSX.Element {
 		return (
 			<div
 				id={`llm_${id}`}
 				className="flex flex-col gap-2 w-full"
 				data-llm-id={id}
 			>
-				<h2 className="llm_heading text-2xl font-extrabold">{heading}</h2>
+				{!isEdited && <h2 className="llm_heading text-2xl font-extrabold">{heading}</h2>}
 				<div
 					className="llm_content flex-col gap-4"
 					dangerouslySetInnerHTML={{ __html: body }}
@@ -38,6 +38,7 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		const newEditorText: LLMReqObject[] = LLMData.map((x: LLMReqObject, y: number): LLMReqObject => {
 			if (y === index) {
 				x.output = editorText;
+				x.isEdited = true;
 			}
 			return x;
 		});
@@ -52,7 +53,7 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 					<EditorModal
 						key={`editor_modal_${y}`}
 						editorContent={getLLMString(x.heading, x.output)}
-						displayedTextContent={llmDisplayedNotes(x.heading, x.output, y.toString())}
+						displayedTextContent={llmDisplayedNotes(x.heading, x.output, x.isEdited, y.toString())}
 						editorHeading={"Edit LLM Notes"}
 						editorSubHeading={"Make changes to the LLM generated notes here."}
 						chatSlug={chatSlug}

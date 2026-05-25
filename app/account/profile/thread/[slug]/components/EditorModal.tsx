@@ -64,7 +64,6 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 											const columnName = editorHeading.toLowerCase().includes("llm") ? "llm_notes" : "user_notes";
 											const newData: LLMReqObject[] = getNewEditorText(markdownData);
 											const updateChat = await updateChatThreadHandler(newData, columnName, chatSlug);
-											// const data = await updateChat.json();
 
 											if (updateChat.status !== 200) {
 												console.error('The following error: ', updateChat.message);

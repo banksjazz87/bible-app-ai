@@ -6,6 +6,8 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from 'next/link';
 import { convertDateTime } from "@/lib/utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@/components/ui/button";
 
@@ -27,6 +29,7 @@ function PastThreads({ threads }: PastThreadsProps) {
 					<TableHead>Thread Name</TableHead>
 					<TableHead>Bible Selection</TableHead>
 					<TableHead className="center"></TableHead>
+					<TableHead className="center"></TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -38,7 +41,14 @@ function PastThreads({ threads }: PastThreadsProps) {
 							<TableCell>{thread.thread_name}</TableCell>
 							<TableCell className="capitalize">{`${thread.book} ${thread.chapter}:${thread.start_verse} - ${thread.end_verse}`}</TableCell>
 							<TableCell>
-                                <Link href={`/account/profile/thread/${thread.thread_slug}` } ><Button>View</Button></Link>
+								<Link href={`/account/profile/thread/${thread.thread_slug}`}>
+									<Button>View</Button>
+								</Link>
+							</TableCell>
+							<TableCell>
+								<Link href={`/account/profile/thread/${thread.thread_slug}`}>
+									<Button variant="outline"><FontAwesomeIcon icon={faTrash} className="text-gray-700" /></Button>
+								</Link>
 							</TableCell>
 						</TableRow>
 					))}
@@ -58,10 +68,12 @@ function PastThreadsSkeleton() {
 						<TableHead>Date Created</TableHead>
 						<TableHead>Thread Name</TableHead>
 						<TableHead>Bible Selection</TableHead>
-						<TableHead className="center">View</TableHead>
+						<TableHead className="center"></TableHead>
+						<TableHead className="center"></TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
+					<TableRow className="h-8"></TableRow>
 					<TableRow className="h-8"></TableRow>
 					<TableRow className="h-8"></TableRow>
 					<TableRow className="h-8"></TableRow>
