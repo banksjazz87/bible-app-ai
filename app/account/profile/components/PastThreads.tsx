@@ -1,23 +1,24 @@
 "use client";
 
-import { use, useState } from "react";
+import { use } from "react";
+import { useRouter } from "next/navigation";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from 'next/link';
+import Link from "next/link";
 import { convertDateTime } from "@/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-
+import { deleteChatThreadHandler } from "../actions";
 import { Button } from "@/components/ui/button";
 
 type PastThreadsProps = {
 	threads: Promise<APIDataResponse<ChatThread[] | null>>;
 };
 
-
 function PastThreads({ threads }: PastThreadsProps) {
 	const pastThreads = use(threads);
+	const router = useRouter();
 
 	return (
 		<Table>
@@ -42,13 +43,31 @@ function PastThreads({ threads }: PastThreadsProps) {
 							<TableCell className="capitalize">{`${thread.book} ${thread.chapter}:${thread.start_verse} - ${thread.end_verse}`}</TableCell>
 							<TableCell>
 								<Link href={`/account/profile/thread/${thread.thread_slug}`}>
-									<Button>View</Button>
+									<Button>{`View ${thread.id}`}</Button>
 								</Link>
 							</TableCell>
 							<TableCell>
-								<Link href={`/account/profile/thread/${thread.thread_slug}`}>
-									<Button variant="outline"><FontAwesomeIcon icon={faTrash} className="text-gray-700" /></Button>
-								</Link>
+								<Button
+									variant="outline"
+									onClick={async() => {
+										try {
+											const deleteChat = await deleteChatThreadHandler(thread.id!);
+
+											if (deleteChat.status !== 200) {
+												console.error("The following error: ", deleteChat.message);
+											} else {
+												router.refresh();
+											}
+										} catch (e: unknown) {
+											console.error(`The following error occurred while updating the chat thread: `, e);
+										}
+									}}
+								>
+									<FontAwesomeIcon
+										icon={faTrash}
+										className="text-gray-700"
+									/>
+								</Button>
 							</TableCell>
 						</TableRow>
 					))}

@@ -205,4 +205,44 @@ export async function updateChatThread(data: LLMReqObject[], column: string, slu
 		}
 
 		return response;
+}
+	
+
+/**
+	 *
+	 * @param {string} data
+	 * @param {string} column
+	 * @param {string} slug
+	 * @returns Promise<APIResponse>
+	 * @description used to update an already existing chat thread.
+	 */
+export async function deleteChatThread(id: number): Promise<{
+	status: number,
+	message: string,
+	data: null
+	}> {
+		const response = {
+			status: 200,
+			message: "The record has been deleted successfully!",
+			data: null,
+		};
+		try {
+			const supabase = await createClient();
+
+			const { error } = await supabase
+				.from("chat_threads")
+				.delete()
+				.eq("id", id);
+
+			if (error) {
+				response.status = 404;
+				response.message = `The user's chat thread could not be deleted, due to the following: ${error}`;
+			}
+		} catch (error: unknown) {
+			console.warn(`The following error occurred in updating the chat thread data: ${error}`);
+			response.status = 404;
+			response.message = `The user's updated chat thread could not be saved, due to the following: ${error}`;
+		}
+
+		return response;
 	}
