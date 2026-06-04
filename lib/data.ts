@@ -1,7 +1,10 @@
+'use server'
+
 import { createClient } from "@/utils/supabase/server";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { NextResponse } from "next/server";
 import { UserRoles, LLMReqObject } from "@/lib/definitions";
+import { revalidateTag } from "next/cache";
 
 export async function GetThreads() {
 	const supabase = await createClient();
@@ -237,6 +240,8 @@ export async function deleteChatThread(id: number): Promise<{
 			if (error) {
 				response.status = 404;
 				response.message = `The user's chat thread could not be deleted, due to the following: ${error}`;
+			} else {
+				revalidateTag("thread-data", "max");
 			}
 		} catch (error: unknown) {
 			console.warn(`The following error occurred in updating the chat thread data: ${error}`);

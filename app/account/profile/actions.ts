@@ -1,6 +1,5 @@
 "use server"
 import { deleteChatThread } from "@/lib/data";
-import { LLMReqObject } from "@/lib/definitions";
 
 
 /**

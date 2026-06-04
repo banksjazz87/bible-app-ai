@@ -18,7 +18,9 @@ export default function ProfilePage() {
     }
     
 	async function getThreads(): Promise<APIDataResponse<ChatThread[] | null>> {
-		const data = await fetch("/account/api/profile/pastThreads");
+		const data = await fetch("/account/api/profile/pastThreads", {
+			next: { tags: ['thread-data'] }
+		});
 		const jsonData: APIDataResponse<ChatThread[] | null> = await data.json();
 		return jsonData;
 	}

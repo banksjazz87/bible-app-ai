@@ -1,7 +1,6 @@
 "use client";
 
 import { use } from "react";
-import { useRouter } from "next/navigation";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,7 +17,6 @@ type PastThreadsProps = {
 
 function PastThreads({ threads }: PastThreadsProps) {
 	const pastThreads = use(threads);
-	const router = useRouter();
 
 	return (
 		<Table>
@@ -49,15 +47,11 @@ function PastThreads({ threads }: PastThreadsProps) {
 							<TableCell>
 								<Button
 									variant="outline"
-									onClick={async() => {
+									onClick={async(): Promise<void> => {
 										try {
 											const deleteChat = await deleteChatThreadHandler(thread.id!);
 
-											if (deleteChat.status !== 200) {
-												console.error("The following error: ", deleteChat.message);
-											} else {
-												router.refresh();
-											}
+											if (deleteChat.status !== 200) console.error("The following error: ", deleteChat.message);
 										} catch (e: unknown) {
 											console.error(`The following error occurred while updating the chat thread: `, e);
 										}
