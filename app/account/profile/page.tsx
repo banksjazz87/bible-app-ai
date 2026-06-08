@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import { getUserData } from "@/lib/store/features/account/loginSlice";
 import { useAppSelector } from "@/lib/store/hooks";
@@ -18,9 +18,7 @@ export default function ProfilePage() {
     }
     
 	async function getThreads(): Promise<APIDataResponse<ChatThread[] | null>> {
-		const data = await fetch("/account/api/profile/pastThreads", {
-			next: { tags: ['thread-data'] }
-		});
+		const data = await fetch("/account/api/profile/pastThreads");
 		const jsonData: APIDataResponse<ChatThread[] | null> = await data.json();
 		return jsonData;
 	}

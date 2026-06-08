@@ -50,8 +50,11 @@ function PastThreads({ threads }: PastThreadsProps) {
 									onClick={async(): Promise<void> => {
 										try {
 											const deleteChat = await deleteChatThreadHandler(thread.id!);
-
-											if (deleteChat.status !== 200) console.error("The following error: ", deleteChat.message);
+											if (deleteChat.status !== 200) {
+												console.error("The following error: ", deleteChat.message);
+											} else {
+												window.location.reload();
+											}
 										} catch (e: unknown) {
 											console.error(`The following error occurred while updating the chat thread: `, e);
 										}
