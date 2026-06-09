@@ -12,11 +12,11 @@ import { deleteChatThreadHandler } from "../actions";
 import { Button } from "@/components/ui/button";
 
 type PastThreadsProps = {
-	threads: Promise<APIDataResponse<ChatThread[] | null>>;
+	threads: APIDataResponse<ChatThread[] | null> | null;
+	onDeleteSuccess: () => void;
 };
 
-function PastThreads({ threads }: PastThreadsProps) {
-	const pastThreads = use(threads);
+function PastThreads({ threads, onDeleteSuccess }: PastThreadsProps) {
 
 	return (
 		<Table>
@@ -32,8 +32,8 @@ function PastThreads({ threads }: PastThreadsProps) {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{pastThreads &&
-					pastThreads.data?.map((thread: ChatThread, y: number) => (
+				{threads &&
+					threads.data?.map((thread: ChatThread, y: number) => (
 						<TableRow key={`thread_num_${y}`}>
 							<TableCell>{convertDateTime(thread.last_modified as string)}</TableCell>
 							<TableCell>{convertDateTime(thread.date_created as string)}</TableCell>
@@ -49,11 +49,11 @@ function PastThreads({ threads }: PastThreadsProps) {
 									variant="outline"
 									onClick={async(): Promise<void> => {
 										try {
-											const deleteChat = await deleteChatThreadHandler(thread.id!);
-											if (deleteChat.status !== 200) {
-												console.error("The following error: ", deleteChat.message);
+											const result = await deleteChatThreadHandler(thread.id!);
+											if (result.status === 200) {
+												onDeleteSuccess();
 											} else {
-												window.location.reload();
+												console.error(`Failed to delete thread with id ${thread.id}, status code: ${result.status}, message: ${result.message}`);
 											}
 										} catch (e: unknown) {
 											console.error(`The following error occurred while updating the chat thread: `, e);

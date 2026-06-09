@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { NextResponse } from "next/server";
 import { UserRoles, LLMReqObject } from "@/lib/definitions";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 export async function GetThreads() {
 	const supabase = await createClient();
@@ -247,5 +247,6 @@ export async function deleteChatThread(id: number): Promise<{
 			response.message = `The user's updated chat thread could not be saved, due to the following: ${error}`;
 		}
 
+		revalidatePath('/account/profile', 'page')
 		return response;
 	}
