@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import {useState} from "react"
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,6 +17,24 @@ type PastThreadsProps = {
 };
 
 function PastThreads({ threads, onDeleteSuccess }: PastThreadsProps) {
+
+	/**
+	 * 
+	 * @param threadId {number}
+	 * @description method that is fired when the user clicks the trash can button to delete a thread.
+	 */
+	const deleteHandler = async (threadId: number): Promise<void> => {
+		try {
+			const result = await deleteChatThreadHandler(threadId);
+			if (result.status === 200) {
+				onDeleteSuccess();
+			} else {
+				console.error(`Failed to delete thread with id ${threadId}, status code: ${result.status}, message: ${result.message}`);
+			}
+		} catch (e: unknown) {
+			console.error(`The following error occurred while updating the chat thread: `, e);
+		}
+	}
 
 	return (
 		<Table>
@@ -41,24 +59,13 @@ function PastThreads({ threads, onDeleteSuccess }: PastThreadsProps) {
 							<TableCell className="capitalize">{`${thread.book} ${thread.chapter}:${thread.start_verse} - ${thread.end_verse}`}</TableCell>
 							<TableCell>
 								<Link href={`/account/profile/thread/${thread.thread_slug}`}>
-									<Button>{`View ${thread.id}`}</Button>
+									<Button>View</Button>
 								</Link>
 							</TableCell>
 							<TableCell>
 								<Button
 									variant="outline"
-									onClick={async(): Promise<void> => {
-										try {
-											const result = await deleteChatThreadHandler(thread.id!);
-											if (result.status === 200) {
-												onDeleteSuccess();
-											} else {
-												console.error(`Failed to delete thread with id ${thread.id}, status code: ${result.status}, message: ${result.message}`);
-											}
-										} catch (e: unknown) {
-											console.error(`The following error occurred while updating the chat thread: `, e);
-										}
-									}}
+									onClick={() => deleteHandler(thread.id as number)}
 								>
 									<FontAwesomeIcon
 										icon={faTrash}
