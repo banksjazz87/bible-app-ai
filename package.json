@@ -57,6 +57,7 @@
         "remark": "^15.0.1",
         "remark-html": "^16.0.1",
         "server-only": "^0.0.1",
+        "sonner": "^2.0.7",
         "stipe": "^0.0.2",
         "stripe": "^19.0.0",
         "tailwind-merge": "^3.0.1",

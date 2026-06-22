@@ -1,16 +1,16 @@
 "use client";
 
 import { JSX } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { AlertDialog } from "@radix-ui/react-alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SaveSermonData, ChatThread } from "@/lib/definitions";
-import {saveSermonData} from "@/app/bible/actions";
+import { saveSermonData } from "@/app/bible/actions";
+import { toast } from "sonner";
 
 
 type SaveModalFormProps = {
@@ -25,7 +25,7 @@ const saveFormSchema = z.object({
 	projectTitle: z.string().min(5, { message: "Please make your title longer than 5 characters." }),
 });
 
-export default function SaveModalForm({ isOpen, openHandler, cancelHandler, confirmHandler, currentData }: SaveModalFormProps): JSX.Element {
+export default function SaveModalForm({ isOpen, openHandler, cancelHandler, currentData }: SaveModalFormProps): JSX.Element {
 	const form = useForm<z.infer<typeof saveFormSchema>>({
 		resolver: zodResolver(saveFormSchema),
 		defaultValues: {
