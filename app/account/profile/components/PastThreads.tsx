@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react"
+import { useState } from "react";
 import { ChatThread, APIDataResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { deleteChatThreadHandler } from "../actions";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 type PastThreadsProps = {
 	threads: APIDataResponse<ChatThread[] | null> | null;
@@ -17,15 +18,20 @@ type PastThreadsProps = {
 };
 
 function PastThreads({ threads, onDeleteSuccess }: PastThreadsProps) {
+	const [isDeleting, setIsDeleting] = useState<boolean>(false);
+	const [deletingThreadId, setDeletingThreadId] = useState<number | null>(null);
 
 	/**
-	 * 
+	 *
 	 * @param threadId {number}
 	 * @description method that is fired when the user clicks the trash can button to delete a thread.
 	 */
 	const deleteHandler = async (threadId: number): Promise<void> => {
 		try {
+			setIsDeleting(true);
+			setDeletingThreadId(threadId);
 			const result = await deleteChatThreadHandler(threadId);
+
 			if (result.status === 200) {
 				onDeleteSuccess();
 			} else {
@@ -33,8 +39,11 @@ function PastThreads({ threads, onDeleteSuccess }: PastThreadsProps) {
 			}
 		} catch (e: unknown) {
 			console.error(`The following error occurred while updating the chat thread: `, e);
+		} finally {
+			setIsDeleting(false);
+			setDeletingThreadId(null);
 		}
-	}
+	};
 
 	return (
 		<Table>
@@ -66,7 +75,9 @@ function PastThreads({ threads, onDeleteSuccess }: PastThreadsProps) {
 								<Button
 									variant="outline"
 									onClick={() => deleteHandler(thread.id as number)}
+									disabled={isDeleting && deletingThreadId === thread.id}
 								>
+									{isDeleting && deletingThreadId === thread.id && <Spinner data-icon="inline-start" />}
 									<FontAwesomeIcon
 										icon={faTrash}
 										className="text-gray-700"
