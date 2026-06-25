@@ -234,20 +234,22 @@ function PageContent() {
 			</section>
 
 			{showChapterText && (
-				<section id="output-content" className="flex flex-col gap-5 my-10 col-span-2">
-					
+				<section
+					id="output-content"
+					className="flex flex-col gap-5 my-10 col-span-2"
+				>
 					<Alert
 						isOpen={showAlert}
 						openHandler={(): void => setShowAlert(!showAlert)}
 						closeHandler={(): void => setShowAlert(false)}
 						title={alertTitle}
 						description={errorMessage}
-						cancelHandler={(): void => requestStatus === 429 ? setShowAlert(false) : singUpHandler()}
-						confirmHandler={(): void => requestStatus === 429 ? router.push("/pricing") : loginHandler()}
+						cancelHandler={(): void => (requestStatus === 429 ? setShowAlert(false) : singUpHandler())}
+						confirmHandler={(): void => (requestStatus === 429 ? router.push("/pricing") : loginHandler())}
 						confirmText={requestStatus === 429 ? "Yes" : "Login"}
 						cancelText={requestStatus === 429 ? "No" : "Sign Up"}
 					/>
-					
+
 					<div className="flex flex-col gap-4">
 						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
 

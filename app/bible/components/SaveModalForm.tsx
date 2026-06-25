@@ -59,12 +59,11 @@ export default function SaveModalForm({ isOpen, openHandler, cancelHandler, curr
 
 		saveSermonData(values.projectTitle, newChatData)
 			.then(data => {
-				console.log('HEREEEEE ', data);
 				if (data.status === 500) {
 					console.error(data);
 					alert(`The following error has occurred: ${data.message}`);
 				} else {
-					alert('The data has been saved.');
+					toast.success('Your project has been saved!', {position: "top-right"});
 					cancelHandler();
 				}
 			});
