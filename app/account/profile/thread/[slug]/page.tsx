@@ -94,14 +94,6 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 							llmData={llm_notes}
 							chatSlug={slug}
 						/>
-						<div>
-							{user_notes.length > 0 && (
-								<div className="flex flex-col gap-2">
-									<h2 className="text-2xl font-extrabold">User Notes</h2>
-									<p>{user_notes}</p>
-								</div>
-							)}
-						</div>
 					</div>
 				</section>
 			</main>
