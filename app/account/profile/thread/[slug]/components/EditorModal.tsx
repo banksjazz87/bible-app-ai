@@ -15,7 +15,7 @@ type EditorProps = {
 	editorHeading: string;
 	editorSubHeading: string;
 	chatSlug: string;
-	getNewEditorText: (content: string) => LLMReqObject[]
+	getNewEditorText: (content: string) => LLMReqObject[];
 };
 
 export default function EditorModal({ editorContent, displayedTextContent, editorHeading, editorSubHeading, chatSlug, getNewEditorText }: EditorProps): JSX.Element {
@@ -40,12 +40,16 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 			{!editorIsVisible && displayedTextContent}
 
 			{editorIsVisible && (
-				<div className="flex flex-wrap bg-white shadow-lg rounded-2xl min-w-full sm:min-w-6xl">
+				<div className="flex flex-wrap bg-white shadow-lg rounded-2xl min-w-full md:min-w-4xl">
 					<div className="w-full">
-						<div className="px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg relative">
-							<h2 className="text-2xl font-extrabold text-white text-center">{editorHeading}</h2>
-							<p className="text-white text-center">{editorSubHeading}</p>
-							<div className="flex flex-row justify-end absolute top-1/2 trasform -translate-y-1/2 right-8 gap-4">
+						<div className="grid grid-flow-row grid-cols-1 gap-4 px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg sm:grid-cols-3">
+							<div className="spacer">
+							</div>
+							<div className="flex flex-col items-center">
+								<h2 className="text-2xl font-extrabold text-white text-center">{editorHeading}</h2>
+								<p className="text-white text-center">{editorSubHeading}</p>
+							</div>
+							<div className="flex flex-row gap-4 justify-center items-center">
 								<Button
 									variant="destructive"
 									onClick={(): void => setEditorIsVisible(false)}
@@ -54,11 +58,12 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 								</Button>
 								<Button
 									variant="outline"
-									onClick={async(): Promise<void> => {
+									onClick={async (): Promise<void> => {
 										console.log("The save method has been executed! The current data = ", ref.current?.getMarkdown());
 										ref.current?.setMarkdown(ref.current?.getMarkdown());
-										const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";						
-										setEditorData(markdownData);
+										//const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";
+
+										const markdownData = ref.current?.getMarkdown() ? ref.current.getMarkdown() : "";
 
 										try {
 											const columnName = editorHeading.toLowerCase().includes("llm") ? "llm_notes" : "user_notes";
@@ -66,14 +71,12 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 											const updateChat = await updateChatThreadHandler(newData, columnName, chatSlug);
 
 											if (updateChat.status !== 200) {
-												console.error('The following error: ', updateChat.message);
+												console.error("The following error: ", updateChat.message);
 											}
 											setEditorIsVisible(false);
-
 										} catch (e: unknown) {
 											console.error(`The following error occurred while updating the chat thread: `, e);
 										}
-									
 									}}
 								>
 									Save

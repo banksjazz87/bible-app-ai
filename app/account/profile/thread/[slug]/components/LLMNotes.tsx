@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, JSX } from "react";
+import { useState, JSX, Suspense } from "react";
 import { LLMReqObject } from "@/lib/definitions";
-import EditorModal from "./EditorModal";
+import dynamic from "next/dynamic";
 
 type LLMNotesProps = {
 	llmData: LLMReqObject[];
 	chatSlug: string;
 };
+
+const Editor = dynamic(() => import("./EditorModal"), { ssr: false });
 
 export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Element {
 	const [LLMData, setLLMData] = useState<LLMReqObject[]>(llmData);
@@ -50,7 +52,7 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		const notes = llmData.map((x: LLMReqObject, y: number) => {
 			if (x.output.length > 0) {
 				return (
-					<EditorModal
+					<Editor
 						key={`editor_modal_${y}`}
 						editorContent={x.isEdited ? x.output : getLLMString(x.heading, x.output)}
 						displayedTextContent={llmDisplayedNotes(x.heading, x.output, x.isEdited, y.toString())}
@@ -59,11 +61,16 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 						chatSlug={chatSlug}
 						getNewEditorText={(editorText: string) => getNewEditorText(y, editorText)}
 					/>
+
 				);
 			}
 		});
 		return notes;
 	}
 
-	return <div className="llm_notes flex flex-col justify-start">{LLMNotes()}</div>;
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<div className="llm_notes flex flex-col justify-start">{LLMNotes()}</div>
+		</Suspense>
+	);
 }
