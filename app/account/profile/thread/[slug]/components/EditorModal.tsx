@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { updateChatThreadHandler } from "../../actions";
 import { LLMReqObject } from "@/lib/definitions";
+import { marked } from 'marked'
 
 type EditorProps = {
 	editorContent: string;
@@ -64,10 +65,12 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 										//const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";
 
 										const markdownData = ref.current?.getMarkdown() ? ref.current.getMarkdown() : "";
+										const htmlData = await marked.parse(markdownData);
 
 										try {
 											const columnName = editorHeading.toLowerCase().includes("llm") ? "llm_notes" : "user_notes";
-											const newData: LLMReqObject[] = getNewEditorText(markdownData);
+											// const newData: LLMReqObject[] = getNewEditorText(markdownData);
+											const newData: LLMReqObject[] = getNewEditorText(htmlData);
 											const updateChat = await updateChatThreadHandler(newData, columnName, chatSlug);
 
 											if (updateChat.status !== 200) {
