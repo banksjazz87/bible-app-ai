@@ -40,7 +40,7 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 			{!editorIsVisible && displayedTextContent}
 
 			{editorIsVisible && (
-				<div className="flex flex-wrap bg-white shadow-lg rounded-2xl">
+				<div className="flex flex-wrap bg-white shadow-lg rounded-2xl min-w-full sm:min-w-6xl">
 					<div className="w-full">
 						<div className="px-2 py-6 bg-primary rounded-tl-lg rounded-tr-lg relative">
 							<h2 className="text-2xl font-extrabold text-white text-center">{editorHeading}</h2>
@@ -92,7 +92,7 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 									toolbarContents: () => (
 										<>
 											<UndoRedo />
-											<BlockTypeSelect />
+											{/* <BlockTypeSelect /> */}
 											<BoldItalicUnderlineToggles />
 											<ListsToggle />
 											<CreateLink />

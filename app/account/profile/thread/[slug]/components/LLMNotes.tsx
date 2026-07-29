@@ -52,7 +52,7 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 				return (
 					<EditorModal
 						key={`editor_modal_${y}`}
-						editorContent={getLLMString(x.heading, x.output)}
+						editorContent={x.isEdited ? x.output : getLLMString(x.heading, x.output)}
 						displayedTextContent={llmDisplayedNotes(x.heading, x.output, x.isEdited, y.toString())}
 						editorHeading={"Edit LLM Notes"}
 						editorSubHeading={"Make changes to the LLM generated notes here."}
