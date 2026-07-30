@@ -20,7 +20,7 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 
 	const bibleText = await retrieveBibleChapter(bible_version, book, chapter);
 
-	console.log('Thread data:', typeof llm_notes);
+	console.log('Thread data:', llm_notes[1]);
 
 	const bibleTextString = (text: ChapterResponse | undefined): string => {
 		if (text) {

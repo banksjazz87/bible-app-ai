@@ -62,10 +62,11 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 									onClick={async (): Promise<void> => {
 										console.log("The save method has been executed! The current data = ", ref.current?.getMarkdown());
 										ref.current?.setMarkdown(ref.current?.getMarkdown());
-										//const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";
+										// const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";
 
-										const markdownData = ref.current?.getMarkdown() ? ref.current.getMarkdown() : "";
-										const htmlData = await marked.parse(markdownData);
+										// const markdownData = ref.current?.getMarkdown() ? ref.current.getMarkdown() : "";
+										const htmlData = await marked.parse(ref.current?.getMarkdown() || "");
+										console.log("Marked HTML is the following: ", htmlData);
 
 										try {
 											const columnName = editorHeading.toLowerCase().includes("llm") ? "llm_notes" : "user_notes";
@@ -98,7 +99,7 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 									toolbarContents: () => (
 										<>
 											<UndoRedo />
-											{/* <BlockTypeSelect /> */}
+											<BlockTypeSelect />
 											<BoldItalicUnderlineToggles />
 											<ListsToggle />
 											<CreateLink />
