@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, JSX, Suspense } from "react";
+import { useState, JSX, Suspense, useEffect } from "react";
+import { NodeHtmlMarkdown } from "node-html-markdown";
 import { LLMReqObject } from "@/lib/definitions";
 import dynamic from "next/dynamic";
 
@@ -16,8 +17,15 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 
 	function getLLMString(heading: string, body: string): string {
 		const formattedString = `<h2>${heading}</h2>\n\n ${body}`;
-		return formattedString;
+		const markdown = NodeHtmlMarkdown.translate(formattedString);
+		return markdown;
 	}
+
+	useEffect(() => {
+		const testString = getLLMString(llmData[0].heading, llmData[0].output);
+		console.log(llmData[0].heading, llmData[0].output);
+		console.log(testString);
+	}, []);
 
 	function llmDisplayedNotes(heading: string, body: string, isEdited: boolean, id: string): JSX.Element {
 		return (
@@ -48,13 +56,39 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		return newEditorText;
 	}
 
+	const testData = `## What is this about?
+
+Sure! Here's a simplified summary of Judges 8:10-18:
+
+**Context**: After a victory against the Midianites, Gideon encounters some of the surviving Midianite leaders.
+* **Verses 10-12**:
+
+  * Gideon is leading an attack against the Midianites.
+  * He captures and defeats two Midianite kings, Zebah and Zalmunna.
+* **Verses 13-15**:
+
+  * Upon returning, Gideon confronts the people of Succoth, who refused to help him during the battle.
+  * He shows them the captured Midianite kings to demonstrate God's victory and his authority.
+* **Verses 16-17**:
+
+  * Gideon punishes the elders of Succoth for their lack of faith and support by teaching them a lesson with thorns and briers.
+  * He also destroys the city of Peniel for their similar betrayal.
+* **Verses 18**:
+
+  * Gideon questions the captured kings about the men they killed at Tabor.
+  * The kings reply that they killed the men who looked like Gideon's brothers.
+
+Overall, this passage illustrates Gideon's unwavering commitment to justice and his determination to hold those accountable who did not support his leadership in battling the Midianites.
+`;
+
 	function LLMNotes(): (JSX.Element | undefined)[] {
 		const notes = llmData.map((x: LLMReqObject, y: number) => {
 			if (x.output.length > 0) {
 				return (
 					<Editor
 						key={`editor_modal_${y}`}
-						editorContent={x.isEdited ? x.output : getLLMString(x.heading, x.output)}
+						// editorContent={x.isEdited ? NodeHtmlMarkdown.translate(x.output) : getLLMString(x.heading, x.output)}
+						editorContent={testData}
 						displayedTextContent={llmDisplayedNotes(x.heading, x.output, x.isEdited, y.toString())}
 						editorHeading={"Edit LLM Notes"}
 						editorSubHeading={"Make changes to the LLM generated notes here."}

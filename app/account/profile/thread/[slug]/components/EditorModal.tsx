@@ -60,13 +60,10 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 								<Button
 									variant="outline"
 									onClick={async (): Promise<void> => {
-										console.log("The save method has been executed! The current data = ", ref.current?.getMarkdown());
 										ref.current?.setMarkdown(ref.current?.getMarkdown());
 										// const markdownData = ref.current?.getMarkdown() ? ref.current.getContentEditableHTML() : "";
-
 										// const markdownData = ref.current?.getMarkdown() ? ref.current.getMarkdown() : "";
-										const htmlData = await marked.parse(ref.current?.getMarkdown() || "");
-										console.log("Marked HTML is the following: ", htmlData);
+										const htmlData = await marked.parse(ref.current?.getMarkdown() || "Error parsing markdown");
 
 										try {
 											const columnName = editorHeading.toLowerCase().includes("llm") ? "llm_notes" : "user_notes";
