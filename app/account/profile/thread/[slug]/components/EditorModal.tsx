@@ -41,7 +41,7 @@ export default function EditorModal({ editorContent, displayedTextContent, edito
 			{!editorIsVisible && displayedTextContent}
 
 			{editorIsVisible && (
-				<div className="flex flex-wrap bg-white dark:bg-slate-950 dark:shadow-slate-700 dark:shadow-sm shadow-lg rounded-2xl min-w-full md:min-w-4xl p-4">
+				<div className="flex flex-wrap bg-white dark:bg-slate-950 dark:shadow-slate-700 dark:shadow-sm shadow-lg rounded-2xl min-w-full md:min-w-4xl">
 					<div className="w-full">
 						<div className="grid grid-flow-row grid-cols-1 gap-4 px-2 py-6 bg-primary dark:bg-slate-950 rounded-tl-lg rounded-tr-lg sm:grid-cols-3">
 							<div className="spacer"></div>
