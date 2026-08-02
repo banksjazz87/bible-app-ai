@@ -8,6 +8,7 @@
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --tw-prose-headings: var(--primary);
 }
 
 :root {
@@ -145,14 +146,18 @@ li {
   }
 }
 
-.markdown_editor h1, 
-.markdown_editor h2, 
-.markdown_editor h3, 
-.markdown_editor li {
-  margin-bottom: 20px;
+.prose :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)),
+.prose :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)),
+.prose :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)),
+.prose :where(h4):not(:where([class~="not-prose"], [class~="not-prose"] *)),
+.prose :where(li):not(:where([class~="not-prose"], [class~="not-prose"] *)),
+.prose :where(p):not(:where([class~="not-prose"], [class~="not-prose"] *)),
+.prose :where(strong):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  color: var(--primary);
+} 
+
+.prose :where(h3):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  color: var(--primary);
 }
 
-.prose :where(ul > li):not(:where([class~="not-prose"], [class~="not-prose"] *))::marker {
-    color: var(--primary);
-}
 

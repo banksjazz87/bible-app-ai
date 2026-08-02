@@ -38,7 +38,7 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 			>
 				{!isEdited && <h2 className="llm_heading text-2xl font-extrabold">{heading}</h2>}
 				<div
-					className="llm_content flex-col gap-4"
+					className="llm_content prose flex-col gap-4"
 					dangerouslySetInnerHTML={{ __html: body }}
 				></div>
 			</div>
@@ -64,14 +64,10 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 				return (
 					<Editor
 						key={`editor_modal_${y}`}
-						editorContent={
-							x.isEdited
-								? NodeHtmlMarkdown.translate(x.output, {bulletMarker: "-",})
-								: getLLMString(x.heading, x.output)
-						}
+						editorContent={x.isEdited ? NodeHtmlMarkdown.translate(x.output, { bulletMarker: "-" }) : getLLMString(x.heading, x.output)}
 						displayedTextContent={llmDisplayedNotes(x.heading, x.output, x.isEdited, y.toString())}
 						editorHeading={"Edit LLM Notes"}
-						editorSubHeading={"Make changes to the LLM generated notes here."}
+						editorSubHeading={"Once you've finished editing, click the Save button."}
 						chatSlug={chatSlug}
 						getNewEditorText={(editorText: string) => getNewEditorText(y, editorText)}
 					/>
@@ -83,7 +79,7 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
-			<div className="llm_notes flex flex-col justify-start prose max-w-full">{LLMNotes()}</div>
+			<div className="llm_notes flex flex-col justify-start max-w-full">{LLMNotes()}</div>
 		</Suspense>
 	);
 }
