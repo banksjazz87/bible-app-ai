@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, JSX, Suspense, useEffect } from "react";
+import { useState, JSX, Suspense } from "react";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { LLMReqObject } from "@/lib/definitions";
 import dynamic from "next/dynamic";
@@ -22,12 +22,6 @@ export default function LLMNotes({ llmData, chatSlug }: LLMNotesProps): JSX.Elem
 		});
 		return markdown;
 	}
-
-	useEffect(() => {
-		const testString = getLLMString(llmData[0].heading, llmData[0].output);
-		console.log(llmData[0].heading, llmData[0].output);
-		console.log(testString);
-	}, []);
 
 	function llmDisplayedNotes(heading: string, body: string, isEdited: boolean, id: string): JSX.Element {
 		return (

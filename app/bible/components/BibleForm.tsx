@@ -17,7 +17,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	const form = useForm();
 	const loggedInDetails = useAppSelector(getUserData);
 
-	//Use stat definitions
+	//Use state definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);

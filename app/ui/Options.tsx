@@ -18,8 +18,8 @@ export default function Options({ changeHandler, sectionTitle, optionsID, option
 			const params = new URLSearchParams(searchParams.toString());
 			params.set(optionsID, value);
 			return params.toString();
-		},
-		[searchParams]
+		}, 
+		[searchParams, optionsID]
 	);
 
 	return (

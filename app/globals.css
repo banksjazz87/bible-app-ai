@@ -160,4 +160,19 @@ li {
   color: var(--primary);
 }
 
+.dark input[type="submit"], 
+.dark button {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.dark input[type="submit"]:hover,
+.dark button:hover { 
+  background-color: color-mix(in oklab, var(--primary) 90%, transparent);
+}
+
+.dark header img {
+  filter: invert(1);
+}
+
 
