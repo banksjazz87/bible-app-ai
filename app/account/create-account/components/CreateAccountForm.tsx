@@ -1,7 +1,6 @@
 "use client";
 
 import { JSX, useState } from "react";
-import Link from "next/link";
 import HyperLink from "@/app/ui/HyperLink";
 import { signup } from "@/app/account/create-account/actions";
 import { useForm} from "react-hook-form";
@@ -10,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormProps, APIResponse } from "@/lib/definitions";
+import { LoginFormProps, APIDataResponse } from "@/lib/definitions";
 import HideShowEye from "../../../../components/ui/hide-show-eye";
 
 const createAccountFormSchema = z
@@ -38,7 +37,7 @@ export default function CreateAccountForm({ responseHandler, alertMessageHandler
 	});
 
 	function onSubmit(values: z.infer<typeof createAccountFormSchema>) {
-		signup(values).then((data: APIResponse): void => {
+		signup(values).then((data: APIDataResponse<object>): void => {
 			responseHandler(data.status);
 			const alertTitle: string = data.status === 200 ? "Success" : "Error Creating Account";
 			alertTitleHandler(alertTitle);
@@ -47,7 +46,7 @@ export default function CreateAccountForm({ responseHandler, alertMessageHandler
 	}
 
 	return (
-		<div className="border-1 border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
+		<div className="border border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
 			<h2 className="font-bold text-xl pb-6 capitalize">Create new account</h2>
 			<Form {...form}>
 				<form

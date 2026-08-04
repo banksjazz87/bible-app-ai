@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useEffectEvent, useState } from "react";
 import CreateAccountForm from "./components/CreateAccountForm";
 import { redirect } from "next/navigation";
 import Alert from "@/app/ui/Alert";
@@ -11,10 +11,14 @@ export default function CreateAccount(): JSX.Element {
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertTitle, setAlertTitle] = useState<string>("");
 
+	const updateAlertModal = useEffectEvent((response:number | null): void => {
+		if (response !== null) {
+			setShowAlert(true);
+		}
+	})
+		
 	useEffect((): void => {
-			if (response !== null) {
-				setShowAlert(true);
-			} 
+			updateAlertModal(response);
 		}, [response]);
 
 	function modalCloseHandler(): void {
