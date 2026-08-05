@@ -33,7 +33,7 @@ export async function signup(formData: SignUpForm): Promise<APIDataResponse<obje
 	// if (error) {
 	if (signupResponse.error) {
 		return {
-			status: 404,
+			status: 500,
             message: `The following error has occurred: ${signupResponse.error}`,
             data: signupResponse
 		};
@@ -41,8 +41,8 @@ export async function signup(formData: SignUpForm): Promise<APIDataResponse<obje
 
     if (signupResponse.data.user?.identities?.length === 0) {
         return {
-            status: 404,
-            message: 'The user already exists in the database, please sign in or request a password reset.',
+            status: 409,
+            message: 'It looks like you already have an account. Please sign in, or if you\'ve forgotten your password, you can request a new one.',
             data: signupResponse
         }
     }

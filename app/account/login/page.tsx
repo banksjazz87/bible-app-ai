@@ -1,24 +1,26 @@
 "use client";
 
-import { JSX, useEffect,  useState, useEffectEvent, Suspense } from "react";
+import { JSX, useEffect, useState, useEffectEvent, Suspense } from "react";
 import Alert from "@/app/ui/Alert";
 import LoginForm from "@/app/account/login/components/LoginForm";
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 
 const LoginView = (): JSX.Element => {
-	const [alertMessage, setAlertMessage] = useState<string>('');
+	const [alertMessage, setAlertMessage] = useState<string>("");
 	const [response, setResponse] = useState<number | null>(null);
 	const [showAlert, setShowAlert] = useState<boolean>(false);
-	const [alertTitle, setAlertTitle] = useState<string>('');
+	const [alertTitle, setAlertTitle] = useState<string>("");
 
 	const params = useSearchParams();
-	const optionValue = params.get('option') ? params.get('option') : null;
+	const optionValue = params.get("option") ? params.get("option") : null;
 
 	const updateAlertTitle = useEffectEvent((httpCode: number | null): void => {
-		if (httpCode !== null && httpCode !== 200) {
+		if (!httpCode) return;
+		
+		if (httpCode !== 200) {
 			setShowAlert(true);
-		} else if (httpCode !== null && httpCode === 200) {
+		} else if (httpCode === 200) {
 			if (optionValue) {
 				redirect(`/subscribe?option=${optionValue}`);
 			} else {
@@ -30,7 +32,6 @@ const LoginView = (): JSX.Element => {
 	useEffect((): void => {
 		updateAlertTitle(response);
 	}, [response]);
-
 
 	function modalCloseHandler(): void {
 		setShowAlert(false);
@@ -48,14 +49,14 @@ const LoginView = (): JSX.Element => {
 				confirmHandler={(): void => modalCloseHandler()}
 				closeHandler={(): void => setShowAlert(false)}
 			/>
-			<LoginForm 
+			<LoginForm
 				responseHandler={setResponse}
 				alertMessageHandler={setAlertMessage}
 				alertTitleHandler={setAlertTitle}
 			/>
 		</main>
 	);
-}
+};
 
 export default function Login(): JSX.Element {
 	return (

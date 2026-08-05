@@ -2,7 +2,6 @@
 
 import { JSX, useEffect, useEffectEvent, useState } from "react";
 import CreateAccountForm from "./components/CreateAccountForm";
-import { redirect } from "next/navigation";
 import Alert from "@/app/ui/Alert";
 
 export default function CreateAccount(): JSX.Element {
@@ -11,11 +10,11 @@ export default function CreateAccount(): JSX.Element {
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertTitle, setAlertTitle] = useState<string>("");
 
-	const updateAlertModal = useEffectEvent((response:number | null): void => {
+	const updateAlertModal = useEffectEvent((response: number | null): void => {
 		if (response !== null) {
 			setShowAlert(true);
 		}
-	})
+	});
 		
 	useEffect((): void => {
 			updateAlertModal(response);

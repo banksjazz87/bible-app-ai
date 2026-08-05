@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useState, useEffectEvent } from "react";
 import UpdatePasswordForm from "./components/UpdatePasswordForm";
 import Alert from "@/app/ui/Alert";
 import { redirect } from "next/navigation";
@@ -11,12 +11,16 @@ export default function UpdatePassword(): JSX.Element {
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertTitle, setAlertTitle] = useState<string>("");
 
-	useEffect((): void => {
+	const updateAlertModal = useEffectEvent((response: number | null): void => {
 		if (response !== null && response !== 200) {
 			setShowAlert(true);
 		} else if (response !== null && response === 200) {
 			setShowAlert(true);
 		}
+	});
+
+	useEffect((): void => {
+		updateAlertModal(response);
 	}, [response]);
 
 	function modalCloseHandler(): void {
@@ -27,7 +31,7 @@ export default function UpdatePassword(): JSX.Element {
 	function closeAndRedirect(): void {
 		setShowAlert(false);
 		setResponse(null);
-		redirect("/account/login");
+		if (response === 200) redirect("/account/login");
 	}
 
 	return (

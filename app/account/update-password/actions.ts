@@ -10,7 +10,6 @@ type ResetPasswordData = {
 
 export async function resetPassword(formData: ResetPasswordData) {
 	const supabase = await createClient();
-
 	const { error } = await supabase.auth.updateUser({ password: formData.password });
 
 	if (error) {

@@ -1,20 +1,24 @@
 "use client";
 
 
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useState, useEffectEvent } from "react";
 import ResetPasswordForm from "@/app/account/reset-password/components/ResetPasswordForm";
 import Alert from "@/app/ui/Alert";
 
-export default function page(): JSX.Element {
+export default function Page(): JSX.Element {
 	const [alertMessage, setAlertMessage] = useState<string>("");
 	const [response, setResponse] = useState<number | null>(null);
 	const [showAlert, setShowAlert] = useState<boolean>(false);
 	const [alertTitle, setAlertTitle] = useState<string>("");
 
-	useEffect((): void => {
+	const updateAlertModal = useEffectEvent((response: number | null): void => {
 		if (response !== null) {
 			setShowAlert(true);
 		}
+	});
+
+	useEffect((): void => {
+		updateAlertModal(response);
 	}, [response]);
 
 	function modalCloseHandler(): void {

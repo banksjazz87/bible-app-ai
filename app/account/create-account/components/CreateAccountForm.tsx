@@ -39,7 +39,21 @@ export default function CreateAccountForm({ responseHandler, alertMessageHandler
 	function onSubmit(values: z.infer<typeof createAccountFormSchema>) {
 		signup(values).then((data: APIDataResponse<object>): void => {
 			responseHandler(data.status);
-			const alertTitle: string = data.status === 200 ? "Success" : "Error Creating Account";
+			let alertTitle: string = "";
+
+			switch (data.status) {
+				case 200:
+					alertTitle = "Success";
+					break;
+				case 500:
+					alertTitle = "Error Creating Account";
+					break;
+				case 409:
+					alertTitle = "Account Already Exists";
+					break;
+				default:
+					break;
+			}
 			alertTitleHandler(alertTitle);
 			alertMessageHandler(data.message);
 		});

@@ -15,6 +15,9 @@ import { APIResponse, LoginFormProps } from "@/lib/definitions";
 const resetSchema = z.object({
 	password: z.string().min(12, { message: "Password must be 12 or more characters." }).max(20, { message: "Password must be fewer than 20 characters" }),
 	verifiedPassword: z.string(),
+}).refine((data) => data.password === data.verifiedPassword, {
+	message: "Passwords do not match",
+	path: ["verifiedPassword"]
 });
 
 export default function UpdatePasswordForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
