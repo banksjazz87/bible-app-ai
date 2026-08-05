@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { APIDataResponse } from "@/lib/definitions";
 
@@ -10,12 +9,6 @@ type SignUpForm = {
 	password: string;
 	verifiedPassword: string;
 };
-
-type SignUpAPIResponse = {
-    status: number;
-    message: string;
-    data: object;
-}
 
 export async function signup(formData: SignUpForm): Promise<APIDataResponse<object>> {
 	const supabase = await createClient();
@@ -26,11 +19,8 @@ export async function signup(formData: SignUpForm): Promise<APIDataResponse<obje
 		verifiedPassword: formData.verifiedPassword,
     };
     
-
-	// const { error } = await supabase.auth.signUp(data);
 	const signupResponse = await supabase.auth.signUp(data);
 
-	// if (error) {
 	if (signupResponse.error) {
 		return {
 			status: 500,
