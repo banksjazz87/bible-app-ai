@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import HyperLink from "@/app/ui/HyperLink";
 import { resetPassword } from "../actions";
 import { useForm } from "react-hook-form";
@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { APIResponse, LoginFormProps } from "@/lib/definitions";
+import HideShowEye from "@/components/ui/hide-show-eye";
 
 //Define our Form schema
 const resetSchema = z.object({
@@ -21,6 +22,10 @@ const resetSchema = z.object({
 });
 
 export default function UpdatePasswordForm({ responseHandler, alertMessageHandler, alertTitleHandler }: LoginFormProps): JSX.Element {
+
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+	const [showValidatedPassword, setShowValidatedPassword] = useState<boolean>(false);
+
 	const form = useForm<z.infer<typeof resetSchema>>({
 		resolver: zodResolver(resetSchema),
 		defaultValues: {
@@ -40,7 +45,7 @@ export default function UpdatePasswordForm({ responseHandler, alertMessageHandle
 
 	return (
 		<div className="border border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40">
-			<h2 className="font-bold text-xl pb-6">Login Form</h2>
+			<h2 className="font-bold text-xl pb-6">Password Reset Form</h2>
 			<Form {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
@@ -53,12 +58,18 @@ export default function UpdatePasswordForm({ responseHandler, alertMessageHandle
 							<FormItem>
 								<FormLabel>New Password</FormLabel>
 								<FormControl>
-									<Input
-										placeholder="Password"
-										type="password"
-										{...field}
-										className="border-slate-600 rounded-none"
-									/>
+									<div className="relative">
+										<Input
+											placeholder="Password"
+											type={showPassword ? "text" : "password"}
+											{...field}
+											className="border-slate-600 rounded-none"
+										/>
+										<HideShowEye
+											showPassword={showPassword}
+											toggleShowPassword={(): void => setShowPassword(!showPassword)}
+										/>
+									</div>
 								</FormControl>
 								<FormMessage className="text-red-700" />
 							</FormItem>
@@ -72,12 +83,18 @@ export default function UpdatePasswordForm({ responseHandler, alertMessageHandle
 							<FormItem>
 								<FormLabel>Validate New Password</FormLabel>
 								<FormControl>
-									<Input
-										placeholder="Verify Password"
-										type="password"
-										{...field}
-										className="border-slate-600 rounded-none"
-									/>
+									<div className="relative">
+										<Input
+											placeholder="Verify Password"
+											type={showValidatedPassword ? "text" : "password"}
+											{...field}
+											className="border-slate-600 rounded-none"
+										/>
+										<HideShowEye
+											showPassword={showValidatedPassword}
+											toggleShowPassword={(): void => setShowValidatedPassword(!showValidatedPassword)}
+										/>
+									</div>
 								</FormControl>
 								<FormMessage className="text-red-700" />
 							</FormItem>
