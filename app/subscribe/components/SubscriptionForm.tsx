@@ -14,6 +14,7 @@ import { createCheckoutSession, createCustomer, searchCustomer, getProducts } fr
 import { ProductResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
 import { useAppSelector } from "@/lib/store/hooks";
+import Link from "next/link";
 
 
 
@@ -102,11 +103,26 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 	return (
 		<main>
-			<section>
+			<section className="pt-10">
 				<h1 className="font-mono font-extrabold text-5xl text-center">Subscribe</h1>
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Update Your Subscription Today</p>
 			</section>
-			{ userEmail && userEmail.length === 0 && (
+
+			{/* if the user selects the free tier they'll have the option to either select a better plan or go back to the bible page.*/}
+			{preSelectedSubscription === "free" && (
+				<section className="flex-col align-middle justify-center pt-4">
+					<p className="font-mono text-center pt-4">Enjoy your free subscription, if you ever want to upgrade feel free to do so by visiting our pricing page. </p>
+					<div className="flex gap-4 justify-center pt-10">
+						<Link href="/pricing">
+							<Button>View Other Plans</Button>
+						</Link>
+						<Link href="/bible">
+							<Button>Proceed to the Bible</Button>
+						</Link>
+					</div>
+				</section>
+			)}
+			{userEmail && userEmail.length === 0 && (
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit(() => formAction(form.getValues()))}
@@ -152,7 +168,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				</Form>
 			)}
 
-			{customerId && <CheckoutForm fetchClientSecret={fetchClientSecret} />}
+			{customerId && preSelectedSubscription !== "free" && <CheckoutForm fetchClientSecret={fetchClientSecret} />}
 		</main>
 	);
 }
