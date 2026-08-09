@@ -27,23 +27,23 @@ export async function login(formData: LoginForm): Promise<APIResponse | APIDataR
 		}
 	}
 
-	if (userRoles && userRoles.status !== 200) {
-		const { error } = await supabase.from("user_roles").insert({
-			user_id: data.user.id,
-			super_admin: false,
-			standard_tier: false,
-			free_tier: true,
-			email_address: data.user.email,
-			premiere_tier: false,
-		});
+	// if (userRoles && userRoles.status !== 200) {
+	// 	const { error } = await supabase.from("user_roles").insert({
+	// 		user_id: data.user.id,
+	// 		super_admin: false,
+	// 		standard_tier: false,
+	// 		free_tier: true,
+	// 		email_address: data.user.email,
+	// 		premiere_tier: false,
+	// 	});
 
-		if (error) {
-			return {
-				status: 400,
-				message: `Unable to add the user to the user table due to the following: ${error}`,
-			};
-		}
-	}
+	// 	if (error) {
+	// 		return {
+	// 			status: 400,
+	// 			message: `Unable to add the user to the user table due to the following: ${error}`,
+	// 		};
+	// 	}
+	// }
 
 	revalidatePath("/");
 	return {

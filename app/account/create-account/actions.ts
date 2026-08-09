@@ -22,7 +22,8 @@ export async function signup(formData: SignUpForm): Promise<APIDataResponse<obje
 	const signupResponse = await supabase.auth.signUp(data);
 
     //If there's an error
-	if (signupResponse.error) {
+    if (signupResponse.error) {
+        console.error('The following error occurred in creating a new account: ', signupResponse.error);
 		return {
 			status: 500,
             message: `The following error has occurred: ${signupResponse.error}`,
@@ -38,27 +39,6 @@ export async function signup(formData: SignUpForm): Promise<APIDataResponse<obje
             data: signupResponse
         }
     }
-
-    // //Set the user as a free tier member by default when creating an account
-    // const { error } = await supabase
-    //     .from('user_roles')
-    //     .insert({
-    //         user_id: signupResponse.data.user?.id,
-    //         super_admin: false,
-    //         standard_tier: false,
-    //         free_tier: true,
-    //         email_address: signupResponse.data.user?.email,
-    //         premiere_tier: false,
-    //     });
-    
-    // if (error) {
-    //     console.log('Error setting user role ', error)
-    //     return {
-    //         status: 500, 
-    //         message: "Unable to set this users user role.",
-    //         data: error
-    //     }
-    // }
 
 	revalidatePath("/", "layout");
 
