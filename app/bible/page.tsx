@@ -80,7 +80,6 @@ function PageContent() {
 		});
 
 		if (isValid) {
-			console.log("Fired again");
 			setShowChapterText(true);
 			setBibleData({
 				...bibleData,
@@ -253,7 +252,7 @@ function PageContent() {
 					<div className="flex flex-col gap-4">
 						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
 
-						<div className="flex flex-row flex-start gap-2">
+						<div className="flex flex-row flex-start gap-2" data-html2canvas-ignore>
 							<Button
 								className="hover:cursor-pointer"
 								onClick={(): void =>
