@@ -27,36 +27,42 @@ export async function POST(req: Request) {
 				// Used to provision services after the trial has ended.
 				// The status of the invoice will show up as paid. Store the status in your
 				// database to reference when a user accesses your service to avoid hitting rate limits.
-				console.log('HERE HERE The payment has been processed correctly');
+				console.log("INVOICE PAID");
+				console.log("HERE HERE The payment has been processed correctly");
 				break;
 			case "invoice.payment_failed":
 				// If the payment fails or the customer doesn't have a valid payment method,
 				//  an invoice.payment_failed event is sent, the subscription becomes past_due.
 				// Use this webhook to notify your user that their payment has
 				// failed and to retrieve new card details.
-				console.log('The payment has failed');
+				console.log("INVOICE PAYMENT FAILED");
+				console.log("The payment has failed");
 				break;
 			case "customer.subscription.trial_will_end":
 				subscription = event.data.object;
 				status = subscription.status;
+				console.log("SUBSCRIPTION TRIAL ENDING");
 				console.log(`Subscription status is ${status}.`);
 				break;
 
 			case "customer.subscription.deleted":
 				subscription = event.data.object;
 				status = subscription.status;
+				console.log("SUBSCRIPTION DELETED");
 				console.log(`Subscription status is ${status}.`);
 				break;
 
 			case "customer.subscription.created":
 				subscription = event.data.object;
 				status = subscription.status;
+				console.log("SUBSCRIPTION CREATED");
 				console.log(`Subscription status is: ${status}`);
 				break;
 
 			case "customer.subscription.updated":
 				subscription = event.data.object;
 				status = subscription.status;
+				console.log("SUBSCRIPTION UPDATED");
 				console.log(`Subscription status is: ${status}`);
 				break;
 
@@ -69,8 +75,8 @@ export async function POST(req: Request) {
 				throw new Error(`Unhandled event: ${event.type}`);
 		}
 	} catch (error) {
-		console.log(error);
-		return NextResponse.json({ message: "Webhook handler failed" }, { status: 500 });
+		console.log(error instanceof Error && error?.message);
+		return NextResponse.json({ message: `Webhook handler failed, ${error instanceof Error && error.message}` }, { status: 500 });
 	}
 
 	// Return a response to acknowledge receipt of the event.

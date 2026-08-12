@@ -8,7 +8,6 @@ import { SubscribeFormSchema } from "@/lib/definitions";
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null, status: number, message?: string, }> {
 	const lookupKey = data.subscription as string;
-	console.log("key = ", lookupKey);
 
 	if (lookupKey === 'free') {
 		return {
@@ -21,7 +20,6 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 
 
 	const prices = await stripe.prices.retrieve(lookupKey);
-	console.log("Prices Here !!!!! ", prices);
 
 	const session = await stripe.checkout.sessions.create({
 		billing_address_collection: 'required',
