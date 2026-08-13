@@ -1,6 +1,13 @@
 import type { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { createClient } from "@/utils/supabase/server";
+
+//This will need to be updated in production.
+const StripeProducts = new Map([
+	["prod_TNN4hsZb9FuoVk", "Premiere"],
+	["prod_TAIA5QhaUQq9JJ", "Basic"]]
+);
 
 export async function POST(req: Request) {
 	let event: Stripe.Event;
@@ -27,52 +34,83 @@ export async function POST(req: Request) {
 				// Used to provision services after the trial has ended.
 				// The status of the invoice will show up as paid. Store the status in your
 				// database to reference when a user accesses your service to avoid hitting rate limits.
-				console.log("INVOICE PAID");
-				console.log("HERE HERE The payment has been processed correctly");
+				// console.log("INVOICE PAID");
+				// console.log("HERE HERE The payment has been processed correctly");
 				break;
 			case "invoice.payment_failed":
 				// If the payment fails or the customer doesn't have a valid payment method,
 				//  an invoice.payment_failed event is sent, the subscription becomes past_due.
 				// Use this webhook to notify your user that their payment has
 				// failed and to retrieve new card details.
-				console.log("INVOICE PAYMENT FAILED");
-				console.log("The payment has failed");
+				// console.log("INVOICE PAYMENT FAILED");
+				// console.log("The payment has failed");
 				break;
 			case "customer.subscription.trial_will_end":
 				subscription = event.data.object;
 				status = subscription.status;
-				console.log("SUBSCRIPTION TRIAL ENDING");
-				console.log(`Subscription status is ${status}.`);
+				// console.log("SUBSCRIPTION TRIAL ENDING");
+				// console.log(`Subscription status is ${status}.`);
 				break;
 
 			case "customer.subscription.deleted":
 				subscription = event.data.object;
 				status = subscription.status;
-				console.log("SUBSCRIPTION DELETED");
-				console.log(`Subscription status is ${status}.`);
+				// console.log("SUBSCRIPTION DELETED");
+				// console.log(`Subscription status is ${status}.`);
 				break;
 
 			case "customer.subscription.created":
 				subscription = event.data.object;
 				status = subscription.status;
+				const productID: string = event.data.object.items.data[0].plan.product as string;
+				const productTitle: string = StripeProducts.get(productID) as string;
+				// let userID: number = -1;
+
+				const supabase = await createClient();
+				const { data, error } = await supabase.auth.getUser();
+				console.log('User ID here: ', data);
+
+				// if (error) {
+				// 	console.error('Error fetching user: ', error.message);
+				// } else if (user) {
+				// 	userID = user.id;
+				// }
+
+				// if (productTitle === "Basic") {
+				// 	const { data, error } = await supabase
+				// 		.from('user_roles')
+				// 		.update({
+				// 			free_tier: false,
+				// 			standard_tier: true,
+				// 		})
+				// 		.eq('user_id', userID);
+					
+				// 	if (error) {
+				// 		console.error('The following error occurred in updating the user_roles table ', error.message);
+				// 	} else {
+				// 		console.log('The user role has successfully been updated.');
+				// 	}
+				// }
 				console.log("SUBSCRIPTION CREATED");
+				console.log('The data is the following', productID);
 				console.log(`Subscription status is: ${status}`);
 				break;
 
-			case "customer.subscription.updated":
-				subscription = event.data.object;
-				status = subscription.status;
-				console.log("SUBSCRIPTION UPDATED");
-				console.log(`Subscription status is: ${status}`);
-				break;
+			// case "customer.subscription.updated":
+			// 	subscription = event.data.object;
+			// 	status = subscription.status;
+			// 	console.log("SUBSCRIPTION UPDATED");
+			// 	console.log(`Subscription status is: ${status}`);
+			// 	break;
 
-			case "entitlements.active_entitlement_summary.updated":
-				subscription = event.data.object;
-				console.log(`Active entitlement summary updated for ${subscription}.`);
-				break;
+			// case "entitlements.active_entitlement_summary.updated":
+			// 	subscription = event.data.object;
+			// 	console.log(`Active entitlement summary updated for ${subscription}.`);
+			// 	break;
 
 			default:
-				throw new Error(`Unhandled event: ${event.type}`);
+				// throw new Error(`Unhandled event: ${event.type}`);
+				break;
 		}
 	} catch (error) {
 		console.log(error instanceof Error && error?.message);
