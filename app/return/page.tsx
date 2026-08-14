@@ -20,7 +20,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
     // const invoice = await stripe.invoices.createPreview({ customer: customer as string });
     const invoiceData = await stripe.invoices.retrieve(invoice as string);
     const { hosted_invoice_url, invoice_pdf } = invoiceData;
-    console.log('Invoice Data here ', invoiceData);
 
 
     console.log('Data here ', sessionData);

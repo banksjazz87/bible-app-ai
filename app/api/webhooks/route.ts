@@ -63,34 +63,27 @@ export async function POST(req: Request) {
 				subscription = event.data.object;
 				status = subscription.status;
 				const productID: string = event.data.object.items.data[0].plan.product as string;
-				const productTitle: string = StripeProducts.get(productID) as string;
-				// let userID: number = -1;
 
-				const supabase = await createClient();
-				const { data, error } = await supabase.auth.getUser();
-				console.log('User ID here: ', data);
+				try {
+					const response = await fetch("http://localhost:3000/api/update-user-roles", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ productId: productID }),
+					});
 
-				// if (error) {
-				// 	console.error('Error fetching user: ', error.message);
-				// } else if (user) {
-				// 	userID = user.id;
-				// }
+					const finalData = await response.json();
 
-				// if (productTitle === "Basic") {
-				// 	const { data, error } = await supabase
-				// 		.from('user_roles')
-				// 		.update({
-				// 			free_tier: false,
-				// 			standard_tier: true,
-				// 		})
-				// 		.eq('user_id', userID);
-					
-				// 	if (error) {
-				// 		console.error('The following error occurred in updating the user_roles table ', error.message);
-				// 	} else {
-				// 		console.log('The user role has successfully been updated.');
-				// 	}
-				// }
+					if (finalData.status !== 200) {
+						console.error(`The following error occurred in updating the user role: ${finalData.message}`)
+					} else {
+						console.log('The user role has been updated from the STRIPE webhook');
+					}
+				} catch (error: unknown) {
+					throw new Error(`The following error occurred in making the update-user-role request ${error instanceof Error && error.message}`);
+				}
+
 				console.log("SUBSCRIPTION CREATED");
 				console.log('The data is the following', productID);
 				console.log(`Subscription status is: ${status}`);
