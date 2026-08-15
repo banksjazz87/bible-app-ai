@@ -59,10 +59,16 @@ export async function POST(req: Request) {
 				// console.log(`Subscription status is ${status}.`);
 				break;
 
-			case "customer.subscription.created":
+				case "customer.subscription.created":
+				// case "checkout.session.completed":
 				subscription = event.data.object;
 				status = subscription.status;
 				const productID: string = event.data.object.items.data[0].plan.product as string;
+				const userID: string = event.data.object.items.data[0].metadata.supabase_userID;
+
+				console.log('**');
+				console.log('User Details: ', event.data);
+				console.log('**');
 
 				try {
 					const response = await fetch("http://localhost:3000/api/update-user-roles", {
@@ -70,7 +76,7 @@ export async function POST(req: Request) {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify({ productId: productID }),
+						body: JSON.stringify({ productId: productID, userId: userID }),
 					});
 
 					const finalData = await response.json();

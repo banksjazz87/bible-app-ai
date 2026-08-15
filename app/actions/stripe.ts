@@ -5,6 +5,7 @@ import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema } from "@/lib/definitions";
+import { createClient } from "@/utils/supabase/server";
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null, status: number, message?: string, }> {
 	const lookupKey = data.subscription as string;
@@ -19,8 +20,13 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 	}
 
 
-	const prices = await stripe.prices.retrieve(lookupKey);
 
+	const prices = await stripe.prices.retrieve(lookupKey);
+	
+	//Get our current user id from supabase
+	const supabase = await createClient();
+	const { data: { user } } = await supabase.auth.getUser();
+	
 	const session = await stripe.checkout.sessions.create({
 		billing_address_collection: 'required',
 		automatic_tax: {
@@ -39,6 +45,9 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 				quantity: 1,
 			},
 		],
+		metadata: {
+			supabase_userID: user?.id ? user.id : ''
+		},
 		mode: "subscription",
 		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`
 	});
@@ -55,7 +64,7 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 export async function createPortalSession(data: FormData) {
 	const sessionID = data.get("session") as string;
 	const { customer } = await stripe.checkout.sessions.retrieve(sessionID);
-	const returnURL = process.env.NEX_PUBLIC_DOMAIN as string;
+	const returnURL = process.env.NEXT_PUBLIC_DOMAIN as string;
 
 	const portalSession = await stripe.billingPortal.sessions.create({
 		customer: customer as string,
