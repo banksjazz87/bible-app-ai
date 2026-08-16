@@ -19,11 +19,8 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 		}
 	}
 
-
-
+	//Retrive the prices object along with the current user.
 	const prices = await stripe.prices.retrieve(lookupKey);
-	
-	//Get our current user id from supabase
 	const supabase = await createClient();
 	const { data: { user } } = await supabase.auth.getUser();
 	
@@ -46,7 +43,8 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 			},
 		],
 		metadata: {
-			supabase_userID: user?.id ? user.id : ''
+			supabase_userID: user?.id ? user.id : '',
+			productID: prices.product as string,
 		},
 		mode: "subscription",
 		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`

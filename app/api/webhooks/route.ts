@@ -59,16 +59,16 @@ export async function POST(req: Request) {
 				// console.log(`Subscription status is ${status}.`);
 				break;
 
-				case "customer.subscription.created":
-				// case "checkout.session.completed":
+				// case "customer.subscription.created":
+				case "checkout.session.completed":
 				subscription = event.data.object;
 				status = subscription.status;
-				const productID: string = event.data.object.items.data[0].plan.product as string;
-				const userID: string = event.data.object.items.data[0].metadata.supabase_userID;
+				// const productID: string = event.data.object.items.data[0].plan.product as string;
+				// const userID: string = event.data.object.items.data[0].metadata.supabase_userID;
 
-				console.log('**');
-				console.log('User Details: ', event.data);
-				console.log('**');
+				const productID: string = event.data.object.metadata?.productID as string;
+				const userID: string = event.data.object.metadata?.supabase_userID as string;
+
 
 				try {
 					const response = await fetch("http://localhost:3000/api/update-user-roles", {
@@ -91,8 +91,7 @@ export async function POST(req: Request) {
 				}
 
 				console.log("SUBSCRIPTION CREATED");
-				console.log('The data is the following', productID);
-				console.log(`Subscription status is: ${status}`);
+				console.log(`SUBSCRIPTION STATUS IS: ${status}`);
 				break;
 
 			// case "customer.subscription.updated":

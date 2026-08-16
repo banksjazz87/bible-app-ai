@@ -12,7 +12,7 @@ export const CheckoutForm = () => {
 			return (
 				<pre>
 					{JSON.stringify(checkoutState.checkout.lineItems, null, 2)}
-					// A formatted total amount Total: {checkoutState.checkout.total.total.amount}
+					{checkoutState.checkout.total.total.amount}
 				</pre>
 			);
 	}

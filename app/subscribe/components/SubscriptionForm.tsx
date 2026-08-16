@@ -37,6 +37,8 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const [customerId, setCustomerId] = useState<string | null>(null);
 	const userEmail = useAppSelector((state) => state.loggedInData.email);
 
+	
+
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
 		resolver: zodResolver(SubscribeFormSchema),
 		defaultValues: {
@@ -82,7 +84,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		}
 	})
 
-	useEffect(() => console.log(products), [products]);
+	useEffect(() => console.log('All products here, ', products), [products]);
 
 	useEffect(() => {
 		setUserEmail();
