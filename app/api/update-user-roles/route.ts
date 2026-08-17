@@ -26,13 +26,14 @@ export async function POST(request: Request) {
     console.log('The product id is: ', productId);
     console.log('//');
     
-    // const supabaseURL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    // const serviceKey = process.env.NEXT_SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseURL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_SUPABASE_ANON_KEY;
+    const apiKey = process.env.NEXT_SUPABASE_API_KEY;
 
-    // const targetTable = "user_roles";
-    // const url = `${supabaseURL}/rest/v1/${targetTable}?id=eq.${userId}`;
+    const targetTable = "user_roles";
+    const url = `${supabaseURL}/rest/v1/${targetTable}?id=eq.${userId}`;
 
-    // console.log('the url is here: ', url);
+    console.log('the url is here: ', url);
 
     return NextResponse.json({ message: 'test complete' }, { status: 200 });
 
