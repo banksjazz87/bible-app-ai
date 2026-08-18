@@ -1,13 +1,9 @@
 import type { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { createClient } from "@/utils/supabase/server";
 
-//This will need to be updated in production.
-const StripeProducts = new Map([
-	["prod_TNN4hsZb9FuoVk", "Premiere"],
-	["prod_TAIA5QhaUQq9JJ", "Basic"]]
-);
+
+
 
 export async function POST(req: Request) {
 	let event: Stripe.Event;
@@ -59,16 +55,13 @@ export async function POST(req: Request) {
 				// console.log(`Subscription status is ${status}.`);
 				break;
 
-				// case "customer.subscription.created":
-				case "checkout.session.completed":
+			// case "customer.subscription.created":
+			case "checkout.session.completed":
 				subscription = event.data.object;
 				status = subscription.status;
-				// const productID: string = event.data.object.items.data[0].plan.product as string;
-				// const userID: string = event.data.object.items.data[0].metadata.supabase_userID;
 
 				const productID: string = event.data.object.metadata?.productID as string;
 				const userID: string = event.data.object.metadata?.supabase_userID as string;
-
 
 				try {
 					const response = await fetch("http://localhost:3000/api/update-user-roles", {
@@ -82,9 +75,9 @@ export async function POST(req: Request) {
 					const finalData = await response.json();
 
 					if (finalData.status !== 200) {
-						console.error(`The following error occurred in updating the user role: ${finalData.message}`)
+						console.error(`The following error occurred in updating the user role: ${finalData.message}`);
 					} else {
-						console.log('The user role has been updated from the STRIPE webhook');
+						console.log("The user role has been updated from the STRIPE webhook");
 					}
 				} catch (error: unknown) {
 					throw new Error(`The following error occurred in making the update-user-role request ${error instanceof Error && error.message}`);

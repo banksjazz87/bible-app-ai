@@ -1,94 +1,73 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
 
 /**
- * This will be used for the following:
- * - Update the user role
- * - Expecting to get a product_id
- * - Based on the product id we will update the user role to the latest subscription tier
- * - Send back a status 200 if all is well
- * - Send back a status 400 if something went wrong, along with an error message
+ *
+ * @param request The request body requires the user id as well as the product id.
+ * @returns {Promise<NextResponse>}
+ * @description used to update the user_roles via the supabase url, based on the most recent subscription purchase.
  */
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
 	//This will need to be updated in production.
 	const StripeProducts = new Map([
 		["prod_TNN4hsZb9FuoVk", "Premiere"],
 		["prod_TAIA5QhaUQq9JJ", "Basic"],
 	]);
 
-    const body = await request.json();
-    console.log('The request body is the following ', body);
-    const { productId, userId } = body;
+	const body = await request.json();
+	const { productId, userId } = body;
 
-    console.log('//');
-    console.log('The user id is: ', userId);
-    console.log('The product id is: ', productId);
-    console.log('//');
+	const supabaseURL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+	const anonKey = process.env.NEXT_SUPABASE_ANON_KEY;
+	const apiKey = process.env.NEXT_SUPABASE_API_KEY;
+
+	const targetTable = "user_roles";
+    const supaUrl = `${supabaseURL}/rest/v1/${targetTable}?user_id=eq.${userId}`;
     
-    const supabaseURL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_SUPABASE_ANON_KEY;
-    const apiKey = process.env.NEXT_SUPABASE_API_KEY;
+	if (!StripeProducts.get(productId)) {
+		return NextResponse.json({ message: "The purchased product cannot be found." }, { status: 400 });
+	}
 
-    const targetTable = "user_roles";
-    const url = `${supabaseURL}/rest/v1/${targetTable}?id=eq.${userId}`;
+	let updateObject = {
+		standard_tier: false,
+		premiere_tier: false,
+		free_tier: true,
+	};
 
-    console.log('the url is here: ', url);
+	if (StripeProducts.get(productId) === "Premiere") {
+		updateObject = {
+			standard_tier: false,
+			premiere_tier: true,
+			free_tier: false,
+		};
+	} else if (StripeProducts.get(productId) === "Basic") {
+		updateObject = {
+			standard_tier: true,
+			premiere_tier: false,
+			free_tier: false,
+		};
+	}
 
-    return NextResponse.json({ message: 'test complete' }, { status: 200 });
+	try {
+		const response = await fetch(supaUrl, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+				apiKey: apiKey as string,
+				Authorization: anonKey as string,
+			},
+			body: JSON.stringify(updateObject),
+		});
 
+        console.log('Response ', response);
+		if (!response.ok) {
+			throw new Error(`HTTP error!  Status: ${response.status}`);
+		}
 
-
-//     console.log('The associated product name is ', StripeProducts.get(productId));
-// 	if (!StripeProducts.get(productId)) {
-// 		return NextResponse.json({ error: "The purchased product cannot be found." }, { status: 400 });
-//     }
-    
-
-// console.log("MADE IT BEFORE the CREATE CLIENT");
-// 	const supabase = await createClient();
-// 	const {
-// 		data: { user },
-// 		error,
-// 	} = await supabase.auth.getUser();
-
-//     if (error) {
-//         console.error('Error fetching the current user: ', error.message);
-// 		return NextResponse.json({ error: "Unable to find the current user." }, { status: 400 });
-//     } else {
-//         console.log('Current user data: ', user);
-//     }
-
-//     console.log('MADE IT PAST the CREATE CLIENT');
-//     const userID = user?.id;
-//     console.log('THE FOLLOWING IS THE USER ID TO UPDATE THE USER ROLE: ', userID);
-// 	let updateObject = {
-// 		standard_tier: false,
-// 		premiere_tier: false,
-// 		free_tier: true,
-// 	};
-
-// 	if (StripeProducts.get(productId) === "Premiere") {
-// 		updateObject = {
-// 			standard_tier: false,
-// 			premiere_tier: false,
-// 			free_tier: true,
-// 		};
-// 	} else if (StripeProducts.get(productId) === "Basic") {
-// 		updateObject = {
-// 			standard_tier: false,
-// 			premiere_tier: false,
-// 			free_tier: true,
-// 		};
-// 	}
-
-// 	try {
-// 		const { error } = await supabase.from("user_roles").update(updateObject).eq("user_id", userID);
-
-// 		if (!error) {
-// 			return NextResponse.json({ message: "The user role has been updated successfully" }, { status: 200 });
-// 		}
-// 	} catch (error: unknown) {
-// 		return NextResponse.json({ message: `The following error occurred in adding the user ${error instanceof Error && error.message}` }, { status: 400 });
-// 	}
+        return NextResponse.json({ message: "The user role has been updated upon checkout session completion" }, { status: 200 });
+        
+    } catch (error: unknown) {
+        console.log('Error HEREEEEEE ', error);
+		return NextResponse.json({ message: `The following error occurred in adding the user ${error instanceof Error && error.message}` }, { status: 400 });
+	}
 }
