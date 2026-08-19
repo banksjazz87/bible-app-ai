@@ -18,6 +18,8 @@ const pageContent = async (): Promise<JSX.Element> => {
 		["Premiere", ["Limit of 50 AI queries per day", "Save data for life", "Print PDF of notes", "Email notifications of all future updates"]],
 	]);
 
+	console.log('Products here', products);
+
 	const displayPriceCards = products.data?.map((x, y) => {
 		if (x.product.active) {
 			const details = pricingDetails.get(x.product.name);
@@ -26,7 +28,7 @@ const pageContent = async (): Promise<JSX.Element> => {
 					key={`price_card_${y}`}
 					title={x.product.name}
 					details={details ? details : []}
-					value={x.product.default_price as string}
+					value={x.unit_amount ? x.unit_amount / 100 : 0}
 					optionValue={`${x.product.default_price as string}`}
 				/>
 			);
@@ -43,7 +45,7 @@ const pageContent = async (): Promise<JSX.Element> => {
 					<PriceCard
 						title="Free"
 						details={["Limit of 5 AI queries per day", "Email notifications of all future updates"]}
-						value="free"
+						value={0}
 						optionValue="free"
 					/>
 					{displayPriceCards}

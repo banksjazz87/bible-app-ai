@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useEffectEvent } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useState, use } from "react";
-import { createCheckoutSession, createCustomer, searchCustomer, getProducts } from "../../actions/stripe";
+import { createCheckoutSession, createCustomer, searchCustomer } from "../../actions/stripe";
 import { ProductResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
 import { useAppSelector } from "@/lib/store/hooks";
@@ -33,7 +32,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const preSelectedSubscription: string = searchParams.get("option") ? searchParams.get("option") as string : "free";
 	const allProducts = use(products);
-	const router = useRouter();
 	const [customerId, setCustomerId] = useState<string | null>(null);
 	const userEmail = useAppSelector((state) => state.loggedInData.email);
 
@@ -84,7 +82,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		}
 	})
 
-	useEffect(() => console.log('All products here, ', products), [products]);
+	useEffect(() => console.log('All products here, ', allProducts), [allProducts]);
 
 	useEffect(() => {
 		setUserEmail();

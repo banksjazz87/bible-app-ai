@@ -30,38 +30,40 @@ export async function POST(req: Request) {
 				// Used to provision services after the trial has ended.
 				// The status of the invoice will show up as paid. Store the status in your
 				// database to reference when a user accesses your service to avoid hitting rate limits.
-				// console.log("INVOICE PAID");
-				// console.log("HERE HERE The payment has been processed correctly");
+				console.log("INVOICE PAID");
+				console.log("HERE HERE The payment has been processed correctly");
 				break;
 			case "invoice.payment_failed":
 				// If the payment fails or the customer doesn't have a valid payment method,
 				//  an invoice.payment_failed event is sent, the subscription becomes past_due.
 				// Use this webhook to notify your user that their payment has
 				// failed and to retrieve new card details.
-				// console.log("INVOICE PAYMENT FAILED");
-				// console.log("The payment has failed");
+				console.log("INVOICE PAYMENT FAILED");
+				console.log("The payment has failed");
 				break;
 			case "customer.subscription.trial_will_end":
 				subscription = event.data.object;
 				status = subscription.status;
-				// console.log("SUBSCRIPTION TRIAL ENDING");
-				// console.log(`Subscription status is ${status}.`);
+				console.log("SUBSCRIPTION TRIAL ENDING");
+				console.log(`Subscription status is ${status}.`);
 				break;
 
 			case "customer.subscription.deleted":
 				subscription = event.data.object;
 				status = subscription.status;
-				// console.log("SUBSCRIPTION DELETED");
-				// console.log(`Subscription status is ${status}.`);
+				console.log("SUBSCRIPTION DELETED");
+				console.log(`Subscription status is ${status}.`);
 				break;
 
 			// case "customer.subscription.created":
 			case "checkout.session.completed":
 				subscription = event.data.object;
 				status = subscription.status;
+				console.log('CHECKOUT SESSION COMPLETED')
+				console.log(`Checkout status is ${status}`);
 
-				const productID: string = event.data.object.metadata?.productID as string;
-				const userID: string = event.data.object.metadata?.supabase_userID as string;
+				const productID: string = subscription.metadata?.productID as string;
+				const userID: string = subscription.metadata?.supabase_userID as string;
 
 				try {
 					const response = await fetch("http://localhost:3000/api/update-user-roles", {
@@ -82,22 +84,19 @@ export async function POST(req: Request) {
 				} catch (error: unknown) {
 					throw new Error(`The following error occurred in making the update-user-role request ${error instanceof Error && error.message}`);
 				}
-
-				console.log("SUBSCRIPTION CREATED");
-				console.log(`SUBSCRIPTION STATUS IS: ${status}`);
 				break;
 
-			// case "customer.subscription.updated":
-			// 	subscription = event.data.object;
-			// 	status = subscription.status;
-			// 	console.log("SUBSCRIPTION UPDATED");
-			// 	console.log(`Subscription status is: ${status}`);
-			// 	break;
+			case "customer.subscription.updated":
+				subscription = event.data.object;
+				status = subscription.status;
+				console.log("SUBSCRIPTION UPDATED");
+				console.log(`Subscription status is: ${status}`);
+				break;
 
-			// case "entitlements.active_entitlement_summary.updated":
-			// 	subscription = event.data.object;
-			// 	console.log(`Active entitlement summary updated for ${subscription}.`);
-			// 	break;
+			case "entitlements.active_entitlement_summary.updated":
+				subscription = event.data.object;
+				console.log(`Active entitlement summary updated for ${subscription}.`);
+				break;
 
 			default:
 				// throw new Error(`Unhandled event: ${event.type}`);

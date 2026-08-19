@@ -22,8 +22,8 @@ export async function POST(request: Request): Promise<NextResponse> {
 	const apiKey = process.env.NEXT_SUPABASE_API_KEY;
 
 	const targetTable = "user_roles";
-    const supaUrl = `${supabaseURL}/rest/v1/${targetTable}?user_id=eq.${userId}`;
-    
+	const supaUrl = `${supabaseURL}/rest/v1/${targetTable}?user_id=eq.${userId}`;
+
 	if (!StripeProducts.get(productId)) {
 		return NextResponse.json({ message: "The purchased product cannot be found." }, { status: 400 });
 	}
@@ -59,15 +59,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 			body: JSON.stringify(updateObject),
 		});
 
-        console.log('Response ', response);
 		if (!response.ok) {
 			throw new Error(`HTTP error!  Status: ${response.status}`);
 		}
 
-        return NextResponse.json({ message: "The user role has been updated upon checkout session completion" }, { status: 200 });
-        
-    } catch (error: unknown) {
-        console.log('Error HEREEEEEE ', error);
+		return NextResponse.json({ message: "The user role has been updated upon checkout session completion" }, { status: 200 });
+	} catch (error: unknown) {
 		return NextResponse.json({ message: `The following error occurred in adding the user ${error instanceof Error && error.message}` }, { status: 400 });
 	}
 }

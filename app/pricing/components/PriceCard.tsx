@@ -10,7 +10,7 @@ import { useAppSelector } from "@/lib/store/hooks";
 type PriceCardProps = {
 	title: string;
 	details: string[];
-    value: string;
+    value: number;
 	optionValue: string;
 };
 
@@ -25,24 +25,38 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 				key={`list_item_${y}`}
 				className="flex flex-row gap-2 align-middle"
 			>
-				<FontAwesomeIcon
-					icon={faCheck}
-					className="size-4"
-				/>
+				<div className="rounded-full bg-neutral-900 h-7 w-7 flex items-center justify-center">
+					<FontAwesomeIcon
+						icon={faCheck}
+						className="size-4 text-white"
+					/>
+				</div>
 				{x}
 			</li>
 		);
 	});
 	return (
-		<div className="grid-cols-1 border border-slate-800 rounded-md p-2 flex flex-col gap-2 align-middle justify-between min-h-96 py-24 px-10">
-			<p className="text-center text-3xl font-semibold">{title}</p>
-			<ul className="text-left">{listItems}</ul>
-			<input
-				type="hidden"
-				name="price-option"
-				value={value}
-			/>
-			<Link href={hrefLink} className="flex flex-col">
+		<div className="grid-cols-1 border border-slate-800 rounded-md p-2 flex flex-col align-middle justify-between gap-10 min-h-96 py-24 px-10">
+			<div className="flex flex-col gap-10">
+				<div className="flex flex-col gap-1">
+					<p className="text-1xl font-semibold">{title}</p>
+					<p className="text-3xl font-bold">{`$${value}/Month`}</p>
+				</div>
+
+				<div>
+					<ul className="text-left">{listItems}</ul>
+					<input
+						type="hidden"
+						name="price-option"
+						value={optionValue}
+					/>
+				</div>
+			</div>
+
+			<Link
+				href={hrefLink}
+				className="flex flex-col"
+			>
 				<Button>Signup</Button>
 			</Link>
 		</div>
