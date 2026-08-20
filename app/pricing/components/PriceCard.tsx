@@ -14,10 +14,13 @@ type PriceCardProps = {
 	optionValue: string;
 };
 
+
 export default function PriceCard({ title, details, value, optionValue }: PriceCardProps): JSX.Element {
 	const userLoggedIn = useAppSelector((state) => state.loggedInData.isLoggedIn);
 	const targetPage = userLoggedIn ? "/subscribe" : "/account/login";
 	const hrefLink = `${targetPage}?option=${optionValue}`;
+	// const isUserTier = UserRoleTierMap.get(userRole as number) === title.toLowerCase();
+	const isUserTier = false;
 
 	const listItems = details.map((x: string, y: number) => {
 		return (
@@ -36,7 +39,9 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 		);
 	});
 	return (
-		<div className="grid-cols-1 border border-slate-800 rounded-md p-2 flex flex-col align-middle justify-between gap-10 min-h-96 py-24 px-10">
+		<div
+			className={`grid-cols-1 border border-slate-800 rounded-md flex flex-col align-middle justify-between gap-10 p-12 ${isUserTier ? 'bg-slate-800' : 'bg-white}'}`}
+		>
 			<div className="flex flex-col gap-10">
 				<div className="flex flex-col gap-1">
 					<p className="text-1xl font-semibold">{title}</p>
