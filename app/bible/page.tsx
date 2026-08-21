@@ -92,6 +92,7 @@ function PageContent() {
 		}
 	});
 
+
 	useEffect((): void => {
 		getBibleRequestData();
 		setLLMReqInit();
@@ -125,7 +126,7 @@ function PageContent() {
 						setUserRoles('premiere');
 						setMaxRequests(50);
 					} else if (userData.standard_tier) {
-						setUserRoles('standard');
+						setUserRoles('basic');
 						setMaxRequests(20);
 					}
 				} else {

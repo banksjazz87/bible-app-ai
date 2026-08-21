@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX } from "react";
+import { JSX, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -10,17 +10,16 @@ import { useAppSelector } from "@/lib/store/hooks";
 type PriceCardProps = {
 	title: string;
 	details: string[];
-    value: number;
+	value: number;
 	optionValue: string;
 };
 
-
 export default function PriceCard({ title, details, value, optionValue }: PriceCardProps): JSX.Element {
 	const userLoggedIn = useAppSelector((state) => state.loggedInData.isLoggedIn);
+	const userRole = useAppSelector((state) => state.loggedInData.userRole);
 	const targetPage = userLoggedIn ? "/subscribe" : "/account/login";
 	const hrefLink = `${targetPage}?option=${optionValue}`;
-	// const isUserTier = UserRoleTierMap.get(userRole as number) === title.toLowerCase();
-	const isUserTier = false;
+	const isUserTier = userRole === title.toLowerCase();
 
 	const listItems = details.map((x: string, y: number) => {
 		return (
@@ -39,9 +38,7 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 		);
 	});
 	return (
-		<div
-			className={`grid-cols-1 border border-slate-800 rounded-md flex flex-col align-middle justify-between gap-10 p-12 ${isUserTier ? 'bg-slate-800' : 'bg-white}'}`}
-		>
+		<div className={`grid-cols-1 border border-slate-800 rounded-md flex flex-col align-middle justify-between gap-10 p-12 ${isUserTier ? "bg-slate-200" : "bg-white}"}`}>
 			<div className="flex flex-col gap-10">
 				<div className="flex flex-col gap-1">
 					<p className="text-1xl font-semibold">{title}</p>
@@ -59,10 +56,10 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 			</div>
 
 			<Link
-				href={hrefLink}
+				href={isUserTier ? '' : hrefLink}
 				className="flex flex-col"
 			>
-				<Button>Signup</Button>
+				{isUserTier ? <Button disabled>Signup</Button> : <Button>Signup</Button>}
 			</Link>
 		</div>
 	);

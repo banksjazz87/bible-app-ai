@@ -41,7 +41,7 @@ export default function StoreProvider({ children }: { children: React.ReactNode 
                 data.userRole = "premiere";
                 data.maxRequests = 50;
             } else if (userData.standard_tier) {
-                data.userRole = "standard";
+                data.userRole = "basic";
 				data.maxRequests = 20;
             } else {
                 data.userRole = "free";

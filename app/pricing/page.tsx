@@ -3,7 +3,9 @@
 import PriceCard from "./components/PriceCard";
 import { Suspense, JSX } from "react";
 import { getProducts } from "../actions/stripe";
-import { createClient } from "@/utils/supabase/server";
+
+
+
 
 export default async function Pricing(): Promise<JSX.Element> {
 	return <Suspense fallback={pageFallBack()}>{pageContent()}</Suspense>;
