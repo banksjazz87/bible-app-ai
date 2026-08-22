@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, useEffect } from "react";
+import { JSX } from "react";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -21,13 +21,13 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 	const hrefLink = `${targetPage}?option=${optionValue}`;
 	const isUserTier = userRole === title.toLowerCase();
 
-	const listItems = details.map((x: string, y: number) => {
+	const listItems: JSX.Element[] = details.map((x: string, y: number):JSX.Element => {
 		return (
 			<li
 				key={`list_item_${y}`}
 				className="flex flex-row gap-2 align-middle"
 			>
-				<div className="rounded-full bg-neutral-900 h-7 w-7 flex items-center justify-center">
+				<div className="rounded-full h-7 w-7 flex items-center bg-neutral-900 justify-center">
 					<FontAwesomeIcon
 						icon={faCheck}
 						className="size-4 text-white"
@@ -37,8 +37,9 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 			</li>
 		);
 	});
+
 	return (
-		<div className={`grid-cols-1 border border-slate-800 rounded-md flex flex-col align-middle justify-between gap-10 p-12 ${isUserTier ? "bg-slate-200" : "bg-white}"}`}>
+		<div className={`grid-cols-1 border border-slate-800 rounded-md flex flex-col align-middle justify-between gap-10 p-12 ${isUserTier ? "bg-slate-200 opacity-95 border-slate-300 dark:bg-slate-400" : "bg-white}"}`}>
 			<div className="flex flex-col gap-10">
 				<div className="flex flex-col gap-1">
 					<p className="text-1xl font-semibold">{title}</p>
@@ -55,12 +56,21 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 				</div>
 			</div>
 
-			<Link
-				href={isUserTier ? '' : hrefLink}
-				className="flex flex-col"
-			>
-				{isUserTier ? <Button disabled>Signup</Button> : <Button>Signup</Button>}
-			</Link>
+			{isUserTier ? (
+				<Button
+					disabled
+					aria-disabled
+				>
+					Signup
+				</Button>
+			) : (
+				<Link
+					href={isUserTier ? "" : hrefLink}
+					className="flex flex-col"
+				>
+					<Button>Signup</Button>
+				</Link>
+			)}
 		</div>
 	);
 }

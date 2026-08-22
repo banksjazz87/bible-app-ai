@@ -55,6 +55,13 @@ export async function POST(req: Request) {
 				console.log(`Subscription status is ${status}.`);
 				break;
 
+			case "customer.created":
+				subscription = event.data.object;
+				console.log('///');
+				console.log('NEW CUSTOMER CREATED!!!!');
+				console.log('///');
+				break;
+
 			// case "customer.subscription.created":
 			case "checkout.session.completed":
 				subscription = event.data.object;

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer } from "../../actions/stripe";
-import { ProductResponse } from "@/lib/definitions";
+import { ProductResponse, SubscriptionResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
 import { useAppSelector } from "@/lib/store/hooks";
 import Link from "next/link";
@@ -24,14 +24,16 @@ const SubscribeFormSchema = z.object({
 
 type SubscriptionFormProps = {
 	products: Promise<ProductResponse>;
+	subscriptions: Promise<SubscriptionResponse>
 };
 
 
 
-export default function SubscriptionForm({ products }: SubscriptionFormProps) {
+export default function SubscriptionForm({ products, subscriptions }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const preSelectedSubscription: string = searchParams.get("option") ? searchParams.get("option") as string : "free";
 	const allProducts = use(products);
+	const allSubscriptions = use(subscriptions);
 	const [customerId, setCustomerId] = useState<string | null>(null);
 	const userEmail = useAppSelector((state) => state.loggedInData.email);
 
@@ -49,7 +51,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		try {
 			const customer = await searchCustomer(data, "email");
 			//If the customer data came back and the data array is empty, create new customer.
-			if (customer && customer.data.length === 0) {
+			if (customer?.data.length === 0) {
 				try {
 					const newCustomer = await createCustomer(data);
 					if (newCustomer.status === 200) {
@@ -83,6 +85,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	})
 
 	useEffect(() => console.log('All products here, ', allProducts), [allProducts]);
+	useEffect(() => console.log('All subscriptions here, ', allSubscriptions), [allSubscriptions]);
 
 	useEffect(() => {
 		setUserEmail();

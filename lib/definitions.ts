@@ -4,54 +4,52 @@ import { Stripe } from "stripe";
 import { SubmitHandler, FieldValues } from "react-hook-form";
 
 export type BookAndChapters = {
-    text: string;
-    chapters: number;
-    value: string;
-
+	text: string;
+	chapters: number;
+	value: string;
 };
 
 export type BibleVersions = {
-    value: string;
-    text: string;
+	value: string;
+	text: string;
 };
 
 export type BooksProps = {
-    books: BookAndChapters[];
-    changeHandler: (value: string) => void;
-    sectionTitle: string;
-    optionsID: string;
-    placeholder: string;
-    selectedValue: string;
+	books: BookAndChapters[];
+	changeHandler: (value: string) => void;
+	sectionTitle: string;
+	optionsID: string;
+	placeholder: string;
+	selectedValue: string;
 };
 
-
 export type VersionsProps = {
-    versions: BibleVersions[];
-    sectionTitle: string;
-    optionsID: string;
-    changeHandler: (value: string) => void;
+	versions: BibleVersions[];
+	sectionTitle: string;
+	optionsID: string;
+	changeHandler: (value: string) => void;
 };
 
 export type SelectFields = {
-    value: string;
-    text: string;
-}
+	value: string;
+	text: string;
+};
 
 export type OptionsProps = {
-    changeHandler: (value: string) => void;
-    sectionTitle: string;
-    options: SelectFields[];
-    optionsID: string;
-    placeholderText: string;
-    selectedValue: string;
+	changeHandler: (value: string) => void;
+	sectionTitle: string;
+	options: SelectFields[];
+	optionsID: string;
+	placeholderText: string;
+	selectedValue: string;
 };
 
 export type BibleFormData = {
-    version: string;
-    book: string;
-    chapter: string;
-    startVerse: string;
-    endVerse: string;
+	version: string;
+	book: string;
+	chapter: string;
+	startVerse: string;
+	endVerse: string;
 };
 
 export type BibleFormProps = {
@@ -60,45 +58,45 @@ export type BibleFormProps = {
 };
 
 export type Verses = {
-    book: string;
-    chapter: string;
-    verse: string;
-    text: string;
+	book: string;
+	chapter: string;
+	verse: string;
+	text: string;
 };
 
 export type ChapterResponse = {
-    data: Verses[];
+	data: Verses[];
 };
 
 export type LLMReqObject = {
 	heading: string;
 	output: string;
-    isEdited: boolean;
-}
+	isEdited: boolean;
+};
 
 export type LoginForm = {
-    email: string;
-    password: string;
-}
+	email: string;
+	password: string;
+};
 
 export interface APIResponse {
-    status: number;
-    message: string;
+	status: number;
+	message: string;
 }
 
 export interface APIDataResponse<K> extends APIResponse {
-    data: K,
+	data: K;
 }
 
 export type UserData = {
-    email: string,
-    id: string
-}
+	email: string;
+	id: string;
+};
 
 export type AlertProps = {
 	isOpen: boolean;
-    openHandler: (isOpen: boolean) => void;
-    closeHandler: () => void;
+	openHandler: (isOpen: boolean) => void;
+	closeHandler: () => void;
 	title: string;
 	description: string;
 	confirmText?: string;
@@ -108,21 +106,21 @@ export type AlertProps = {
 };
 
 export type LoginFormProps = {
-    responseHandler: (statusCode: number | null) => void;
-    alertMessageHandler: (message: string) => void;
-    alertTitleHandler: (title: string) => void;
-}
+	responseHandler: (statusCode: number | null) => void;
+	alertMessageHandler: (message: string) => void;
+	alertTitleHandler: (title: string) => void;
+};
 
 export type SaveSermonData = {
 	bibleData: BibleFormData;
 	LLMOutput: LLMReqObject[];
-}; 
+};
 
 export type ChatThread = {
-    id?: number;
-    thread_slug: string;
-    date_created?: string;
-    last_modified?: string;
+	id?: number;
+	thread_slug: string;
+	date_created?: string;
+	last_modified?: string;
 	thread_name: string;
 	bible_version: string;
 	book: string;
@@ -135,33 +133,44 @@ export type ChatThread = {
 };
 
 export type UserRoles = {
-    id: number;
-    user_id: string;
-    super_admin: boolean;
-    standard_tier: boolean;
-    premiere_tier: boolean;
-    free_tier: boolean;
-    email_address: string;
-}
+	id: number;
+	user_id: string;
+	super_admin: boolean;
+	standard_tier: boolean;
+	premiere_tier: boolean;
+	free_tier: boolean;
+	email_address: string;
+};
 
 export type SubscriptionData = {
-    priceTitle: string;
-    details: string[],
-    value: string
-}
+	priceTitle: string;
+	details: string[];
+	value: string;
+};
 
 export type LocationObject = {
-    code: string;
-    name: string;
-}
+	code: string;
+	name: string;
+};
 
 export type SubscribeFormSchema = {
-    email: string;
-    subscription: string;
-}
+	email: string;
+	subscription: string;
+};
 
 export type ProductResponse = {
 	status: number;
-    data?: (Stripe.Price & { product: Stripe.Product })[];
+	data?: (Stripe.Price & { product: Stripe.Product })[];
 	errorMessage?: string;
+};
+
+export type SubscriptionResponse = {
+    status: number;
+    data: Stripe.Response<Stripe.ApiList<Stripe.Subscription>>;
+    message?: undefined;
+}
+| {
+    status: number;
+    message: string;
+    data?: undefined;
 };

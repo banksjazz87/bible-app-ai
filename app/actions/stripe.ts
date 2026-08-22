@@ -4,7 +4,7 @@ import type { Stripe } from "stripe";
 import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
-import { SubscribeFormSchema } from "@/lib/definitions";
+import { SubscribeFormSchema, SubscriptionResponse, ProductResponse } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null, status: number, message?: string, }> {
@@ -130,11 +130,23 @@ export async function createCustomer(data: SubscribeFormSchema) {
 	};
 }
 
-type ProductResponse = {
-	status: number;
-	data?: (Stripe.Price & { product: Stripe.Product })[];
-	errorMessage?: string;
-};
+
+export async function getSubscriptions(): Promise<SubscriptionResponse> {
+	try {
+		const subscriptions: Stripe.Response<Stripe.ApiList<Stripe.Subscription>> = await stripe.subscriptions.list();
+
+		return {
+			status: 200,
+			data: subscriptions
+		}
+	} catch (error: unknown) {
+		return {
+			status: 500,
+			message: `The following error occured while retrieving subscriptions: ${error instanceof Error && error.message}`
+		}
+	}
+}
+
 
 export async function getProducts(): Promise<ProductResponse> {
 	try {
