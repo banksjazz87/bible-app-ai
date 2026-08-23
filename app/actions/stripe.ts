@@ -7,30 +7,32 @@ import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema, SubscriptionResponse, ProductResponse } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
 
-export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null, status: number, message?: string, }> {
+export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
 
-	if (lookupKey === 'free') {
+	if (lookupKey === "free") {
 		return {
 			status: 200,
-			message: 'A free product has been selected, no checkout is required.',
+			message: "A free product has been selected, no checkout is required.",
 			client_secret: null,
-			url: null
-		}
+			url: null,
+		};
 	}
 
 	//Retrive the prices object along with the current user.
 	const prices = await stripe.prices.retrieve(lookupKey);
 	const supabase = await createClient();
-	const { data: { user } } = await supabase.auth.getUser();
-	
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
 	const session = await stripe.checkout.sessions.create({
-		billing_address_collection: 'required',
+		billing_address_collection: "required",
 		automatic_tax: {
-			enabled: true
+			enabled: true,
 		},
 		customer_update: {
-			address: "auto"
+			address: "auto",
 		},
 		ui_mode: "embedded",
 		// Provide the customer ID of the customer you previously created
@@ -43,11 +45,11 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 			},
 		],
 		metadata: {
-			supabase_userID: user?.id ? user.id : '',
+			supabase_userID: user?.id ? user.id : "",
 			productID: prices.product as string,
 		},
 		mode: "subscription",
-		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`
+		return_url: `${process.env.NEXT_PUBLIC_DOMAIN}return?session_id={CHECKOUT_SESSION_ID}`,
 	});
 
 	console.log("Session here ", session);
@@ -57,7 +59,6 @@ export async function createCheckoutSession(data: SubscribeFormSchema, customerI
 		url: session.url,
 	};
 }
-
 
 export async function createPortalSession(data: FormData) {
 	const sessionID = data.get("session") as string;
@@ -100,8 +101,6 @@ export async function subscribeAction() {
 	});
 }
 
-
-
 export async function searchCustomer(data: SubscribeFormSchema, field: keyof SubscribeFormSchema) {
 	const fieldValue = data[field];
 
@@ -130,34 +129,67 @@ export async function createCustomer(data: SubscribeFormSchema) {
 	};
 }
 
-
 export async function getSubscriptions(): Promise<SubscriptionResponse> {
 	try {
 		const subscriptions: Stripe.Response<Stripe.ApiList<Stripe.Subscription>> = await stripe.subscriptions.list();
 
 		return {
 			status: 200,
-			data: subscriptions
-		}
+			data: subscriptions,
+		};
 	} catch (error: unknown) {
 		return {
 			status: 500,
-			message: `The following error occured while retrieving subscriptions: ${error instanceof Error && error.message}`
-		}
+			message: `The following error occured while retrieving subscriptions: ${error instanceof Error && error.message}`,
+		};
 	}
 }
 
+export async function searchSubscriptionsByCustomerID(customerID: string): Promise<
+	| {
+			status: number;
+			data: Stripe.Subscription;
+			message?: undefined;
+	  }
+	| {
+			status: number;
+			message: string;
+			data?: undefined;
+	  }
+> {
+	try {
+		const subscriptions: Stripe.Response<Stripe.ApiSearchResult<Stripe.Subscription>> = await stripe.subscriptions.search({
+			query: `status:'active' AND customer: "${customerID}"`,
+		});
+
+		console.log('///');
+		console.log('Subscription data here: ', subscriptions.data[0].id);
+		console.log('///');
+		return {
+			status: 200,
+			data: subscriptions.data[0],
+		};
+	} catch (e) {
+		const errorMessage = `The following error occurred in retrieving the current customer's subscription details: ${e instanceof Error && e.message}`;
+
+		console.error(errorMessage);
+		return {
+			status: 500,
+			message: errorMessage,
+		};
+	}
+}
 
 export async function getProducts(): Promise<ProductResponse> {
 	try {
 		const products: Stripe.Response<Stripe.ApiList<Stripe.Price>> = await stripe.prices.list({
 			expand: ["data.product"],
-			active: true
+			active: true,
 		});
 		const productArray = products.data as (Stripe.Price & { product: Stripe.Product })[];
 
 		if (productArray.length > 1) {
-			productArray.sort((a: Stripe.Price, b: Stripe.Price) => a.unit_amount as number - b.unit_amount! as number);
+			productArray.sort((a: Stripe.Price, b: Stripe.Price) => ((a.unit_amount as number) - b.unit_amount!) as number);
 		}
 
 		return {
@@ -177,6 +209,3 @@ export async function getCheckoutSession(sessionId: string): Promise<Stripe.Resp
 	console.log("The session has been retrieved and the returned value is ", session);
 	return session;
 }
-
-
-

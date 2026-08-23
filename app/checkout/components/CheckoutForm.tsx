@@ -6,7 +6,7 @@ import {
     EmbeddedCheckout
 } from '@stripe/react-stripe-js';
 
-const testMode = true;
+const testMode = process.env.NEXT_PUBLIC_STRIPE_TEST_MODE;
 const stripePromise = loadStripe(testMode ? process.env.NEXT_PUBLIC_STRIPE_TEST_PUBLIC_KEY! : process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const CheckoutForm = ({ fetchClientSecret }: { fetchClientSecret: () => Promise<string> }) => {

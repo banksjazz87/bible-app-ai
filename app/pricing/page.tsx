@@ -13,14 +13,11 @@ export default async function Pricing(): Promise<JSX.Element> {
 
 const pageContent = async (): Promise<JSX.Element> => {
 	const products = await getProducts();
-
 	const pricingDetails = new Map([
 		["Free", ["Limit of 5 AI queries per day", "Email notifications of all future updates"]],
 		["Basic", ["Limit of 20 AI queries per day", "Save Data for up to 2 Weeks", "Print PDF of notes", "Email notifications of all future updates"]],
 		["Premiere", ["Limit of 50 AI queries per day", "Save data for life", "Print PDF of notes", "Email notifications of all future updates"]],
 	]);
-
-	console.log('Products here', products);
 
 	const displayPriceCards = products.data?.map((x, y) => {
 		if (x.product.active) {

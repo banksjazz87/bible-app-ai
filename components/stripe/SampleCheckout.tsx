@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import SubscriptionForm from "@/app/subscribe/components/SubscriptionForm";
 
 
-const testMode = true;
+const testMode = process.env.NEXT_PUBLIC_STRIPE_TEST_MODE;
 
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
