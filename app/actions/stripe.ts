@@ -158,13 +158,13 @@ export async function searchSubscriptionsByCustomerID(customerID: string): Promi
 	  }
 > {
 	try {
-		const subscriptions: Stripe.Response<Stripe.ApiSearchResult<Stripe.Subscription>> = await stripe.subscriptions.search({
-			query: `status:'active' AND customer: "${customerID}"`,
+		const subscriptions: Stripe.Response<Stripe.ApiList<Stripe.Subscription>> = await stripe.subscriptions.list({
+			customer: customerID,
 		});
 
-		console.log('///');
-		console.log('Subscription data here: ', subscriptions.data[0].id);
-		console.log('///');
+		console.log("///");
+		console.log("Subscription data here: ", subscriptions.data[0].id);
+		console.log("///");
 		return {
 			status: 200,
 			data: subscriptions.data[0],
