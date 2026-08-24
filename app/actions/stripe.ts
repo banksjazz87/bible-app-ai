@@ -6,6 +6,7 @@ import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema, SubscriptionResponse, ProductResponse } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
@@ -145,29 +146,22 @@ export async function getSubscriptions(): Promise<SubscriptionResponse> {
 	}
 }
 
-export async function searchSubscriptionsByCustomerID(customerID: string): Promise<
-	| {
+export async function searchSubscriptionsByCustomerID(customerID: string): Promise<{
 			status: number;
-			data: Stripe.Subscription;
-			message?: undefined;
+			data: Stripe.Subscription[];
 	  }
 	| {
 			status: number;
 			message: string;
-			data?: undefined;
 	  }
 > {
 	try {
 		const subscriptions: Stripe.Response<Stripe.ApiList<Stripe.Subscription>> = await stripe.subscriptions.list({
 			customer: customerID,
 		});
-
-		console.log("///");
-		console.log("Subscription data here: ", subscriptions.data[0].id);
-		console.log("///");
 		return {
 			status: 200,
-			data: subscriptions.data[0],
+			data: subscriptions.data
 		};
 	} catch (e) {
 		const errorMessage = `The following error occurred in retrieving the current customer's subscription details: ${e instanceof Error && e.message}`;

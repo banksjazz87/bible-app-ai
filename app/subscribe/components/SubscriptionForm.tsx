@@ -114,7 +114,17 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				
 				try {
 					const customerSubscription = await searchSubscriptionsByCustomerID(customerID);
-					console.log(`Customer subscription details here: ${JSON.stringify(customerSubscription)}`);
+					const subscriptionData = "data" in customerSubscription ? customerSubscription.data : null;
+					const customerError = "message" in customerSubscription ? customerSubscription.message : null;
+
+					if (customerError) {
+						throw new Error('The customer subscription was unable to be found.');
+					}
+
+					if (subscriptionData) {
+						console.log(subscriptionData[0]);
+					}
+					
 				} catch (e) {
 					console.error(`Error in accessing the user's subscription details: ${e instanceof Error && e.message}`);
 				}
