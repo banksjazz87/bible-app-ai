@@ -146,6 +146,51 @@ export async function getSubscriptions(): Promise<SubscriptionResponse> {
 	}
 }
 
+export async function updateUserSubscription(
+	subscriptionID: string,
+	currentItemID: string,
+	newSubscriptionPrice: string,
+): Promise<
+	| {
+			status: number;
+			data: Stripe.Response<Stripe.Subscription>;
+			message: string;
+	  }
+	| {
+			status: number;
+			data: null;
+			message: string;
+	  }
+	> {
+	
+	try {
+		const subscription = await stripe.subscriptions.update(subscriptionID, {
+			items: [
+				{
+					id: currentItemID,
+					price: newSubscriptionPrice,
+				},
+			],
+			proration_behavior: "create_prorations",
+			automatic_tax: {
+				enabled: true,
+			},
+		});
+
+		return {
+			status: 200,
+			data: subscription,
+			message: "Successfully update the registration.",
+		};
+	} catch (e) {
+		return {
+			status: 400,
+			data: null,
+			message: `The following error occurred in updating the subscription: ${e instanceof Error && e.message}`,
+		};
+	}
+}
+
 export async function searchSubscriptionsByCustomerID(customerID: string): Promise<{
 			status: number;
 			data: Stripe.Subscription[];

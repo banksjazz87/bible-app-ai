@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useState, use } from "react";
-import { createCheckoutSession, createCustomer, searchCustomer, searchSubscriptionsByCustomerID } from "../../actions/stripe";
+import { createCheckoutSession, createCustomer, searchCustomer, searchSubscriptionsByCustomerID, updateUserSubscription } from "../../actions/stripe";
 import { ProductResponse, SubscriptionResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
 import { useAppSelector } from "@/lib/store/hooks";
@@ -122,7 +122,16 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					}
 
 					if (subscriptionData) {
-						console.log(subscriptionData[0]);
+						const subscriptionID: string = subscriptionData[0].id;
+						const currentItemID: string = subscriptionData[0].items.data[0].id;
+						const newSubscriptionPriceID: string = preSelectedSubscription;
+
+						try {
+							const updateStripeSubscription = await updateUserSubscription(subscriptionID, currentItemID, newSubscriptionPriceID);
+							console.log("Results here: ", updateStripeSubscription);
+						} catch (e) {
+							console.error(`The folllowing error occurred in updating the subscription ${e instanceof Error && e.message}`);
+						}
 					}
 					
 				} catch (e) {
