@@ -94,9 +94,17 @@ export async function POST(req: Request) {
 			case "customer.subscription.updated":
 				subscription = event.data.object;
 				status = subscription.status;
+				console.log("SUBSCRIPTION UPDATED");
+				console.log(`Subscription status is ${status}.`);
+
 				try {
 					const productID: string = subscription.metadata?.productID as string;
 					const userID: string = subscription.metadata?.supabase_userID;
+
+					console.log("///");
+					console.log("Product ID: ", productID);
+					console.log("userID: ", userID);
+					console.log("///");
 					const user = new User();
 					const updateUser = await user.updateUserSubscription(userID, productID);
 
@@ -108,7 +116,7 @@ export async function POST(req: Request) {
 				} catch (e) {
 					console.error(`The following error occurred in updating the user role: ${e instanceof Error && e.message}`);
 				}
-				
+
 				break;
 
 			case "entitlements.active_entitlement_summary.updated":

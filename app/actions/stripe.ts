@@ -151,7 +151,6 @@ export async function updateUserSubscription(
 	newSubscriptionPrice: string,
 ): Promise<{
 	status: number;
-	data: Stripe.Response<Stripe.Subscription> | null;
 	message: string;
 }> {
 
@@ -160,6 +159,11 @@ export async function updateUserSubscription(
 	const {
 		data: { user }
 	} = await supabase.auth.getUser();
+
+	console.log('///');
+	console.log('supabase_userID: ', user?.id);
+	console.log('productID: ', prices.product);
+	console.log('///');
 
 	try {
 		const subscription = await stripe.subscriptions.update(subscriptionID, {
@@ -181,13 +185,12 @@ export async function updateUserSubscription(
 
 		return {
 			status: 200,
-			data: subscription,
-			message: "Successfully updated the registration.",
+			message: `Successfully updated the registration. ${subscription.created}`,
+
 		};
 	} catch (e) {
 		return {
 			status: 400,
-			data: null,
 			message: `The following error occurred in updating the subscription: ${e instanceof Error && e.message}`,
 		};
 	}
