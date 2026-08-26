@@ -1,9 +1,7 @@
 import type { Stripe } from "stripe";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-
-
-
+import User from "@/lib/classes/User";
 
 export async function POST(req: Request) {
 	let event: Stripe.Event;
@@ -57,16 +55,16 @@ export async function POST(req: Request) {
 
 			case "customer.created":
 				subscription = event.data.object;
-				console.log('///');
-				console.log('NEW CUSTOMER CREATED!!!!');
-				console.log('///');
+				console.log("///");
+				console.log("NEW CUSTOMER CREATED!!!!");
+				console.log("///");
 				break;
 
 			// case "customer.subscription.created":
 			case "checkout.session.completed":
 				subscription = event.data.object;
 				status = subscription.status;
-				console.log('CHECKOUT SESSION COMPLETED')
+				console.log("CHECKOUT SESSION COMPLETED");
 				console.log(`Checkout status is ${status}`);
 
 				const productID: string = subscription.metadata?.productID as string;
@@ -96,8 +94,21 @@ export async function POST(req: Request) {
 			case "customer.subscription.updated":
 				subscription = event.data.object;
 				status = subscription.status;
-				console.log("SUBSCRIPTION UPDATED");
-				console.log(`Subscription status is: ${status}`);
+				try {
+					const productID: string = subscription.metadata?.productID as string;
+					const userID: string = subscription.metadata?.supabase_userID;
+					const user = new User();
+					const updateUser = await user.updateUserSubscription(userID, productID);
+
+					if (updateUser.status !== 200) {
+						throw new Error(`The following error occurred in updating the user role: ${updateUser.message}`);
+					} else {
+						console.log(`The user role has been updated.`);
+					}
+				} catch (e) {
+					console.error(`The following error occurred in updating the user role: ${e instanceof Error && e.message}`);
+				}
+				
 				break;
 
 			case "entitlements.active_entitlement_summary.updated":

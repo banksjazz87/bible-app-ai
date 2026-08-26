@@ -5,7 +5,7 @@ import { UserRoles, APIDataResponse } from "../definitions";
  */
 
 export default class User {
-    
+
 	async getUserDetails(): Promise<APIDataResponse<UserRoles[]> | undefined> {
 		try {
 			const response = await fetch("/api/user-roles");
@@ -41,5 +41,36 @@ export default class User {
 		}
 
 		return data;
+	}
+
+	async updateUserSubscription(userID: string, productID: string) {
+		try {
+			const response = await fetch("http://localhost:3000/api/update-user-roles", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ productId: productID, userId: userID }),
+			});
+
+			const finalData = await response.json();
+			if (finalData.status !== 200) {
+				console.error(`The following error occurred in updating the user role: ${finalData.message}`);
+				return {
+					status: 400,
+					message: `The user has NOT been updated successfully.`
+				}
+			} else {
+				return {
+					status: 200,
+					message: 'The user subscription has been updated successfully'
+				}
+			}
+		} catch (error: unknown) {
+			return {
+				status: 400,
+				message: `The following error occurred in making the update-user-role request: ${error instanceof Error && error.message}`
+			}
+		}
 	}
 }
