@@ -6,7 +6,6 @@ import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema, SubscriptionResponse, ProductResponse } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
-import { NextResponse } from "next/server";
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
@@ -150,19 +149,18 @@ export async function updateUserSubscription(
 	subscriptionID: string,
 	currentItemID: string,
 	newSubscriptionPrice: string,
-): Promise<
-	| {
-			status: number;
-			data: Stripe.Response<Stripe.Subscription>;
-			message: string;
-	  }
-	| {
-			status: number;
-			data: null;
-			message: string;
-	  }
-	> {
-	
+): Promise<{
+	status: number;
+	data: Stripe.Response<Stripe.Subscription> | null;
+	message: string;
+}> {
+
+	const prices = await stripe.prices.retrieve(newSubscriptionPrice);
+	const supabase = await createClient();
+	const {
+		data: { user }
+	} = await supabase.auth.getUser();
+
 	try {
 		const subscription = await stripe.subscriptions.update(subscriptionID, {
 			items: [
@@ -175,12 +173,16 @@ export async function updateUserSubscription(
 			automatic_tax: {
 				enabled: true,
 			},
+			metadata: {
+				supabase_userID: user?.id ? user.id : "",
+				productID: prices.product as string,
+			},
 		});
 
 		return {
 			status: 200,
 			data: subscription,
-			message: "Successfully update the registration.",
+			message: "Successfully updated the registration.",
 		};
 	} catch (e) {
 		return {
@@ -191,7 +193,8 @@ export async function updateUserSubscription(
 	}
 }
 
-export async function searchSubscriptionsByCustomerID(customerID: string): Promise<{
+export async function searchSubscriptionsByCustomerID(customerID: string): Promise<
+	| {
 			status: number;
 			data: Stripe.Subscription[];
 	  }
@@ -206,7 +209,7 @@ export async function searchSubscriptionsByCustomerID(customerID: string): Promi
 		});
 		return {
 			status: 200,
-			data: subscriptions.data
+			data: subscriptions.data,
 		};
 	} catch (e) {
 		const errorMessage = `The following error occurred in retrieving the current customer's subscription details: ${e instanceof Error && e.message}`;
