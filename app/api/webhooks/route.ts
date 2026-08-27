@@ -64,47 +64,35 @@ export async function POST(req: Request) {
 			case "checkout.session.completed":
 				subscription = event.data.object;
 				status = subscription.status;
-				console.log("CHECKOUT SESSION COMPLETED");
-				console.log(`Checkout status is ${status}`);
-
-				const productID: string = subscription.metadata?.productID as string;
-				const userID: string = subscription.metadata?.supabase_userID as string;
 
 				try {
-					const response = await fetch("http://localhost:3000/api/update-user-roles", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({ productId: productID, userId: userID }),
-					});
+					const productID: string = subscription.metadata?.productID as string;
+					const userID: string = subscription.metadata?.supabase_userID as string;
 
-					const finalData = await response.json();
+					const user = new User();
+					const updateUser = await user.updateUserSubscription(userID, productID);
 
-					if (finalData.status !== 200) {
-						console.error(`The following error occurred in updating the user role: ${finalData.message}`);
+					if (updateUser.status !== 200) {
+						throw new Error(`The following error occurred in updating the user role: ${updateUser.message}`);
 					} else {
-						console.log("The user role has been updated from the STRIPE webhook");
+						console.log(`The user role has been updated.`);
 					}
 				} catch (error: unknown) {
 					throw new Error(`The following error occurred in making the update-user-role request ${error instanceof Error && error.message}`);
+				} finally {
+					console.log("CHECKOUT SESSION COMPLETED");
+					console.log(`Checkout status is ${status}`);
 				}
 				break;
 
 			case "customer.subscription.updated":
 				subscription = event.data.object;
 				status = subscription.status;
-				console.log("SUBSCRIPTION UPDATED");
-				console.log(`Subscription status is ${status}.`);
 
 				try {
 					const productID: string = subscription.metadata?.productID as string;
 					const userID: string = subscription.metadata?.supabase_userID;
 
-					console.log("///");
-					console.log("Product ID: ", productID);
-					console.log("userID: ", userID);
-					console.log("///");
 					const user = new User();
 					const updateUser = await user.updateUserSubscription(userID, productID);
 
@@ -115,6 +103,9 @@ export async function POST(req: Request) {
 					}
 				} catch (e) {
 					console.error(`The following error occurred in updating the user role: ${e instanceof Error && e.message}`);
+				} finally {
+					console.log("SUBSCRIPTION UPDATED");
+					console.log(`Subscription status is ${status}.`);
 				}
 
 				break;

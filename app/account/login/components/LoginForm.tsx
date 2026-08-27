@@ -42,7 +42,6 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 	const loadUserRoles = async () => {
 		const user = new User();
 		const result = await user.getUserDetails();
-		console.warn(`The user details are the following: ${result}`);
 
 		if (result && result.status === 200) {
 			const { userRole, maxRequests } = user.getUserRoles(result.data[0]);

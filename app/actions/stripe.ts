@@ -160,11 +160,7 @@ export async function updateUserSubscription(
 		data: { user }
 	} = await supabase.auth.getUser();
 
-	console.log('///');
-	console.log('supabase_userID: ', user?.id);
-	console.log('productID: ', prices.product);
-	console.log('///');
-
+	
 	try {
 		const subscription = await stripe.subscriptions.update(subscriptionID, {
 			items: [

@@ -1,4 +1,7 @@
+"use server";
+
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 /**
  *
@@ -63,7 +66,9 @@ export async function POST(request: Request): Promise<NextResponse> {
 			throw new Error(`HTTP error!  Status: ${response.status}`);
 		}
 
-		return NextResponse.json({ message: "The user role has been updated upon checkout session completion" }, { status: 200 });
+        revalidatePath("/");
+        return NextResponse.json({ message: "The user role has been updated upon checkout session completion" }, { status: 200 });
+        
 	} catch (error: unknown) {
 		return NextResponse.json({ message: `The following error occurred in adding the user ${error instanceof Error && error.message}` }, { status: 400 });
 	}

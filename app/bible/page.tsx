@@ -98,6 +98,7 @@ function PageContent() {
 		setLLMReqInit();
 	}, []);
 
+
 	const resetFormStatus = useEffectEvent((): void => setFormSubmitted(!formSubmitted));
 
 	useEffect((): void => {

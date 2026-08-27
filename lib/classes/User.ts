@@ -43,7 +43,8 @@ export default class User {
 		return data;
 	}
 
-	async updateUserSubscription(userID: string, productID: string) {
+	
+	async updateUserSubscription(userID: string, productID: string): Promise<{status: number, message: string}> {
 		try {
 			const response = await fetch("http://localhost:3000/api/update-user-roles", {
 				method: "POST",
