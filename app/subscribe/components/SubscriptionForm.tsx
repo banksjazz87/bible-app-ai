@@ -14,47 +14,48 @@ import { ProductResponse, SubscriptionResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
 import { useAppSelector } from "@/lib/store/hooks";
 import Link from "next/link";
-
-
+import HideShowEye from "@/components/ui/hide-show-eye";
+import { login } from "@/app/account/login/actions";
 
 const SubscribeFormSchema = z.object({
-	email: z.string().email({ message: "Please provide a valid email." }),
+	email: z.string().trim().email({ message: "Please provide a valid email." }),
 	subscription: z.string(),
 });
 
 const UpdateSubscriptionFormSchema = z.object({
-	customerEmail: z.string().email({ message: "Please provide a valid email."})
-})
+	email: z.string().email({ message: "Please provide a valid email." }),
+	password: z.string(),
+	subscription: z.string(),
+});
 
 type SubscriptionFormProps = {
 	products: Promise<ProductResponse>;
 };
 
-
-
 export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const [customerId, setCustomerId] = useState<string | null>(null);
 	const [isNewCustomer, setIsNewCustomer] = useState<boolean>(false);
-	const preSelectedSubscription: string = searchParams.get("option") ? searchParams.get("option") as string : "free";
+	const preSelectedSubscription: string = searchParams.get("option") ? (searchParams.get("option") as string) : "free";
 	const allProducts = use(products);
 	const userEmail = useAppSelector((state) => state.loggedInData.email);
-	
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
 		resolver: zodResolver(SubscribeFormSchema),
 		defaultValues: {
 			email: userEmail ? userEmail : "",
-			subscription: preSelectedSubscription
+			subscription: preSelectedSubscription,
 		},
 	});
 
 	const updateSubscriptionForm = useForm<z.infer<typeof UpdateSubscriptionFormSchema>>({
 		resolver: zodResolver(UpdateSubscriptionFormSchema),
 		defaultValues: {
-			customerEmail: userEmail? userEmail: ""
-		}
-	})
+			email: userEmail ? userEmail : "",
+			password: "",
+			subscription: preSelectedSubscription
+		},
+	});
 
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
 		try {
@@ -86,14 +87,16 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		}
 	};
 
-	const updateSubscriptionFormAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
+	const updateSubscriptionFormAction = async (data: z.infer<typeof UpdateSubscriptionFormSchema>): Promise<void> => {
+
+		//Login function here in a try block
 		try {
 			const customer = await searchCustomer(data, "email");
 			//If the customer data came back and the data array is empty, create new customer.
 			if (customer?.data.length === 0) {
 				try {
 					const newCustomer = await createCustomer(data);
-					console.log('Creating new Customer');
+					console.log("Creating new Customer");
 					if (newCustomer.status === 200) {
 						try {
 							const customerID: string = newCustomer.customerId;
@@ -111,14 +114,14 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 			} else {
 				const customerID: string = customer?.data[0].id as string;
 				setCustomerId(customerID);
-				
+
 				try {
 					const customerSubscription = await searchSubscriptionsByCustomerID(customerID);
 					const subscriptionData = "data" in customerSubscription ? customerSubscription.data : null;
 					const customerError = "message" in customerSubscription ? customerSubscription.message : null;
 
 					if (customerError) {
-						throw new Error('The customer subscription was unable to be found.');
+						throw new Error("The customer subscription was unable to be found.");
 					}
 
 					if (subscriptionData) {
@@ -133,7 +136,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 							console.error(`The folllowing error occurred in updating the subscription ${e instanceof Error && e.message}`);
 						}
 					}
-					
 				} catch (e) {
 					console.error(`Error in accessing the user's subscription details: ${e instanceof Error && e.message}`);
 				}
@@ -141,33 +143,30 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		} catch (e: unknown) {
 			console.warn("The following error occurred while searching for the customer ", e);
 		}
-	}
+	};
 
-	
 	const setUserEmail = useEffectEvent((): void => {
-		if(userEmail && userEmail.length > 0) {
+		if (userEmail && userEmail.length > 0) {
 			form.setValue("email", userEmail);
 			formAction(form.getValues());
 		}
-	})
+	});
 
-	
 	useEffect(() => {
 		setUserEmail();
 	}, [userEmail]);
 
-	
 	const fetchClientSecret = async (): Promise<string> => {
-		console.log('Fetching client is running');
+		console.log("Fetching client is running");
 		if (customerId) {
 			const data = form.getValues();
 			const checkoutSession = await createCheckoutSession(data, customerId);
-			console.log('this is the checkout session ', checkoutSession);
+			console.log("this is the checkout session ", checkoutSession);
 			return checkoutSession.client_secret as string;
 		} else {
 			return "";
 		}
-	}
+	};
 
 	return (
 		<main>
@@ -241,33 +240,73 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 			{/** RETURNING CUSTOMER UPDATE USER SUBSCRIPTION */}
 			{preSelectedSubscription !== "free" && !isNewCustomer && (
-				<Form {...form}>
-					<form
-						onSubmit={form.handleSubmit(() => updateSubscriptionFormAction(form.getValues()))}
-						className="space-y-5 w-170 mx-auto"
-					>
-						<FormField
-							control={updateSubscriptionForm.control}
-							name="customerEmail"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Email</FormLabel>
-									<FormControl>
-										<Input
-											placeholder="Email"
-											type="email"
-											{...field}
-											className="border-slate-600 rounded-none"
-										/>
-									</FormControl>
-									<FormMessage className="text-red-700" />
-								</FormItem>
-							)}
-						/>
+				<section className="mt-4">
+					<p className="text-center">To continue with your upgrade, please confirm your account by entering your email address and password.</p>
+					<div className="border border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40 mt-4">
+						<Form {...form}>
+							<form
+								onSubmit={form.handleSubmit(() => updateSubscriptionFormAction(updateSubscriptionForm.getValues()))}
+								className="space-y-5 w-100 mx-auto"
+							>
+								<FormField
+									control={updateSubscriptionForm.control}
+									name="email"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Email</FormLabel>
+											<FormControl>
+												<Input
+													placeholder="Email"
+													type="email"
+													{...field}
+													className="border-slate-600 rounded-none"
+												/>
+											</FormControl>
+											<FormMessage className="text-red-700" />
+										</FormItem>
+									)}
+								/>
 
-						<Button type="submit">Submit</Button>
-					</form>
-				</Form>
+								<FormField
+									control={updateSubscriptionForm.control}
+									name="password"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Password</FormLabel>
+											<FormControl>
+												<Input
+													placeholder="Password"
+													type="text"
+													{...field}
+													className="border-slate-600 rounded-none"
+												/>
+											</FormControl>
+											<FormMessage className="text-red-700" />
+										</FormItem>
+									)}
+								/>
+
+								<FormField
+									control={form.control}
+									name="subscription"
+									render={({ field }) => (
+										<FormItem>
+											<FormControl>
+												<Input
+													type="hidden"
+													{...field}
+													value={preSelectedSubscription}
+												/>
+											</FormControl>
+										</FormItem>
+									)}
+								/>
+
+								<Button type="submit">Submit</Button>
+							</form>
+						</Form>
+					</div>
+				</section>
 			)}
 		</main>
 	);

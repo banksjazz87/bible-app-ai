@@ -79,10 +79,12 @@ export async function POST(req: Request) {
 					}
 				} catch (error: unknown) {
 					throw new Error(`The following error occurred in making the update-user-role request ${error instanceof Error && error.message}`);
+					
 				} finally {
 					console.log("CHECKOUT SESSION COMPLETED");
 					console.log(`Checkout status is ${status}`);
 				}
+
 				break;
 
 			case "customer.subscription.updated":
@@ -101,8 +103,10 @@ export async function POST(req: Request) {
 					} else {
 						console.log(`The user role has been updated.`);
 					}
+
 				} catch (e) {
 					console.error(`The following error occurred in updating the user role: ${e instanceof Error && e.message}`);
+
 				} finally {
 					console.log("SUBSCRIPTION UPDATED");
 					console.log(`Subscription status is ${status}.`);

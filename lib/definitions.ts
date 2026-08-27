@@ -155,7 +155,8 @@ export type LocationObject = {
 
 export type SubscribeFormSchema = {
 	email: string;
-	subscription: string;
+	subscription?: string;
+	password?: string;
 };
 
 export type ProductResponse = {
