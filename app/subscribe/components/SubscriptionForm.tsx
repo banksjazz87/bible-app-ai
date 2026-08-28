@@ -10,13 +10,14 @@ import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer, searchSubscriptionsByCustomerID, updateUserSubscription } from "../../actions/stripe";
-import { ProductResponse, SubscriptionResponse } from "@/lib/definitions";
+import { ProductResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
-import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector } from "@/lib/store/hooks";
 import Link from "next/link";
 import HideShowEye from "@/components/ui/hide-show-eye";
 import { login } from "@/app/account/login/actions";
-
+import Alert from "@/app/ui/Alert";
+import { redirect } from "next/navigation";
 
 const SubscribeFormSchema = z.object({
 	email: z.string().trim().email({ message: "Please provide a valid email." }),
@@ -38,7 +39,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const [customerId, setCustomerId] = useState<string | null>(null);
 	const [isNewCustomer, setIsNewCustomer] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-
+	const [alertIsOpen, setAlertIsOpen] = useState<boolean>(false);
 
 	const preSelectedSubscription: string = searchParams.get("option") ? (searchParams.get("option") as string) : "free";
 	const allProducts = use(products);
@@ -91,8 +92,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		}
 	};
 
-
-
 	const updateSubscriptionFormAction = async (data: z.infer<typeof UpdateSubscriptionFormSchema>): Promise<void> => {
 		//Check for valid login credentials before processing the upgrade
 		const { status, message } = await login(data);
@@ -142,8 +141,14 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 						const newSubscriptionPriceID: string = preSelectedSubscription;
 
 						try {
-							const updateStripeSubscription = await updateUserSubscription(subscriptionID, currentItemID, newSubscriptionPriceID);
-							console.log("Results here: ", updateStripeSubscription);
+							const { status, message } = await updateUserSubscription(subscriptionID, currentItemID, newSubscriptionPriceID);
+
+							if (status !== 200) {
+								alert(`The following error occurred in upgrading the user: ${message}`);
+								return;
+							}
+
+							setAlertIsOpen(true);
 						} catch (e) {
 							console.error(`The folllowing error occurred in updating the subscription ${e instanceof Error && e.message}`);
 						}
@@ -154,6 +159,17 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 			}
 		} catch (e: unknown) {
 			console.warn("The following error occurred while searching for the customer ", e);
+		}
+	};
+
+	const upgradeConfirmHandler = async (): Promise<void> => {
+		const data = await fetch("/account/logout");
+		const finalData = await data.json();
+
+		if (finalData.status === 200) {
+			redirect("/account/login");
+		} else {
+			console.error("An error occurred in logging out the user");
 		}
 	};
 
@@ -252,79 +268,93 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 			{/** RETURNING CUSTOMER UPDATE USER SUBSCRIPTION */}
 			{preSelectedSubscription !== "free" && !isNewCustomer && (
-				<section className="mt-4">
-					<p className="text-center">To continue with your upgrade, please confirm your account by entering your email address and password.</p>
-					<div className="border border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40 mt-4">
-						<Form {...form}>
-							<form
-								onSubmit={form.handleSubmit(() => updateSubscriptionFormAction(updateSubscriptionForm.getValues()))}
-								className="space-y-5 w-100 mx-auto"
-							>
-								<FormField
-									control={updateSubscriptionForm.control}
-									name="email"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Email</FormLabel>
-											<FormControl>
-												<Input
-													placeholder="Email"
-													type="email"
-													{...field}
-													className="border-slate-600 rounded-none"
-												/>
-											</FormControl>
-											<FormMessage className="text-red-700" />
-										</FormItem>
-									)}
-								/>
+				<>
+					<Alert
+						isOpen={alertIsOpen}
+						openHandler={() => setAlertIsOpen(!alertIsOpen)}
+						closeHandler={() => setAlertIsOpen(false)}
+						title="Apply Upgrade"
+						description="Your upgrade is ready to be applied. Select OK to continue. You’ll be logged out and redirected to the login page. After you log back in, your upgraded account will be ready to use."
+						confirmHandler={() => upgradeConfirmHandler()}
+						cancelHandler={() => setAlertIsOpen(false)}
+						confirmText="Ok"
+						cancelText="Cancel"
+					/>
 
-								<FormField
-									control={updateSubscriptionForm.control}
-									name="password"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Password</FormLabel>
-											<FormControl>
-												<div className="relative">
+					<section className="mt-4">
+						<p className="text-center">To continue with your upgrade, please confirm your account by entering your email address and password.</p>
+						<div className="border border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40 mt-4">
+							<Form {...form}>
+								<form
+									onSubmit={form.handleSubmit(() => updateSubscriptionFormAction(updateSubscriptionForm.getValues()))}
+									className="space-y-5 w-100 mx-auto"
+								>
+									<FormField
+										control={updateSubscriptionForm.control}
+										name="email"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Email</FormLabel>
+												<FormControl>
 													<Input
-														placeholder="Password"
-														type={showPassword ? "text" : "password"}
+														placeholder="Email"
+														type="email"
 														{...field}
 														className="border-slate-600 rounded-none"
 													/>
-													<HideShowEye
-														showPassword={showPassword}
-														toggleShowPassword={(): void => setShowPassword(!showPassword)}
+												</FormControl>
+												<FormMessage className="text-red-700" />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={updateSubscriptionForm.control}
+										name="password"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Password</FormLabel>
+												<FormControl>
+													<div className="relative">
+														<Input
+															placeholder="Password"
+															type={showPassword ? "text" : "password"}
+															{...field}
+															className="border-slate-600 rounded-none"
+														/>
+														<HideShowEye
+															showPassword={showPassword}
+															toggleShowPassword={(): void => setShowPassword(!showPassword)}
+														/>
+													</div>
+												</FormControl>
+												<FormMessage className="text-red-700" />
+											</FormItem>
+										)}
+									/>
+
+									<FormField
+										control={form.control}
+										name="subscription"
+										render={({ field }) => (
+											<FormItem>
+												<FormControl>
+													<Input
+														type="hidden"
+														{...field}
+														value={preSelectedSubscription}
 													/>
-												</div>
-											</FormControl>
-											<FormMessage className="text-red-700" />
-										</FormItem>
-									)}
-								/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
 
-								<FormField
-									control={form.control}
-									name="subscription"
-									render={({ field }) => (
-										<FormItem>
-											<FormControl>
-												<Input
-													type="hidden"
-													{...field}
-													value={preSelectedSubscription}
-												/>
-											</FormControl>
-										</FormItem>
-									)}
-								/>
-
-								<Button type="submit">Submit</Button>
-							</form>
-						</Form>
-					</div>
-				</section>
+									<Button type="submit">Submit</Button>
+								</form>
+							</Form>
+						</div>
+					</section>
+				</>
 			)}
 		</main>
 	);
