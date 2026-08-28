@@ -16,6 +16,8 @@ import HideShowEye from "@/components/ui/hide-show-eye";
 import User from "@/lib/classes/User";
 
 
+
+
 //Define our Form schema
 const loginFormSchema = z.object({
 	email: z.string().email({ message: "Please provide a valid email." }),
@@ -39,7 +41,7 @@ export default function LoginForm({ responseHandler, alertMessageHandler, alertT
 	 * @returns void
 	 * @description Loads the user roles upon successful login.
 	 */
-	const loadUserRoles = async () => {
+	 const loadUserRoles = async () => {
 		const user = new User();
 		const result = await user.getUserDetails();
 

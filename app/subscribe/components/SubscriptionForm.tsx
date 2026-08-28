@@ -12,10 +12,11 @@ import { useState, use } from "react";
 import { createCheckoutSession, createCustomer, searchCustomer, searchSubscriptionsByCustomerID, updateUserSubscription } from "../../actions/stripe";
 import { ProductResponse, SubscriptionResponse } from "@/lib/definitions";
 import CheckoutForm from "@/app/checkout/components/CheckoutForm";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import Link from "next/link";
 import HideShowEye from "@/components/ui/hide-show-eye";
 import { login } from "@/app/account/login/actions";
+
 
 const SubscribeFormSchema = z.object({
 	email: z.string().trim().email({ message: "Please provide a valid email." }),
@@ -36,6 +37,9 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const searchParams = useSearchParams();
 	const [customerId, setCustomerId] = useState<string | null>(null);
 	const [isNewCustomer, setIsNewCustomer] = useState<boolean>(false);
+	const [showPassword, setShowPassword] = useState<boolean>(false);
+
+
 	const preSelectedSubscription: string = searchParams.get("option") ? (searchParams.get("option") as string) : "free";
 	const allProducts = use(products);
 	const userEmail = useAppSelector((state) => state.loggedInData.email);
@@ -53,7 +57,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		defaultValues: {
 			email: userEmail ? userEmail : "",
 			password: "",
-			subscription: preSelectedSubscription
+			subscription: preSelectedSubscription,
 		},
 	});
 
@@ -87,9 +91,17 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		}
 	};
 
-	const updateSubscriptionFormAction = async (data: z.infer<typeof UpdateSubscriptionFormSchema>): Promise<void> => {
 
-		//Login function here in a try block
+
+	const updateSubscriptionFormAction = async (data: z.infer<typeof UpdateSubscriptionFormSchema>): Promise<void> => {
+		//Check for valid login credentials before processing the upgrade
+		const { status, message } = await login(data);
+
+		if (status === 404) {
+			alert(message);
+			return;
+		}
+
 		try {
 			const customer = await searchCustomer(data, "email");
 			//If the customer data came back and the data array is empty, create new customer.
@@ -274,12 +286,18 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 										<FormItem>
 											<FormLabel>Password</FormLabel>
 											<FormControl>
-												<Input
-													placeholder="Password"
-													type="text"
-													{...field}
-													className="border-slate-600 rounded-none"
-												/>
+												<div className="relative">
+													<Input
+														placeholder="Password"
+														type={showPassword ? "text" : "password"}
+														{...field}
+														className="border-slate-600 rounded-none"
+													/>
+													<HideShowEye
+														showPassword={showPassword}
+														toggleShowPassword={(): void => setShowPassword(!showPassword)}
+													/>
+												</div>
 											</FormControl>
 											<FormMessage className="text-red-700" />
 										</FormItem>
