@@ -7,6 +7,8 @@ import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema, SubscriptionResponse, ProductResponse } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
 
+
+
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
 
@@ -118,6 +120,32 @@ export async function searchCustomer(data: SubscribeFormSchema, field: keyof Sub
 	}
 }
 
+export async function searchCustomerByEmail(email: string): Promise<{
+    status: number;
+    message: string;
+    data: Stripe.Customer[];
+} | {
+    status: number;
+    message: string;
+    data: null;
+}> {
+	try {
+		const customers = await stripe.customers.search({ query: `email: ${email}` });
+
+		return {
+			status: 200,
+			message: "Successfully reqeusted the customers object.",
+			data: customers.data
+		}
+	} catch (e: unknown) {
+		return {
+			status: 400,
+			message: `Unable to retrieve the customer by email due to: ${e instanceof Error && e.message}`, 
+			data: null
+		}
+	}
+}
+
 export async function createCustomer(data: SubscribeFormSchema) {
 	const email = data.email;
 	const customer = await stripe.customers.create({
@@ -220,6 +248,30 @@ export async function searchSubscriptionsByCustomerID(customerID: string): Promi
 			message: errorMessage,
 		};
 	}
+}
+
+export async function getCurrentUserSubscriptionDetails() {
+	const supabase = await createClient();
+	const { data: { user } } = await supabase.auth.getUser();
+	
+	if (!user) {
+		return {
+			status: 500,
+			message: 'No user can be found currently.'
+		}
+	}
+
+	const userEmail = user.email;
+	const customerData = await searchCustomerByEmail(userEmail as string);
+
+	if (customerData.status !== 200) {
+		return {
+			status: 500,
+			message: `Unable to find customer by email due to the following error: ${customerData.message}`
+		}
+	}
+
+	// const customerID = customerData.data[0].id as string;
 }
 
 export async function getProducts(): Promise<ProductResponse> {

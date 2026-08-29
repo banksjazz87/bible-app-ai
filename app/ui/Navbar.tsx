@@ -128,8 +128,12 @@ export default function NavBar(): JSX.Element {
 								<DropdownMenuItem>
 									<Link href="/account/profile">Profile</Link>
 								</DropdownMenuItem>
-								<DropdownMenuItem>Billing</DropdownMenuItem>
-								<DropdownMenuItem>Subscription</DropdownMenuItem>
+								<DropdownMenuItem>
+									<Link href="/account/billing">Billing</Link>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<Link href="/account/subscription">Subscription</Link>
+								</DropdownMenuItem>
 								<DropdownMenuItem>
 									<button
 										type="button"
