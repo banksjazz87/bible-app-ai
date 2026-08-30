@@ -165,13 +165,20 @@ export type ProductResponse = {
 	errorMessage?: string;
 };
 
-export type SubscriptionResponse = {
-    status: number;
-    data: Stripe.Response<Stripe.ApiList<Stripe.Subscription>>;
-    message?: undefined;
-}
-| {
-    status: number;
-    message: string;
-    data?: undefined;
+export type SubscriptionResponse =
+	| {
+			status: number;
+			data: Stripe.Response<Stripe.ApiList<Stripe.Subscription>>;
+			message?: undefined;
+	  }
+	| {
+			status: number;
+			message: string;
+			data?: undefined;
+	  };
+
+export type UserSubscriptionResponse = {
+	status: number;
+	message: string;
+	data: Stripe.Subscription[] | null;
 };

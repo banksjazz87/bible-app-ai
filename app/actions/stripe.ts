@@ -4,10 +4,8 @@ import type { Stripe } from "stripe";
 import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
-import { SubscribeFormSchema, SubscriptionResponse, ProductResponse } from "@/lib/definitions";
+import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
-
-
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
@@ -103,7 +101,6 @@ export async function subscribeAction() {
 	});
 }
 
-
 export async function searchCustomer(data: SubscribeFormSchema, field: keyof SubscribeFormSchema) {
 	const fieldValue = data[field];
 
@@ -120,29 +117,32 @@ export async function searchCustomer(data: SubscribeFormSchema, field: keyof Sub
 	}
 }
 
-export async function searchCustomerByEmail(email: string): Promise<{
-    status: number;
-    message: string;
-    data: Stripe.Customer[];
-} | {
-    status: number;
-    message: string;
-    data: null;
-}> {
+export async function searchCustomerByEmail(email: string): Promise<
+	| {
+			status: number;
+			message: string;
+			data: Stripe.Customer[];
+	  }
+	| {
+			status: number;
+			message: string;
+			data: null;
+	  }
+> {
 	try {
 		const customers = await stripe.customers.search({ query: `email: ${email}` });
 
 		return {
 			status: 200,
 			message: "Successfully reqeusted the customers object.",
-			data: customers.data
-		}
+			data: customers.data,
+		};
 	} catch (e: unknown) {
 		return {
 			status: 400,
-			message: `Unable to retrieve the customer by email due to: ${e instanceof Error && e.message}`, 
-			data: null
-		}
+			message: `Unable to retrieve the customer by email due to: ${e instanceof Error && e.message}`,
+			data: null,
+		};
 	}
 }
 
@@ -182,14 +182,12 @@ export async function updateUserSubscription(
 	status: number;
 	message: string;
 }> {
-
 	const prices = await stripe.prices.retrieve(newSubscriptionPrice);
 	const supabase = await createClient();
 	const {
-		data: { user }
+		data: { user },
 	} = await supabase.auth.getUser();
 
-	
 	try {
 		const subscription = await stripe.subscriptions.update(subscriptionID, {
 			items: [
@@ -211,7 +209,6 @@ export async function updateUserSubscription(
 		return {
 			status: 200,
 			message: `Successfully updated the registration. ${subscription.created}`,
-
 		};
 	} catch (e) {
 		return {
@@ -221,16 +218,7 @@ export async function updateUserSubscription(
 	}
 }
 
-export async function searchSubscriptionsByCustomerID(customerID: string): Promise<
-	| {
-			status: number;
-			data: Stripe.Subscription[];
-	  }
-	| {
-			status: number;
-			message: string;
-	  }
-> {
+export async function searchSubscriptionsByCustomerID(customerID: string): Promise<UserSubscriptionResponse> {
 	try {
 		const subscriptions: Stripe.Response<Stripe.ApiList<Stripe.Subscription>> = await stripe.subscriptions.list({
 			customer: customerID,
@@ -238,6 +226,7 @@ export async function searchSubscriptionsByCustomerID(customerID: string): Promi
 		return {
 			status: 200,
 			data: subscriptions.data,
+			message: "success",
 		};
 	} catch (e) {
 		const errorMessage = `The following error occurred in retrieving the current customer's subscription details: ${e instanceof Error && e.message}`;
@@ -245,33 +234,41 @@ export async function searchSubscriptionsByCustomerID(customerID: string): Promi
 		console.error(errorMessage);
 		return {
 			status: 500,
+			data: null,
 			message: errorMessage,
 		};
 	}
 }
 
-export async function getCurrentUserSubscriptionDetails() {
+export async function getCurrentUserSubscriptionDetails(): Promise<UserSubscriptionResponse> {
 	const supabase = await createClient();
-	const { data: { user } } = await supabase.auth.getUser();
-	
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
 	if (!user) {
 		return {
-			status: 500,
-			message: 'No user can be found currently.'
-		}
+			status: 400,
+			message: "No user can be found currently.",
+			data: null,
+		};
 	}
 
 	const userEmail = user.email;
-	const customerData = await searchCustomerByEmail(userEmail as string);
+	const customerData = await searchCustomerByEmail(`"${userEmail as string}"`);
 
-	if (customerData.status !== 200) {
+	if (customerData.data === null) {
+		console.log("Message here ", customerData.message);
 		return {
-			status: 500,
-			message: `Unable to find customer by email due to the following error: ${customerData.message}`
-		}
+			status: 400,
+			message: `Unable to find customer by email due to the following error: ${customerData.message}`,
+			data: null,
+		};
 	}
 
-	// const customerID = customerData.data[0].id as string;
+	const customerID = customerData.data[0].id as string;
+	const subscriptionData = await searchSubscriptionsByCustomerID(customerID);
+	return subscriptionData;
 }
 
 export async function getProducts(): Promise<ProductResponse> {
