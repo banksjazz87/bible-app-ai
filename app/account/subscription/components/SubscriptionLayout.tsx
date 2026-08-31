@@ -31,6 +31,12 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         }, 2000);
     };
 
+    const getDate = (unixDate: number): string => {
+        const date = new Date(unixDate * 1000);
+        const formattedDate = new Intl.DateTimeFormat('en-US').format(date);
+        return formattedDate;
+    }
+
 	return (
 		<section>
 			<h2>Subscription Details</h2>
@@ -45,16 +51,19 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 							<TableHead>Subscription/Plan</TableHead>
 							<TableHead>Billing Cycle</TableHead>
 							<TableHead>Amount Due</TableHead>
-							<TableHead>Renewal Date</TableHead>
+							<TableHead>Start Date</TableHead>
+							<TableHead>End Date</TableHead>
 							<TableHead className="center"></TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{userData?.data.map((data: Stripe.Subscription, y: number) => (
 							<TableRow key={`thread_num_${y}`}>
-                                <TableCell>{StripeProducts.get(data.items.data[0].plan.product as string) }</TableCell>
-                                <TableCell className="capitalize">{data.items.data[0].plan.interval}</TableCell>
-                                <TableCell>{data.items.data[0].plan.amount ? `$${ data.items.data[0].plan.amount / 100 }` : "$0.00" }</TableCell>
+								<TableCell>{StripeProducts.get(data.items.data[0].plan.product as string)}</TableCell>
+								<TableCell className="capitalize">{`${data.items.data[0].plan.interval}ly`}</TableCell>
+								<TableCell>{data.items.data[0].plan.amount ? `$${data.items.data[0].plan.amount / 100}` : "$0.00"}</TableCell>
+								<TableCell>{getDate(data.start_date)}</TableCell>
+								<TableCell>{"-"}</TableCell>
 								<TableCell className="capitalize"></TableCell>
 								<TableCell>
 									{/* <Button
