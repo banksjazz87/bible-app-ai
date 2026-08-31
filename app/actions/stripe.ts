@@ -300,3 +300,34 @@ export async function getCheckoutSession(sessionId: string): Promise<Stripe.Resp
 	console.log("The session has been retrieved and the returned value is ", session);
 	return session;
 }
+
+export async function cancelSubscription(subscriptionID: string) {
+
+	try {
+		const subscription = await stripe.subscriptions.update(subscriptionID, {
+			cancel_at_period_end: true,
+		});
+
+		if (subscription.id) {
+			return {
+				status: 200,
+				message: "Subscription has been cancelled",
+				data: subscription
+			};
+		} else {
+		
+			return {
+				status: 400,
+				message: "Subscription was unable to be cancelled",
+				data: subscription
+			}
+		}
+
+	} catch (e: unknown) {
+		return {
+			status: 400,
+			message: `The following error occurred in cancelling the subscription: ${e instanceof Error && e.message}`,
+			data: null
+		}
+	}
+}
