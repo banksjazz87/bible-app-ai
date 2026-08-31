@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
+import { StripeProducts } from "@/lib/constants";
 
 
 type SubscriptionLayoutProps = {
@@ -51,9 +52,9 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 					<TableBody>
 						{userData?.data.map((data: Stripe.Subscription, y: number) => (
 							<TableRow key={`thread_num_${y}`}>
-								<TableCell></TableCell>
-								<TableCell></TableCell>
-								<TableCell></TableCell>
+                                <TableCell>{StripeProducts.get(data.items.data[0].plan.product as string) }</TableCell>
+                                <TableCell className="capitalize">{data.items.data[0].plan.interval}</TableCell>
+                                <TableCell>{data.items.data[0].plan.amount ? `$${ data.items.data[0].plan.amount / 100 }` : "$0.00" }</TableCell>
 								<TableCell className="capitalize"></TableCell>
 								<TableCell>
 									{/* <Button

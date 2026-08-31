@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { StripeProducts } from "@/lib/constants";
 
 /**
  *
@@ -11,12 +12,7 @@ import { revalidatePath } from "next/cache";
  */
 
 export async function POST(request: Request): Promise<NextResponse> {
-	//This will need to be updated in production.
-	const StripeProducts = new Map([
-		["prod_TNN4hsZb9FuoVk", "Premiere"],
-		["prod_TAIA5QhaUQq9JJ", "Basic"],
-	]);
-
+	
 	const body = await request.json();
 	const { productId, userId } = body;
 
