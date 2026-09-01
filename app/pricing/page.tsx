@@ -41,12 +41,6 @@ const pageContent = async (): Promise<JSX.Element> => {
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Check out our subscription options</p>
 
 				<div className="grid grid-cols-3 gap-4 pt-9">
-					<PriceCard
-						title="Free"
-						details={["Limit of 5 AI queries per day", "Email notifications of all future updates"]}
-						value={0}
-						optionValue="free"
-					/>
 					{displayPriceCards}
 				</div>
 			</section>

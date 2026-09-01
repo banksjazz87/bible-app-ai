@@ -82,7 +82,7 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 							<TableHead>Billing Cycle</TableHead>
 							<TableHead>Amount Due</TableHead>
 							<TableHead>Start Date</TableHead>
-							<TableHead>End Date</TableHead>
+							<TableHead>Canceled Date</TableHead>
 							<TableHead className="center"></TableHead>
 						</TableRow>
 					</TableHeader>
@@ -93,21 +93,33 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 								<TableCell className="capitalize">{`${data.items.data[0].plan.interval}ly`}</TableCell>
 								<TableCell>{data.items.data[0].plan.amount ? `$${data.items.data[0].plan.amount / 100}` : "$0.00"}</TableCell>
 								<TableCell>{getDate(data.start_date)}</TableCell>
-								<TableCell>{"-"}</TableCell>
+								<TableCell>{data.canceled_at ? getDate(data.canceled_at) : "-"}</TableCell>
 								<TableCell className="capitalize"></TableCell>
-								<TableCell>
-									<Button
-										variant="destructive"
-										onClick={(): void => cancelRequestHandler(data.id)}
-										disabled={isCancelling && cancelID === data.id}
-									>
-										{isCancelling && cancelID === data.id && <Spinner data-icon="inline-start" />}
-										{/* <FontAwesomeIcon
-											icon={faTrash}
-											className="text-gray-700"
-										/> */}
-										Cancel
-									</Button>
+                                <TableCell>
+
+                                    {/**    SUBSCRIPTION HAS BEEN CANCELED    **/}
+									{data.canceled_at && (
+										<Button
+											variant="secondary"
+											onClick={(): void => cancelRequestHandler(data.id)}
+											disabled={isCancelling && cancelID === data.id}
+										>
+											{isCancelling && cancelID === data.id && <Spinner data-icon="inline-start" />}
+											Renew
+										</Button>
+                                    )}
+                                    
+                                    {/**    SUBSCRIPTION HAS NOT BEEN CANCELED    **/}
+                                    {data.canceled_at === null && (
+                                        <Button
+                                            variant="destructive"
+                                            onClick={(): void => cancelRequestHandler(data.id)}
+                                            disabled={isCancelling && cancelID === data.id}
+                                        >
+                                            {isCancelling && cancelID === data.id && <Spinner data-icon="inline-start" />}
+                                            Cancel
+                                        </Button>
+                                    )}
 								</TableCell>
 							</TableRow>
 						))}
