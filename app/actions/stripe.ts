@@ -6,6 +6,7 @@ import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
+import User from "@/lib/classes/User";
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
@@ -267,7 +268,7 @@ export async function getCurrentUserSubscriptionDetails(): Promise<UserSubscript
 	}
 
 	const customerID = customerData.data[0].id as string;
-	const subscriptionData = await searchSubscriptionsByCustomerID(customerID);
+	const subscriptionData: UserSubscriptionResponse = await searchSubscriptionsByCustomerID(customerID);
 	return subscriptionData;
 }
 
@@ -302,7 +303,6 @@ export async function getCheckoutSession(sessionId: string): Promise<Stripe.Resp
 }
 
 export async function cancelSubscription(subscriptionID: string) {
-
 	try {
 		const subscription = await stripe.subscriptions.update(subscriptionID, {
 			cancel_at_period_end: true,
@@ -312,22 +312,42 @@ export async function cancelSubscription(subscriptionID: string) {
 			return {
 				status: 200,
 				message: "Subscription has been cancelled",
-				data: subscription
+				data: subscription,
 			};
 		} else {
-		
 			return {
 				status: 400,
 				message: "Subscription was unable to be cancelled",
-				data: subscription
-			}
+				data: subscription,
+			};
 		}
-
 	} catch (e: unknown) {
 		return {
 			status: 400,
 			message: `The following error occurred in cancelling the subscription: ${e instanceof Error && e.message}`,
-			data: null
+			data: null,
+		};
+	}
+}
+
+export async function deleteSubscription(subscriptionID: string): Promise<{
+	status: number,
+	message: string,
+}> {
+	const response = {
+		status: 400,
+		message: "Failure",
+	};
+
+	try {
+		const { deleted } = await stripe.subscriptionItems.del(subscriptionID);
+		if (deleted) {
+			response.status = 200;
+			response.message = "Success";
 		}
+	} catch (e) {
+		response.message = `The following error occurred in deleting the subscription item: ${e instanceof Error && e.message}`;
+	} finally {
+		return response;
 	}
 }
