@@ -87,6 +87,16 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         return formattedDate;
     }
 
+    function getNextBillingDate(unixDate: number): string {
+        const date = new Date(unixDate * 1000);
+        date.setMonth(date.getMonth() + 1);
+
+        const nextMonthUnix = Math.floor(date.getTime() / 1000);
+        const nextMonthDate = getDate(nextMonthUnix);
+
+        return nextMonthDate;
+    }
+
 	return (
 		<section>
 			<h2>Subscription Details</h2>
@@ -127,8 +137,10 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 							<TableHead>Subscription/Plan</TableHead>
 							<TableHead>Billing Cycle</TableHead>
 							<TableHead>Amount Due</TableHead>
-							<TableHead>Start Date</TableHead>
-							<TableHead>Canceled Date</TableHead>
+                            <TableHead>Start Date</TableHead>
+                            <TableHead>Renewal Date</TableHead>
+                            <TableHead>Canceled Date</TableHead>
+                            <TableHead>End Date</TableHead>
 							<TableHead className="center"></TableHead>
 						</TableRow>
 					</TableHeader>
@@ -138,8 +150,10 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 								<TableCell>{StripeProducts.get(data.items.data[0].plan.product as string)}</TableCell>
 								<TableCell className="capitalize">{`${data.items.data[0].plan.interval}ly`}</TableCell>
 								<TableCell>{data.items.data[0].plan.amount ? `$${data.items.data[0].plan.amount / 100}` : "$0.00"}</TableCell>
-								<TableCell>{getDate(data.start_date)}</TableCell>
-								<TableCell>{data.canceled_at ? getDate(data.canceled_at) : "-"}</TableCell>
+                                <TableCell>{getDate(data.start_date)}</TableCell>
+                                <TableCell>{ getNextBillingDate(data.billing_cycle_anchor) }</TableCell>
+                                <TableCell>{data.canceled_at ? getDate(data.canceled_at) : "-"}</TableCell>
+                                <TableCell>{data.cancel_at ? getDate(data.cancel_at) : '-'}</TableCell>
 								<TableCell className="capitalize"></TableCell>
 								<TableCell>
 									{/**    SUBSCRIPTION HAS BEEN CANCELED    **/}
