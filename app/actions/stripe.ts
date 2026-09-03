@@ -330,24 +330,3 @@ export async function cancelSubscription(subscriptionID: string) {
 	}
 }
 
-export async function deleteSubscription(subscriptionID: string): Promise<{
-	status: number,
-	message: string,
-}> {
-	const response = {
-		status: 400,
-		message: "Failure",
-	};
-
-	try {
-		const { deleted } = await stripe.subscriptionItems.del(subscriptionID);
-		if (deleted) {
-			response.status = 200;
-			response.message = "Success";
-		}
-	} catch (e) {
-		response.message = `The following error occurred in deleting the subscription item: ${e instanceof Error && e.message}`;
-	} finally {
-		return response;
-	}
-}

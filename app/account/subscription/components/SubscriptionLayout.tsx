@@ -5,7 +5,7 @@ import { UserSubscriptionResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Stripe } from "stripe";
-import { cancelSubscription, deleteSubscription } from "@/app/actions/stripe";
+import { cancelSubscription } from "@/app/actions/stripe";
 import { Spinner } from "@/components/ui/spinner";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,8 +23,11 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
     const [isCancelling, setIsCancelling] = useState<boolean>(false);
     const [cancelID, setCancelID] = useState<string>('');
     const [alertIsOpen, setAlertIsOpen] = useState<boolean>(false);
-    const [isDeleting, setIsDeleting] = useState<boolean>(false);
-    const [deleteID, setDeleteID] = useState<string>('');
+    const [alertMessage, setAlertMessage] = useState<string>('');
+    const [showDetails, setShowDetails] = useState<boolean>(false);
+    const [alertTitle, setAlertTitle] = useState<string>('');
+    const [alertItemID, setAlertItemID] = useState<string>('');
+
 
     console.log('User subscription data here!!!!! ', userData);
 
@@ -40,16 +43,11 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         setAlertIsOpen(false);
     }
 
-    function deleteRequestHandler(id: string): void {
-        setIsDeleting(true);
-        setDeleteID(id);
-        setAlertIsOpen(true);
-    }
-
-    function clearDeleteRequest(): void {
-        setIsDeleting(false);
-        setDeleteID('');
+    function clearAlert(): void {
         setAlertIsOpen(false);
+        setAlertMessage('');
+        setAlertTitle('');
+        setAlertItemID('');
     }
 
     async function cancelSubscriptionHandler() {
@@ -64,22 +62,6 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         }
     }
 
-    async function deleteSubscriptionHandler() {
-        const deleted = await deleteSubscription(deleteID);
-
-        if (deleted.status !== 200) {
-            clearDeleteRequest();
-            toast('Error', {
-                description: `The following error occurred in deleting the subscription: ${deleted.message}`,
-            });
-            console.error(`The following error occurred in deleting the subscription: ${deleted.message}`);
-        } else {
-            clearDeleteRequest();
-            toast('Success', {
-                description: 'The subscription has been deleted.'
-            });
-        }
-    }
 
     const getDate = (unixDate: number): string => {
         const date = new Date(unixDate * 1000);
@@ -97,13 +79,23 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         return nextMonthDate;
     }
 
+    function setAlertDetails(data: Stripe.Subscription, title: string): void {
+        const message = `This subscription was cancelled on ${data.canceled_at}.  The subscription will end on ${data.cancel_at}.`
+
+        setAlertMessage(message);
+        setAlertTitle(title);
+        setAlertItemID(data.id);
+        setShowDetails(true);
+        setAlertIsOpen(true);
+    }
+
 	return (
 		<section>
 			<h2>Subscription Details</h2>
 
 			{userData.data === null && <p>No Data found</p>}
 
-            {/**    CANCELLATION ALERT    **/}
+			{/**    CANCELLATION ALERT    **/}
 			<Alert
 				isOpen={alertIsOpen && isCancelling}
 				openHandler={() => setAlertIsOpen(true)}
@@ -116,17 +108,16 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 				cancelText="Keep Subscription"
 			/>
 
-            {/**     DELETE ALERT    **/}
+            {/**    MORE DETAILS ALERT      **/}
 			<Alert
-				isOpen={alertIsOpen && isDeleting}
+				isOpen={showDetails && alertIsOpen}
 				openHandler={() => setAlertIsOpen(true)}
 				closeHandler={() => setAlertIsOpen(false)}
-				title="Delete Subscription"
-				description="Are you sure that you would like to permanently delete the subscription?"
+				title={alertTitle}
+				description={alertMessage}
 				cancelHandler={() => setAlertIsOpen(false)}
-				confirmHandler={() => deleteSubscriptionHandler()}
-				confirmText="Yes"
-				cancelText="Cancel"
+                confirmHandler={() => clearAlert()}
+				confirmText="Ok"
 			/>
 
 			{userData.data !== null && (
@@ -137,10 +128,10 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 							<TableHead>Subscription/Plan</TableHead>
 							<TableHead>Billing Cycle</TableHead>
 							<TableHead>Amount Due</TableHead>
-                            <TableHead>Start Date</TableHead>
-                            <TableHead>Renewal Date</TableHead>
-                            <TableHead>Canceled Date</TableHead>
-                            <TableHead>End Date</TableHead>
+							<TableHead>Start Date</TableHead>
+							<TableHead>Renewal Date</TableHead>
+							<TableHead>Canceled Date</TableHead>
+							<TableHead>End Date</TableHead>
 							<TableHead className="center"></TableHead>
 						</TableRow>
 					</TableHeader>
@@ -150,21 +141,21 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 								<TableCell>{StripeProducts.get(data.items.data[0].plan.product as string)}</TableCell>
 								<TableCell className="capitalize">{`${data.items.data[0].plan.interval}ly`}</TableCell>
 								<TableCell>{data.items.data[0].plan.amount ? `$${data.items.data[0].plan.amount / 100}` : "$0.00"}</TableCell>
-                                <TableCell>{getDate(data.start_date)}</TableCell>
-                                <TableCell>{ getNextBillingDate(data.billing_cycle_anchor) }</TableCell>
-                                <TableCell>{data.canceled_at ? getDate(data.canceled_at) : "-"}</TableCell>
-                                <TableCell>{data.cancel_at ? getDate(data.cancel_at) : '-'}</TableCell>
+								<TableCell>{getDate(data.start_date)}</TableCell>
+								<TableCell>{getNextBillingDate(data.billing_cycle_anchor)}</TableCell>
+								<TableCell>{data.canceled_at ? getDate(data.canceled_at) : "-"}</TableCell>
+								<TableCell>{data.cancel_at ? getDate(data.cancel_at) : "-"}</TableCell>
 								<TableCell className="capitalize"></TableCell>
 								<TableCell>
 									{/**    SUBSCRIPTION HAS BEEN CANCELED    **/}
 									{data.canceled_at && (
 										<Button
 											variant="secondary"
-											onClick={(): void => deleteRequestHandler(data.id)}
-											disabled={isDeleting && deleteID === data.id}
+											onClick={(): void => setAlertDetails(data, "Subscription Canceled")}
+											disabled={alertIsOpen && alertItemID === data.id}
 										>
-											{isDeleting && deleteID === data.id && <Spinner data-icon="inline-start" />}
-											Delete
+											{alertIsOpen && alertItemID === data.id && <Spinner data-icon="inline-start" />}
+											Details
 										</Button>
 									)}
 
