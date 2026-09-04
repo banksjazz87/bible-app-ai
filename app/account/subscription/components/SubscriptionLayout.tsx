@@ -43,8 +43,9 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         setAlertIsOpen(false);
     }
 
-    function clearAlert(): void {
+    function clearDetailsAlert(): void {
         setAlertIsOpen(false);
+        setShowDetails(false);
         setAlertMessage('');
         setAlertTitle('');
         setAlertItemID('');
@@ -79,11 +80,19 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         return nextMonthDate;
     }
 
-    function setAlertDetails(data: Stripe.Subscription, title: string): void {
-        const message = `This subscription was cancelled on ${data.canceled_at}.  The subscription will end on ${data.cancel_at}.`
+    function getCancellationMessage(data: Stripe.Subscription): string {
+        const canceledDate: string = data.canceled_at ? getDate(data.canceled_at) : '';
+        const endDate: string = data.cancel_at ? getDate(data.cancel_at) : '';
+        const errorMessage = `This subscription was cancelled on ${canceledDate}.  The subscription will end on ${endDate}.`;
 
+        return errorMessage;
+    }
+
+ 
+    function displayCancellationMessage(data: Stripe.Subscription, title: string): void {
+        const message = getCancellationMessage(data);
         setAlertMessage(message);
-        setAlertTitle(title);
+		setAlertTitle(title);
         setAlertItemID(data.id);
         setShowDetails(true);
         setAlertIsOpen(true);
@@ -102,21 +111,21 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 				closeHandler={() => setAlertIsOpen(false)}
 				title="Cancel Subscription"
 				description="Are you sure that you would like to cancel the subscription?"
-				cancelHandler={() => setAlertIsOpen(false)}
+				cancelHandler={() => clearCancelSubscriptionState()}
 				confirmHandler={() => cancelSubscriptionHandler()}
 				confirmText="Cancel Subscription"
 				cancelText="Keep Subscription"
 			/>
 
-            {/**    MORE DETAILS ALERT      **/}
+			{/**    MORE DETAILS ALERT      **/}
 			<Alert
 				isOpen={showDetails && alertIsOpen}
 				openHandler={() => setAlertIsOpen(true)}
 				closeHandler={() => setAlertIsOpen(false)}
 				title={alertTitle}
 				description={alertMessage}
-				cancelHandler={() => setAlertIsOpen(false)}
-                confirmHandler={() => clearAlert()}
+				cancelHandler={() => clearDetailsAlert()}
+				confirmHandler={() => clearDetailsAlert()}
 				confirmText="Ok"
 			/>
 
@@ -151,7 +160,7 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 									{data.canceled_at && (
 										<Button
 											variant="secondary"
-											onClick={(): void => setAlertDetails(data, "Subscription Canceled")}
+											onClick={(): void => displayCancellationMessage(data, "Subscription Canceled")}
 											disabled={alertIsOpen && alertItemID === data.id}
 										>
 											{alertIsOpen && alertItemID === data.id && <Spinner data-icon="inline-start" />}
