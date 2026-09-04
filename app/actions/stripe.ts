@@ -223,6 +223,7 @@ export async function searchSubscriptionsByCustomerID(customerID: string): Promi
 	try {
 		const subscriptions: Stripe.Response<Stripe.ApiList<Stripe.Subscription>> = await stripe.subscriptions.list({
 			customer: customerID,
+			limit: 100
 		});
 		return {
 			status: 200,

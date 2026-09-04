@@ -1,6 +1,7 @@
 "use client"
 
 import { use, useState } from "react";
+import { useRouter } from "next/navigation";
 import { UserSubscriptionResponse } from "@/lib/definitions";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
@@ -20,6 +21,8 @@ type SubscriptionLayoutProps = {
 
 export default function SubscriptionLayout({ subscriptionData }: SubscriptionLayoutProps) {
     const userData = use(subscriptionData);
+    const router = useRouter();
+
     const [isCancelling, setIsCancelling] = useState<boolean>(false);
     const [cancelID, setCancelID] = useState<string>('');
     const [alertIsOpen, setAlertIsOpen] = useState<boolean>(false);
@@ -56,10 +59,14 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 
         if (cancel.status !== 200) {
             clearCancelSubscriptionState();
-            alert(`The following error occurred in canceling the subscription:  ${cancel.message}`);
+            toast.error(`The following error occurred in canceling the subscription:  ${cancel.message}`);
         } else {
             clearCancelSubscriptionState();
-            console.log(cancel.message);
+            toast.success('Your subscription has been canceled!');
+        
+            setTimeout(() => {
+                router.refresh();
+            }, 1500);
         }
     }
 
