@@ -24,6 +24,7 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
     const router = useRouter();
 
     const [isCancelling, setIsCancelling] = useState<boolean>(false);
+    const [cancelInProgress, setCancelInProgress] = useState<boolean>(false);
     const [cancelID, setCancelID] = useState<string>('');
     const [alertIsOpen, setAlertIsOpen] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('');
@@ -44,6 +45,7 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         setIsCancelling(false);
         setCancelID('');
         setAlertIsOpen(false);
+        setCancelInProgress(false);
     }
 
     function clearDetailsAlert(): void {
@@ -55,18 +57,25 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
     }
 
     async function cancelSubscriptionHandler() {
+        setCancelInProgress(true);
         const cancel = await cancelSubscription(cancelID);
 
         if (cancel.status !== 200) {
             clearCancelSubscriptionState();
-            toast.error(`The following error occurred in canceling the subscription:  ${cancel.message}`);
+            toast(`The following error occurred in canceling the subscription:  ${cancel.message}`, {
+                position: "top-right",
+                duration: 20
+            });
         } else {
             clearCancelSubscriptionState();
-            toast.success('Your subscription has been canceled!');
+            toast.success("The subscription has been successfully canceled.", {
+                position: "top-right",
+                duration: 20
+            });
         
             setTimeout(() => {
                 router.refresh();
-            }, 1500);
+            }, 2500);
         }
     }
 
@@ -117,11 +126,12 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 				openHandler={() => setAlertIsOpen(true)}
 				closeHandler={() => setAlertIsOpen(false)}
 				title="Cancel Subscription"
-				description="Are you sure that you would like to cancel the subscription?"
+				description="Are you sure that you would like to cancel your subscription?"
 				cancelHandler={() => clearCancelSubscriptionState()}
-				confirmHandler={() => cancelSubscriptionHandler()}
-				confirmText="Cancel Subscription"
-				cancelText="Keep Subscription"
+                confirmHandler={() => cancelSubscriptionHandler()}
+                confirmInProcess={cancelInProgress}
+                confirmText={'Cancel Subscription'}
+				cancelText="Other Subscription Options"
 			/>
 
 			{/**    MORE DETAILS ALERT      **/}
@@ -168,9 +178,7 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 										<Button
 											variant="secondary"
 											onClick={(): void => displayCancellationMessage(data, "Subscription Canceled")}
-											disabled={alertIsOpen && alertItemID === data.id}
 										>
-											{alertIsOpen && alertItemID === data.id && <Spinner data-icon="inline-start" />}
 											Details
 										</Button>
 									)}
@@ -180,9 +188,7 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 										<Button
 											variant="destructive"
 											onClick={(): void => cancelRequestHandler(data.id)}
-											disabled={isCancelling && cancelID === data.id}
 										>
-											{isCancelling && cancelID === data.id && <Spinner data-icon="inline-start" />}
 											Cancel
 										</Button>
 									)}

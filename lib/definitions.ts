@@ -2,6 +2,7 @@
 
 import { Stripe } from "stripe";
 import { SubmitHandler, FieldValues } from "react-hook-form";
+import { JSX } from "react";
 
 export type BookAndChapters = {
 	text: string;
@@ -99,7 +100,8 @@ export type AlertProps = {
 	closeHandler: () => void;
 	title: string;
 	description: string;
-	confirmText?: string;
+	confirmInProcess?: boolean;
+	confirmText?: string | JSX.Element;
 	cancelText?: string;
 	cancelHandler: () => void;
 	confirmHandler: () => void;

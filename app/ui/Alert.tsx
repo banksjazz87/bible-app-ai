@@ -3,6 +3,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { AlertProps } from "@/lib/definitions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Spinner } from "@/components/ui/spinner";
 
 
 export default function Alert({
@@ -12,7 +13,8 @@ export default function Alert({
     title,
     description,
     cancelHandler,
-    confirmHandler,
+	confirmHandler,
+	confirmInProcess = false ,
     confirmText = "Okay",
     cancelText = "Cancel", }: AlertProps): JSX.Element {
     
@@ -37,7 +39,7 @@ export default function Alert({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel onClick={cancelHandler}>{cancelText}</AlertDialogCancel>
-					<AlertDialogAction onClick={confirmHandler}>{confirmText}</AlertDialogAction>
+					<AlertDialogAction onClick={confirmHandler} disabled={confirmInProcess}>{confirmInProcess ? <Spinner data-icon="inline-start" /> : confirmText}</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
