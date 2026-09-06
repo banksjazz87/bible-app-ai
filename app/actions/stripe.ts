@@ -223,7 +223,7 @@ export async function searchSubscriptionsByCustomerID(customerID: string): Promi
 	try {
 		const subscriptions: Stripe.Response<Stripe.ApiList<Stripe.Subscription>> = await stripe.subscriptions.list({
 			customer: customerID,
-			limit: 100
+			limit: 100,
 		});
 		return {
 			status: 200,
@@ -303,10 +303,37 @@ export async function getCheckoutSession(sessionId: string): Promise<Stripe.Resp
 	return session;
 }
 
-export async function cancelSubscription(subscriptionID: string) {
+export async function cancelSubscription(subscriptionID: string): Promise<
+	| {
+			status: number;
+			message: string;
+			data: null;
+	  }
+	| {
+			status: number;
+			message: string;
+			data: Stripe.Response<Stripe.Subscription>;
+	  }
+> {
+	const supabase = await createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	if (!user) {
+		return {
+			status: 400,
+			message: "No user can be found currently.",
+			data: null,
+		};
+	}
+
 	try {
 		const subscription = await stripe.subscriptions.update(subscriptionID, {
 			cancel_at_period_end: true,
+			metadata: {
+				supabase_userID: user.id,
+			},
 		});
 
 		if (subscription.id) {
@@ -330,4 +357,3 @@ export async function cancelSubscription(subscriptionID: string) {
 		};
 	}
 }
-

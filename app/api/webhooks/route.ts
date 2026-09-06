@@ -91,25 +91,32 @@ export async function POST(req: Request) {
 				subscription = event.data.object;
 				status = subscription.status;
 
-				try {
-					const productID: string = subscription.metadata?.productID as string;
-					const userID: string = subscription.metadata?.supabase_userID;
+				console.log('Canceled at date is: ', subscription.canceled_at);
+				if (subscription.canceled_at !== null) {
+					console.log('Update cancellation table.');
 
-					const user = new User();
-					const updateUser = await user.updateUserSubscription(userID, productID);
+				} else {
+				
+					try {
+						const productID: string = subscription.metadata?.productID as string;
+						const userID: string = subscription.metadata?.supabase_userID;
 
-					if (updateUser.status !== 200) {
-						throw new Error(`The following error occurred in updating the user role: ${updateUser.message}`);
-					} else {
-						console.log(`The user role has been updated.`);
+						const user = new User();
+						const updateUser = await user.updateUserSubscription(userID, productID);
+
+						if (updateUser.status !== 200) {
+							throw new Error(`The following error occurred in updating the user role: ${updateUser.message}`);
+						} else {
+							console.log(`The user role has been updated.`);
+						}
+
+					} catch (e) {
+						console.error(`The following error occurred in updating the user role: ${e instanceof Error && e.message}`);
+
+					} finally {
+						console.log("SUBSCRIPTION UPDATED");
+						console.log(`Subscription status is ${status}.`);
 					}
-
-				} catch (e) {
-					console.error(`The following error occurred in updating the user role: ${e instanceof Error && e.message}`);
-
-				} finally {
-					console.log("SUBSCRIPTION UPDATED");
-					console.log(`Subscription status is ${status}.`);
 				}
 
 				break;
