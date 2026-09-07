@@ -79,7 +79,6 @@ export async function POST(req: Request) {
 					}
 				} catch (error: unknown) {
 					throw new Error(`The following error occurred in making the update-user-role request ${error instanceof Error && error.message}`);
-					
 				} finally {
 					console.log("CHECKOUT SESSION COMPLETED");
 					console.log(`Checkout status is ${status}`);
@@ -91,12 +90,31 @@ export async function POST(req: Request) {
 				subscription = event.data.object;
 				status = subscription.status;
 
-				console.log('Canceled at date is: ', subscription.canceled_at);
+				//	SUBSCRIPTION CANCELLATION REQUEST	//
 				if (subscription.canceled_at !== null) {
-					console.log('Update cancellation table.');
+					try {
+						const userID: string = subscription.metadata.supabase_userID;
+						const cancelRequestedOn: number = subscription.canceled_at;
+						const cancelOn: number = subscription.cancel_at as number;
 
+						const user = new User();
+						const response = await user.cancelSubscription(userID, cancelRequestedOn, cancelOn);
+
+						if (response.status !== 200) {
+							throw new Error(`The following error occurred in canceling the subscription for ${userID}: ${response.message}`);
+						} else {
+							console.log("The user has been marked for cancellation.");
+						}
+					} catch (e: unknown) {
+						console.error(`The following error occurred in canceling the subscription: ${e instanceof Error && e.message}`);
+					} finally {
+						console.log("---");
+						console.log("SUBSCRIPTION CANCELLED");
+						console.log("---");
+					}
+
+					//	SUBSCRIPTION UPDATE REQUEST	//
 				} else {
-				
 					try {
 						const productID: string = subscription.metadata?.productID as string;
 						const userID: string = subscription.metadata?.supabase_userID;
@@ -109,10 +127,8 @@ export async function POST(req: Request) {
 						} else {
 							console.log(`The user role has been updated.`);
 						}
-
 					} catch (e) {
 						console.error(`The following error occurred in updating the user role: ${e instanceof Error && e.message}`);
-
 					} finally {
 						console.log("SUBSCRIPTION UPDATED");
 						console.log(`Subscription status is ${status}.`);

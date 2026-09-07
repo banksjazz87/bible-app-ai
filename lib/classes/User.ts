@@ -74,4 +74,39 @@ export default class User {
 			}
 		}
 	}
+
+	async cancelSubscription(userID: string, cancelRequestedOn: number, cancelOn: number): Promise<{ status: number, message: string }>  {
+		try {
+			const response = await fetch("http://localhost:3000/api/cancel-subscription", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					userID: userID,
+					cancelRequestedOn: cancelRequestedOn,
+					cancelOn: cancelOn
+				}),
+			});
+
+			const data = await response.json();
+			if (data.status !== 200) {
+				console.error(`The following error occurred in canceling the user: ${data.message}`);
+				return {
+					status: 400,
+					message: `The user has NOT been cancelled successfully.`,
+				};
+			} else {
+				return {
+					status: 200,
+					message: "The user subscription has been cancelled successfully",
+				};
+			}
+		} catch (error: unknown) {
+			return {
+				status: 400,
+				message: `The following error occurred in making the cancel-subscription request: ${error instanceof Error && error.message}`,
+			};
+		}
+	}
 }
