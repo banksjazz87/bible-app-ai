@@ -10,16 +10,16 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request): Promise<NextResponse> {
 	const body = await request.json();
-	const { user_id, cancel_requested_on, cancel_end_date } = body;
-	console.log("user id = ", user_id);
-	console.log("cancel requested on ", cancel_requested_on);
-	console.log("cancel on ", cancel_end_date);
+	const { userID, cancelRequestedOn, cancelOn } = body;
+	console.log("user id = ", userID);
+	console.log("cancel requested on ", cancelRequestedOn);
+	console.log("cancel on ", cancelOn);
     console.log("body = ", body);
     
-    const cancelRequestedOnDate = new Date(cancel_requested_on * 1000);
+    const cancelRequestedOnDate = new Date(cancelRequestedOn * 1000);
     const requestedDate = cancelRequestedOnDate.toISOString();
 
-    const cancelOnDate = new Date(cancel_end_date * 1000);
+    const cancelOnDate = new Date(cancelOn * 1000);
     const endDate = cancelOnDate.toISOString();
 
     console.log('Cancel on Date: ', cancelOnDate.toISOString());
@@ -40,7 +40,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 				Authorization: anonKey as string,
 			},
 			body: JSON.stringify({
-				user_id: user_id,
+				user_id: userID,
 				cancel_requested_on: requestedDate,
 				cancel_end_date: endDate,
 			}),
