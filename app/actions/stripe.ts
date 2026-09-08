@@ -303,18 +303,10 @@ export async function getCheckoutSession(sessionId: string): Promise<Stripe.Resp
 	return session;
 }
 
-export async function cancelSubscription(subscriptionID: string): Promise<
-	| {
+export async function cancelSubscription(subscriptionID: string): Promise<{
 			status: number;
 			message: string;
-			data: null;
-	  }
-	| {
-			status: number;
-			message: string;
-			data: Stripe.Response<Stripe.Subscription>;
-	  }
-> {
+	  }> {
 	const supabase = await createClient();
 	const {
 		data: { user },
@@ -324,7 +316,6 @@ export async function cancelSubscription(subscriptionID: string): Promise<
 		return {
 			status: 400,
 			message: "No user can be found currently.",
-			data: null,
 		};
 	}
 
@@ -340,20 +331,17 @@ export async function cancelSubscription(subscriptionID: string): Promise<
 			return {
 				status: 200,
 				message: "Subscription has been cancelled",
-				data: subscription,
 			};
 		} else {
 			return {
 				status: 400,
 				message: "Subscription was unable to be cancelled",
-				data: subscription,
 			};
 		}
 	} catch (e: unknown) {
 		return {
 			status: 400,
 			message: `The following error occurred in cancelling the subscription: ${e instanceof Error && e.message}`,
-			data: null,
 		};
 	}
 }

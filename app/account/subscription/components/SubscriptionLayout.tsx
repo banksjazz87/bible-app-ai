@@ -7,9 +7,6 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { toast } from "sonner";
 import { Stripe } from "stripe";
 import { cancelSubscription } from "@/app/actions/stripe";
-import { Spinner } from "@/components/ui/spinner";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { StripeProducts } from "@/lib/constants";
 import Alert from "@/app/ui/Alert";

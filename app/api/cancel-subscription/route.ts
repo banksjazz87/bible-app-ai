@@ -11,18 +11,14 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request): Promise<NextResponse> {
 	const body = await request.json();
 	const { userID, cancelRequestedOn, cancelOn } = body;
-	console.log("user id = ", userID);
-	console.log("cancel requested on ", cancelRequestedOn);
-	console.log("cancel on ", cancelOn);
-    console.log("body = ", body);
     
+    //Format requested date
     const cancelRequestedOnDate = new Date(cancelRequestedOn * 1000);
     const requestedDate = cancelRequestedOnDate.toISOString();
 
+    //Format cancle on date
     const cancelOnDate = new Date(cancelOn * 1000);
     const endDate = cancelOnDate.toISOString();
-
-    console.log('Cancel on Date: ', cancelOnDate.toISOString());
 
 	const supabaseURL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 	const anonKey = process.env.NEXT_SUPABASE_ANON_KEY;
@@ -46,13 +42,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 			}),
 		});
         
-        console.log(response);
-
 		if (!response.ok) {
 			throw new Error(`HTTP error!  Status: ${response.status}`);
 		}
-
-		return NextResponse.json({ message: "The user has been marked to be cancelled within the database." }, { status: 200 });
+        return NextResponse.json({ message: "The user has been marked to be cancelled within the database." }, { status: 200 });
+        
     } catch (e: unknown) {
 		return NextResponse.json({ message: `The following error occurred in updating the cancellation table: ${e instanceof Error && e.message}` }, { status: 400 });
 	}
