@@ -113,7 +113,7 @@ export async function POST(req: Request) {
 						console.log("---");
 					}
 
-					//	SUBSCRIPTION UPDATE REQUEST	//
+				//	SUBSCRIPTION UPDATE REQUEST	//
 				} else {
 					try {
 						const productID: string = subscription.metadata?.productID as string;

@@ -112,9 +112,7 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
     }
 
 	return (
-		<section>
-			<h2>Subscription Details</h2>
-
+		<section className="mt-4">
 			{userData.data === null && <p>No Data found</p>}
 
 			{/**    CANCELLATION ALERT    **/}
@@ -148,13 +146,13 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
 					<TableCaption>A list of your subscriptions.</TableCaption>
 					<TableHeader>
 						<TableRow>
-							<TableHead>Subscription/Plan</TableHead>
-							<TableHead>Billing Cycle</TableHead>
-							<TableHead>Amount Due</TableHead>
-							<TableHead>Start Date</TableHead>
-							<TableHead>Renewal Date</TableHead>
-							<TableHead>Canceled Date</TableHead>
-							<TableHead>End Date</TableHead>
+							<TableHead className="font-bold">Subscription/Plan</TableHead>
+							<TableHead className="font-bold">Billing Cycle</TableHead>
+							<TableHead className="font-bold">Amount Due</TableHead>
+							<TableHead className="font-bold">Start Date</TableHead>
+							<TableHead className="font-bold">Renewal Date</TableHead>
+							<TableHead className="font-bold">Canceled Date</TableHead>
+							<TableHead className="font-bold">End Date</TableHead>
 							<TableHead className="center"></TableHead>
 						</TableRow>
 					</TableHeader>

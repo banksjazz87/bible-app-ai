@@ -121,17 +121,19 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					console.error("The following error occured while creating the customer ", e);
 				}
 
-				//This will be executed if the customer already exists
+			//This will be executed if the customer already exists
 			} else {
 				const customerID: string = customer?.data[0].id as string;
 				setCustomerId(customerID);
 
 				try {
 					const customerSubscription = await searchSubscriptionsByCustomerID(customerID);
-					const subscriptionData = "data" in customerSubscription ? customerSubscription.data : null;
-					const customerError = "message" in customerSubscription ? customerSubscription.message : null;
+					console.log("user's subscription details here: ", customerSubscription.status);
 
-					if (customerError) {
+					const subscriptionData = customerSubscription.data;
+					const customerSubscriptionStatus = customerSubscription.status;
+
+					if (customerSubscriptionStatus !== 200) {
 						throw new Error("The customer subscription was unable to be found.");
 					}
 
@@ -282,13 +284,13 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					/>
 
 					<section className="mt-4">
-						<p className="text-center">To continue with your upgrade, please confirm your account by entering your email address and password.</p>
-						<div className="border border-solid border-slate-800 rounded-md w-fit mx-auto px-10 py-10 shadow-md mb-40 mt-4">
+						<div className="border border-solid border-slate-800 rounded-md w-[550px] mx-auto px-10 py-10 shadow-md mb-40 mt-4">
 							<Form {...form}>
 								<form
 									onSubmit={form.handleSubmit(() => updateSubscriptionFormAction(updateSubscriptionForm.getValues()))}
 									className="space-y-5 w-100 mx-auto"
 								>
+									<p className="text-center font-semibold">To continue with your upgrade, please confirm your account by entering your email address and password.</p>
 									<FormField
 										control={updateSubscriptionForm.control}
 										name="email"
