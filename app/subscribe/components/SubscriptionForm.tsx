@@ -40,6 +40,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const [isNewCustomer, setIsNewCustomer] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [alertIsOpen, setAlertIsOpen] = useState<boolean>(false);
+	const [isReturningCustomer, setIsReturningCustomer] = useState<boolean>(false);
 
 	const preSelectedSubscription: string = searchParams.get("option") ? (searchParams.get("option") as string) : "free";
 	const allProducts = use(products);
@@ -81,11 +82,14 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				} catch (e: unknown) {
 					console.error("The following error occured while creating the customer ", e);
 				}
-
 				//This will be executed if the customer already exists
 			} else {
 				const customerID: string = customer?.data[0].id as string;
 				setCustomerId(customerID);
+
+				if (customer?.data[0].subscriptions?.data[0].canceled_at !== null) {
+					setIsReturningCustomer(true);
+				}
 			}
 		} catch (e: unknown) {
 			console.warn("The following error occurred while searching for the customer ", e);
@@ -121,7 +125,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 					console.error("The following error occured while creating the customer ", e);
 				}
 
-			//This will be executed if the customer already exists
+				//This will be executed if the customer already exists
 			} else {
 				const customerID: string = customer?.data[0].id as string;
 				setCustomerId(customerID);
@@ -265,8 +269,8 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				</Form>
 			)}
 
-			{/** NEW CUSTOMER CREATING A NEW SUBSCRIPTION */}
-			{customerId && preSelectedSubscription !== "free" && isNewCustomer && <CheckoutForm fetchClientSecret={fetchClientSecret} />}
+			{/** NEW CUSTOMER CREATING A NEW SUBSCRIPTION, OR RETURNING CUSTOMER */}
+			{customerId && preSelectedSubscription !== "free" && (isNewCustomer || isReturningCustomer) && <CheckoutForm fetchClientSecret={fetchClientSecret} />}
 
 			{/** RETURNING CUSTOMER UPDATE USER SUBSCRIPTION */}
 			{preSelectedSubscription !== "free" && !isNewCustomer && (
