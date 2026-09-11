@@ -63,7 +63,7 @@ export default function SubscriptionForm(): JSX.Element {
 	/**
 	 * 
 	 * @param data 
-	 * @description Form method used with the form that's presented to the user if they have selected the free option.
+	 * @description Form method is called on page load to determine if the current user is customer or not.
 	 */
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
 		try {
@@ -89,7 +89,7 @@ export default function SubscriptionForm(): JSX.Element {
 				const customerID: string = customer?.data[0].id as string;
 				setCustomerId(customerID);
 
-				if (customer?.data[0].subscriptions?.data[0].canceled_at !== null) {
+				if (customer?.data[0].subscriptions?.data[0].canceled_at) {
 					setIsReturningCustomer(true);
 				}
 			}
@@ -211,8 +211,6 @@ export default function SubscriptionForm(): JSX.Element {
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Update Your Subscription Today</p>
 			</section>
 
-			<p>{`Pre-selected option ${preSelectedSubscription}`}</p>
-
 			{/* if the user selects the free tier they'll have the option to either select a better plan or go back to the bible page.*/}
 			{preSelectedSubscription === "free" && (
 				<section className="flex-col align-middle justify-center pt-4">
@@ -293,7 +291,6 @@ export default function SubscriptionForm(): JSX.Element {
 
 					<section className="mt-4">
 						<div className="border border-solid border-slate-800 rounded-md w-[550px] mx-auto px-10 py-10 shadow-md mb-40 mt-4">
-							<p>RETURNING CUSTOMER UPDATE USER SUBSCRIPTION </p>
 							<Form {...form}>
 								<form
 									onSubmit={form.handleSubmit(() => updateSubscriptionFormAction(updateSubscriptionForm.getValues()))}
