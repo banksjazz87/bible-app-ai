@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useEffectEvent } from "react";
+import { JSX, useEffect, useEffectEvent } from "react";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -30,11 +30,8 @@ const UpdateSubscriptionFormSchema = z.object({
 	subscription: z.string(),
 });
 
-type SubscriptionFormProps = {
-	products: Promise<ProductResponse>;
-};
 
-export default function SubscriptionForm({ products }: SubscriptionFormProps) {
+export default function SubscriptionForm(): JSX.Element {
 	const searchParams = useSearchParams();
 	const [customerId, setCustomerId] = useState<string | null>(null);
 	const [isNewCustomer, setIsNewCustomer] = useState<boolean>(false);
@@ -43,7 +40,6 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 	const [isReturningCustomer, setIsReturningCustomer] = useState<boolean>(false);
 
 	const preSelectedSubscription: string = searchParams.get("option") ? (searchParams.get("option") as string) : "free";
-	const allProducts = use(products);
 	const userEmail = useAppSelector((state) => state.loggedInData.email);
 
 	const form = useForm<z.infer<typeof SubscribeFormSchema>>({
@@ -63,6 +59,12 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 		},
 	});
 
+
+	/**
+	 * 
+	 * @param data 
+	 * @description Form method used with the form that's presented to the user if they have selected the free option.
+	 */
 	const formAction = async (data: z.infer<typeof SubscribeFormSchema>): Promise<void> => {
 		try {
 			const customer = await searchCustomer(data, "email");
@@ -209,6 +211,8 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				<p className="font-mono text-l uppercase font-bold text-center pt-4">Update Your Subscription Today</p>
 			</section>
 
+			<p>{`Pre-selected option ${preSelectedSubscription}`}</p>
+
 			{/* if the user selects the free tier they'll have the option to either select a better plan or go back to the bible page.*/}
 			{preSelectedSubscription === "free" && (
 				<section className="flex-col align-middle justify-center pt-4">
@@ -269,11 +273,11 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 				</Form>
 			)}
 
-			{/** NEW CUSTOMER CREATING A NEW SUBSCRIPTION, OR RETURNING CUSTOMER */}
-			{customerId && preSelectedSubscription !== "free" && (isNewCustomer || isReturningCustomer) && <CheckoutForm fetchClientSecret={fetchClientSecret} />}
+			{/** NEW CUSTOMER CREATING A NEW SUBSCRIPTION, OR RETURNING CUSTOMER WITH A CANCELLED SUSBSCRIPTION */}
+			{(customerId && isNewCustomer ||  customerId && isReturningCustomer) && <CheckoutForm fetchClientSecret={fetchClientSecret} />}
 
 			{/** RETURNING CUSTOMER UPDATE USER SUBSCRIPTION */}
-			{preSelectedSubscription !== "free" && !isNewCustomer && (
+			{(!isNewCustomer && !isReturningCustomer) && (
 				<>
 					<Alert
 						isOpen={alertIsOpen}
@@ -289,6 +293,7 @@ export default function SubscriptionForm({ products }: SubscriptionFormProps) {
 
 					<section className="mt-4">
 						<div className="border border-solid border-slate-800 rounded-md w-[550px] mx-auto px-10 py-10 shadow-md mb-40 mt-4">
+							<p>RETURNING CUSTOMER UPDATE USER SUBSCRIPTION </p>
 							<Form {...form}>
 								<form
 									onSubmit={form.handleSubmit(() => updateSubscriptionFormAction(updateSubscriptionForm.getValues()))}
