@@ -3,8 +3,9 @@
 import type { Stripe } from "stripe";
 import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
+import { failureResponse, successResponse } from "@/lib/utils";
 import { stripe } from "@/lib/stripe";
-import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse } from "@/lib/definitions";
+import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse, APIResult } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
 import User from "@/lib/classes/User";
 
@@ -304,9 +305,9 @@ export async function getCheckoutSession(sessionId: string): Promise<Stripe.Resp
 }
 
 export async function cancelSubscription(subscriptionID: string): Promise<{
-			status: number;
-			message: string;
-	  }> {
+	status: number;
+	message: string;
+}> {
 	const supabase = await createClient();
 	const {
 		data: { user },
@@ -343,5 +344,34 @@ export async function cancelSubscription(subscriptionID: string): Promise<{
 			status: 400,
 			message: `The following error occurred in cancelling the subscription: ${e instanceof Error && e.message}`,
 		};
+	}
+}
+
+export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>>{
+	const supabase = await createClient();
+	const { data: { user }, error, } = await supabase.auth.getUser();
+
+	if (error || !user?.email) {
+		return failureResponse(404, `The following error occurred in fetching the user ${error}`);
+	}
+
+	const customerData = await searchCustomerByEmail(`"${user?.email}"`);
+
+	if (!customerData.data?.length) {
+		return failureResponse(404, `The following error occurred in retrieving the user ${customerData.message}`);
+	}
+
+	try {
+		const invoices = await stripe.invoices.list({ customer: customerData.data[0].id });
+
+		if (!invoices.data) {
+			return failureResponse(400, "No invoice data found for this user.");
+
+		} else {
+			return successResponse(invoices.data)
+		}
+
+	} catch (e: unknown) {
+		return failureResponse(404, `The following error occurred in accessing the invoice data: ${e instanceof Error && e.message}`);
 	}
 }

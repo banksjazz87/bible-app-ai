@@ -184,3 +184,13 @@ export type UserSubscriptionResponse = {
 	message: string;
 	data: Stripe.Subscription[] | null;
 };
+
+export type APIResult<T> = 
+	| {
+		status: 200; 
+		data: T;
+	}
+	| {
+		status: number;
+		message: string;
+	}
