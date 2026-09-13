@@ -1,30 +1,40 @@
 "use client";
 
 
-import { JSX } from "react";
+import { JSX, use } from "react";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { APIResult } from "@/lib/definitions";
+import { Stripe } from "stripe";
+import { stripe } from "@/lib/stripe";
 
+type BillingTableProps = {
+	invoices: Promise<APIResult<Stripe.Invoice[]>>
+}
 
-export default function BillingTable(): JSX.Element {
-    return (
+export default function BillingTable({ invoices }: BillingTableProps): JSX.Element {
+
+	const invoiceData = use(invoices);
+	console.log("Invoice data here ", invoiceData);
+	
+	return (
 		<section className="mt-4">
 			{<p>No Data found</p>}
-				<Table>
-					<TableCaption>A list of your subscriptions.</TableCaption>
-					<TableHeader>
-						<TableRow>
-							<TableHead className="font-bold">Subscription/Plan</TableHead>
-							<TableHead className="font-bold">Billing Cycle</TableHead>
-							<TableHead className="font-bold">Amount Due</TableHead>
-							<TableHead className="font-bold">Start Date</TableHead>
-							<TableHead className="font-bold">Renewal Date</TableHead>
-							<TableHead className="font-bold">Canceled Date</TableHead>
-							<TableHead className="font-bold">End Date</TableHead>
-							<TableHead className="center"></TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-                    {/* {userData?.data.map((data: Stripe.Subscription, y: number) => (
+			<Table>
+				<TableCaption>A list of your subscriptions.</TableCaption>
+				<TableHeader>
+					<TableRow>
+						<TableHead className="font-bold">Subscription/Plan</TableHead>
+						<TableHead className="font-bold">Billing Cycle</TableHead>
+						<TableHead className="font-bold">Amount Due</TableHead>
+						<TableHead className="font-bold">Start Date</TableHead>
+						<TableHead className="font-bold">Renewal Date</TableHead>
+						<TableHead className="font-bold">Canceled Date</TableHead>
+						<TableHead className="font-bold">End Date</TableHead>
+						<TableHead className="center"></TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{/* {userData?.data.map((data: Stripe.Subscription, y: number) => (
 							<TableRow key={`thread_num_${y}`}>
 								<TableCell>{StripeProducts.get(data.items.data[0].plan.product as string)}</TableCell>
 								<TableCell className="capitalize">{`${data.items.data[0].plan.interval}ly`}</TableCell>
@@ -36,8 +46,8 @@ export default function BillingTable(): JSX.Element {
 								<TableCell className="capitalize"></TableCell>
 								<TableCell> 
 							</TableRow> */}
-					</TableBody>
-				</Table>
+				</TableBody>
+			</Table>
 		</section>
 	);
 }

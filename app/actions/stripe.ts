@@ -7,7 +7,17 @@ import { failureResponse, successResponse } from "@/lib/utils";
 import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse, APIResult } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
-import User from "@/lib/classes/User";
+import {User} from "@supabase/supabase-js"
+
+
+export async function getUser(): Promise<User | null> {
+	const supabase = await createClient();
+	const { data: { user } } = await supabase.auth.getUser();
+
+	return user;
+}
+
+
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
@@ -348,11 +358,10 @@ export async function cancelSubscription(subscriptionID: string): Promise<{
 }
 
 export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>>{
-	const supabase = await createClient();
-	const { data: { user }, error, } = await supabase.auth.getUser();
+	const user = await getUser();
 
-	if (error || !user?.email) {
-		return failureResponse(404, `The following error occurred in fetching the user ${error}`);
+	if (!user?.email) {
+		return failureResponse(404, `User not found.`);
 	}
 
 	const customerData = await searchCustomerByEmail(`"${user?.email}"`);
