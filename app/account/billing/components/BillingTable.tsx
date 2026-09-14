@@ -14,27 +14,31 @@ type BillingTableProps = {
 export default function BillingTable({ invoices }: BillingTableProps): JSX.Element {
 
 	const invoiceData = use(invoices);
-	console.log("Invoice data here ", invoiceData);
 	
+	if (invoiceData.success) {
+		console.log(invoiceData.data);
+	}
+
 	return (
 		<section className="mt-4">
 			{<p>No Data found</p>}
 			<Table>
-				<TableCaption>A list of your subscriptions.</TableCaption>
+				<TableCaption>A list of your most recent transactions.</TableCaption>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="font-bold">Subscription/Plan</TableHead>
-						<TableHead className="font-bold">Billing Cycle</TableHead>
-						<TableHead className="font-bold">Amount Due</TableHead>
-						<TableHead className="font-bold">Start Date</TableHead>
-						<TableHead className="font-bold">Renewal Date</TableHead>
-						<TableHead className="font-bold">Canceled Date</TableHead>
-						<TableHead className="font-bold">End Date</TableHead>
+						<TableHead className="font-bold">Invoice #</TableHead>
+						<TableHead className="font-bold">Description</TableHead>
+						<TableHead className="font-bold">Billing Period</TableHead>
+						<TableHead className="font-bold">Amount</TableHead>
+						<TableHead className="font-bold">Status</TableHead>
+						<TableHead className="font-bold">Invoice Date</TableHead>
+						<TableHead className="font-bold">Actions</TableHead>
 						<TableHead className="center"></TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{/* {userData?.data.map((data: Stripe.Subscription, y: number) => (
+					{/* {invoiceData.status === 200 &&
+						invoiceData((data: Stripe.Subscription, y: number) => (
 							<TableRow key={`thread_num_${y}`}>
 								<TableCell>{StripeProducts.get(data.items.data[0].plan.product as string)}</TableCell>
 								<TableCell className="capitalize">{`${data.items.data[0].plan.interval}ly`}</TableCell>

@@ -189,8 +189,10 @@ export type APIResult<T> =
 	| {
 		status: 200; 
 		data: T;
+		success: true;
 	}
 	| {
 		status: number;
 		message: string;
+		success: false;
 	}

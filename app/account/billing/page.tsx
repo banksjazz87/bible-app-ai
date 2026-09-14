@@ -12,7 +12,7 @@ export default async function SubscriptionPage() {
     return (
 			<main>
 				<section className="mt-16 flex flex-col gap-4">
-					<h2 className="font-bold text-2xl">Subscription Details</h2>
+					<h2 className="font-bold text-2xl">Invoice Details</h2>
 				</section>
 				<Suspense fallback={<BillingSkeleton />}>
 					<BillingTable invoices={customerInvoices} />

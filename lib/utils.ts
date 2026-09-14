@@ -21,13 +21,15 @@ export function convertDateTime(timeStamp: string): string {
 export function failureResponse(status: number = 400, errorMessage: string): APIResult<never>{
 	return {
 		status: status,
-		message: errorMessage
+		message: errorMessage,
+		success: false
 	}
 }
 
 export function successResponse<T>(data: T): APIResult<T>{
 	return {
 		status: 200,
-		data: data
+		data: data,
+		success: true
 	}
 }
