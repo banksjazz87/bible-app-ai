@@ -4,7 +4,7 @@ export function formatAmountForDisplay(amount: number, currency: string): string
 		currency: currency,
 		currencyDisplay: "symbol",
 	});
-	return numberFormat.format(amount);
+	return numberFormat.format(amount / 100);
 }
 
 export function formatAmountForStripe(amount: number, currency: string): number {
