@@ -10,6 +10,7 @@ import { cancelSubscription } from "@/app/actions/stripe";
 import { Button } from "@/components/ui/button";
 import { StripeProducts } from "@/lib/constants";
 import Alert from "@/app/ui/Alert";
+import { getDate, getNextBillingDate } from "@/utils/stripe-helpers";
 
 
 type SubscriptionLayoutProps = {
@@ -76,22 +77,6 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
         }
     }
 
-
-    const getDate = (unixDate: number): string => {
-        const date = new Date(unixDate * 1000);
-        const formattedDate = new Intl.DateTimeFormat('en-US').format(date);
-        return formattedDate;
-    }
-
-    function getNextBillingDate(unixDate: number): string {
-        const date = new Date(unixDate * 1000);
-        date.setMonth(date.getMonth() + 1);
-
-        const nextMonthUnix = Math.floor(date.getTime() / 1000);
-        const nextMonthDate = getDate(nextMonthUnix);
-
-        return nextMonthDate;
-    }
 
     function getCancellationMessage(data: Stripe.Subscription): string {
         const canceledDate: string = data.canceled_at ? getDate(data.canceled_at) : '';
