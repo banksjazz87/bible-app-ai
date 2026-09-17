@@ -384,3 +384,13 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 		return failureResponse(404, `The following error occurred in accessing the invoice data: ${e instanceof Error && e.message}`);
 	}
 }
+
+export async function retrieveCharge(chargeID: string): Promise<APIResult<Stripe.Charge>> {
+	try {
+		const charge = await stripe.charges.retrieve(chargeID);
+		return (successResponse(charge));
+		
+	} catch (e: unknown) {
+		return failureResponse(404, `The following error occurred in retrieving the charge ${e instanceof Error && e.message}`);
+	}
+} 

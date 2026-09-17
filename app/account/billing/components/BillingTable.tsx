@@ -2,6 +2,7 @@
 
 import { JSX, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { APIResult } from "@/lib/definitions";
@@ -9,6 +10,7 @@ import { Stripe } from "stripe";
 import { getDate, getNextBillingDate, formatAmountForDisplay } from "@/utils/stripe-helpers";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { retrieveCharge } from "@/app/actions/stripe";
 
 type BillingTableProps = {
 	invoices: Promise<APIResult<Stripe.Invoice[]>>;
@@ -16,7 +18,21 @@ type BillingTableProps = {
 
 export default function BillingTable({ invoices }: BillingTableProps): JSX.Element {
 	const invoiceData = use(invoices);
+	const router = useRouter();
 	console.log("Invoice Data HERE: ", invoiceData);
+
+	async function receiptRequestHandler(chargeID: string) {
+		try {
+			const charge = await retrieveCharge(chargeID);
+			if (charge.success && charge.data.receipt_url) {
+				router.push(charge.data.receipt_url);
+			} else {
+				alert('Unable to find the url for the invoice');
+			}
+		} catch (e: unknown) {
+			console.error(`The following error occurred in making the retrive charge method. ${e instanceof Error && e.message}`);
+		}
+	}
 
 	return (
 		<section className="mt-4">
@@ -59,6 +75,10 @@ export default function BillingTable({ invoices }: BillingTableProps): JSX.Eleme
 									) : (
 										"-"
 									)}
+
+									 <Button variant="secondary">
+										Receipt
+									</Button>
 								</TableCell>
 							</TableRow>
 						))}
