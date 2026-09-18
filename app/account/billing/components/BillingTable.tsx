@@ -10,7 +10,7 @@ import { Stripe } from "stripe";
 import { getDate, getNextBillingDate, formatAmountForDisplay } from "@/utils/stripe-helpers";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { retrieveCharge } from "@/app/actions/stripe";
+import { searchForCharge } from "@/app/actions/stripe";
 
 type BillingTableProps = {
 	invoices: Promise<APIResult<Stripe.Invoice[]>>;
@@ -21,14 +21,20 @@ export default function BillingTable({ invoices }: BillingTableProps): JSX.Eleme
 	const router = useRouter();
 	console.log("Invoice Data HERE: ", invoiceData);
 
-	async function receiptRequestHandler(chargeID: string) {
+	async function receiptRequestHandler(timeOfCharge: number) {
 		try {
-			const charge = await retrieveCharge(chargeID);
-			if (charge.success && charge.data.receipt_url) {
-				router.push(charge.data.receipt_url);
+
+			const charge = await searchForCharge();
+
+			console.log('Time created = ', timeOfCharge);
+			console.log(charge);
+			if (charge.success && charge.data[0].receipt_url) {
+				console.log(charge.data);
+				// router.push(charge.data[0].receipt_url);
 			} else {
 				alert('Unable to find the url for the invoice');
 			}
+
 		} catch (e: unknown) {
 			console.error(`The following error occurred in making the retrive charge method. ${e instanceof Error && e.message}`);
 		}
@@ -76,7 +82,10 @@ export default function BillingTable({ invoices }: BillingTableProps): JSX.Eleme
 										"-"
 									)}
 
-									 <Button variant="secondary">
+									<Button
+										variant="secondary"
+										onClick={() => receiptRequestHandler(data.created)}
+									>
 										Receipt
 									</Button>
 								</TableCell>

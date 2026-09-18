@@ -357,7 +357,9 @@ export async function cancelSubscription(subscriptionID: string): Promise<{
 	}
 }
 
-export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>>{
+
+//Used to retrieve the customer details based on the current user.
+export async function getCustomerDetails():Promise<APIResult<Stripe.Customer[]>> {
 	const user = await getUser();
 
 	if (!user?.email) {
@@ -370,8 +372,19 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 		return failureResponse(404, `The following error occurred in retrieving the user ${customerData.message}`);
 	}
 
+	return successResponse(customerData.data);
+}
+
+
+export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>>{
+	const customer = await getCustomerDetails();
+
+	if (!customer.success) {
+		return failureResponse(404, `The following error occurred in retrieving the user ${customer.message}`);
+	}
+
 	try {
-		const invoices = await stripe.invoices.list({ customer: customerData.data[0].id });
+		const invoices = await stripe.invoices.list({ customer: customer.data[0].id });
 
 		if (!invoices.data) {
 			return failureResponse(400, "No invoice data found for this user.");
@@ -385,11 +398,22 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 	}
 }
 
-export async function retrieveCharge(chargeID: string): Promise<APIResult<Stripe.Charge>> {
+
+export async function searchForCharge(): Promise<APIResult<Stripe.Charge[]>> {
+
+	const customer = await getCustomerDetails();
+
+	if (!customer.success) {
+		return failureResponse(404, `The following error occurred in retrieving the customer details: ${customer.message}`);
+	}
+
 	try {
-		const charge = await stripe.charges.retrieve(chargeID);
-		return (successResponse(charge));
-		
+		const charge = await stripe.charges.search({
+			// query: `customer:\"${customer.data[0].id}"\ AND  created:${timeOfCharge}`,
+			query: `customer:"${customer.data[0].id}"`,
+		});
+		return successResponse(charge.data);
+
 	} catch (e: unknown) {
 		return failureResponse(404, `The following error occurred in retrieving the charge ${e instanceof Error && e.message}`);
 	}
