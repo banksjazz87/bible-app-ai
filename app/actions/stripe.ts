@@ -399,7 +399,7 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 }
 
 
-export async function searchForCharge(): Promise<APIResult<Stripe.Charge[]>> {
+export async function listCustomerCharges(): Promise<APIResult<Stripe.Charge[]>> {
 
 	const customer = await getCustomerDetails();
 
