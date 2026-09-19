@@ -28,32 +28,29 @@ export default function InvoiceTable({ invoices }: BillingTableProps): JSX.Eleme
 					<TableHeader>
 						<TableRow>
 							<TableHead className="font-bold">Invoice #</TableHead>
-							<TableHead className="font-bold">Description</TableHead>
 							<TableHead className="font-bold">Billing Period</TableHead>
 							<TableHead className="font-bold">Amount</TableHead>
-							<TableHead className="font-bold">Status</TableHead>
-							<TableHead className="font-bold">Invoice Date</TableHead>
-							<TableHead className="font-bold">Actions</TableHead>
+							<TableHead className="font-bold">Status</TableHead>	
+							<TableHead className="font-bold pl-8">Actions</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{invoiceData.data.map((data: Stripe.Invoice, y: number) => (
 							<TableRow key={`row_num_${y}`}>
 								<TableCell>{data.number}</TableCell>
-								<TableCell>{data.lines.data[0].description}</TableCell>
 								<TableCell>{`${getDate(data.period_start)} - ${getDate(data.period_end)}`}</TableCell>
 								<TableCell>{formatAmountForDisplay(data.amount_paid, "USD")}</TableCell>
 								<TableCell className="capitalize">{data.status}</TableCell>
-								<TableCell>{data.status_transitions.finalized_at ? getDate(data.status_transitions.finalized_at) : "-"}</TableCell>
 								<TableCell>
 									{data.invoice_pdf ? (
 										<Button variant="secondary">
 											<Link
+												className="flex align-middle gap-2"
 												target="_blank"
 												rel="noopener"
 												href={data.invoice_pdf}
 											>
-												<FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
+												<FontAwesomeIcon className="self-center" icon={faDownload}></FontAwesomeIcon>
 												Invoice
 											</Link>
 										</Button>
