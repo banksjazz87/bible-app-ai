@@ -7,17 +7,16 @@ import { failureResponse, successResponse } from "@/lib/utils";
 import { stripe } from "@/lib/stripe";
 import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse, APIResult } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
-import {User} from "@supabase/supabase-js"
-
+import { User } from "@supabase/supabase-js";
 
 export async function getUser(): Promise<User | null> {
 	const supabase = await createClient();
-	const { data: { user } } = await supabase.auth.getUser();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
 
 	return user;
 }
-
-
 
 export async function createCheckoutSession(data: SubscribeFormSchema, customerId: string): Promise<{ client_secret: string | null; url: string | null; status: number; message?: string }> {
 	const lookupKey = data.subscription as string;
@@ -357,9 +356,8 @@ export async function cancelSubscription(subscriptionID: string): Promise<{
 	}
 }
 
-
 //Used to retrieve the customer details based on the current user.
-export async function getCustomerDetails():Promise<APIResult<Stripe.Customer[]>> {
+export async function getCustomerDetails(): Promise<APIResult<Stripe.Customer[]>> {
 	const user = await getUser();
 
 	if (!user?.email) {
@@ -375,8 +373,7 @@ export async function getCustomerDetails():Promise<APIResult<Stripe.Customer[]>>
 	return successResponse(customerData.data);
 }
 
-
-export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>>{
+export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>> {
 	const customer = await getCustomerDetails();
 
 	if (!customer.success) {
@@ -388,19 +385,15 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 
 		if (!invoices.data) {
 			return failureResponse(400, "No invoice data found for this user.");
-
 		} else {
-			return successResponse(invoices.data)
+			return successResponse(invoices.data);
 		}
-
 	} catch (e: unknown) {
 		return failureResponse(404, `The following error occurred in accessing the invoice data: ${e instanceof Error && e.message}`);
 	}
 }
 
-
 export async function listCustomerCharges(): Promise<APIResult<Stripe.Charge[]>> {
-
 	const customer = await getCustomerDetails();
 
 	if (!customer.success) {
@@ -409,12 +402,11 @@ export async function listCustomerCharges(): Promise<APIResult<Stripe.Charge[]>>
 
 	try {
 		const charge = await stripe.charges.search({
-			// query: `customer:\"${customer.data[0].id}"\ AND  created:${timeOfCharge}`,
 			query: `customer:"${customer.data[0].id}"`,
+			limit: 10
 		});
 		return successResponse(charge.data);
-
 	} catch (e: unknown) {
 		return failureResponse(404, `The following error occurred in retrieving the charge ${e instanceof Error && e.message}`);
 	}
-} 
+}
