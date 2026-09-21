@@ -12,9 +12,9 @@ export default async function SubscriptionPage({ searchParams }: {
 }) {
 
 	const { billCount } = await searchParams;
-	const requestedNumberOfBills = Number(billCount) ? billCount : 10;
+	const requestedNumberOfCharges = Number(billCount) || 10;
 	const customerInvoices = getCustomerInvoices();
-	const customerCharges = listCustomerCharges();
+	const customerCharges = listCustomerCharges(requestedNumberOfCharges);
 
     return (
 			<main>
@@ -26,7 +26,10 @@ export default async function SubscriptionPage({ searchParams }: {
 				</Suspense>
 
 				<Suspense fallback={<ChargesSkeleton />}>
-					<ChargesTable charges={customerCharges } />
+					<ChargesTable
+						charges={customerCharges}
+						count={requestedNumberOfCharges}
+					/>
 				</Suspense>
 			</main>
 		);

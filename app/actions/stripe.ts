@@ -393,7 +393,7 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 	}
 }
 
-export async function listCustomerCharges(): Promise<APIResult<Stripe.Charge[]>> {
+export async function listCustomerCharges(limit: number): Promise<APIResult<Stripe.Charge[]>> {
 	const customer = await getCustomerDetails();
 
 	if (!customer.success) {
@@ -403,7 +403,7 @@ export async function listCustomerCharges(): Promise<APIResult<Stripe.Charge[]>>
 	try {
 		const charge = await stripe.charges.search({
 			query: `customer:"${customer.data[0].id}"`,
-			limit: 10
+			limit: limit
 		});
 		return successResponse(charge.data);
 	} catch (e: unknown) {

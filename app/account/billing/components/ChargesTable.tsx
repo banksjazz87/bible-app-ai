@@ -2,7 +2,7 @@
 
 import { JSX, use } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { APIResult } from "@/lib/definitions";
@@ -10,17 +10,30 @@ import { Stripe } from "stripe";
 import { getDate, getNextBillingDate, formatAmountForDisplay } from "@/utils/stripe-helpers";
 import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import useSWR from 'swr'
 
 
 
 type ChargesTableProps = {
-	charges: Promise<APIResult<Stripe.Charge[]>>;
+    charges: Promise<APIResult<Stripe.Charge[]>>;
+    count: number;
 };
 
-export default function ChargesTable({ charges }: ChargesTableProps): JSX.Element {
+export default function ChargesTable({ charges, count }: ChargesTableProps): JSX.Element {
 	const chargesData = use(charges);
+	const searchParams = useSearchParams();
+	const pathname = usePathname();
+	const router = useRouter();
 	console.log("//CHARGES DATA FOLLOWS//");
 	console.log(chargesData);
+
+	function loadMoreHandler(): void {
+		const newCount = count + 10;
+		const params = new URLSearchParams(searchParams.toString());
+		params.set("billCount", newCount.toString());
+
+        router.push(`${pathname}?${params.toString()}`, { scroll: true });
+	}
 
 	return (
 		<section className="mt-4 pb-32">
@@ -71,10 +84,8 @@ export default function ChargesTable({ charges }: ChargesTableProps): JSX.Elemen
 						))}
 					</TableBody>
 				</Table>
-            )}
-            <Button>Load More</Button>
-
-		
+			)}
+			<Button onClick={() => loadMoreHandler()}>Load More</Button>
 		</section>
 	);
 }
