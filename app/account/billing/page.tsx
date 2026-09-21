@@ -7,7 +7,12 @@ import { getCustomerInvoices, listCustomerCharges } from "@/app/actions/stripe";
 import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 
-export default async function SubscriptionPage() {
+export default async function SubscriptionPage({ searchParams }: {
+	searchParams: Promise<{ billCount?: string }>
+}) {
+
+	const { billCount } = await searchParams;
+	const requestedNumberOfBills = Number(billCount) ? billCount : 10;
 	const customerInvoices = getCustomerInvoices();
 	const customerCharges = listCustomerCharges();
 

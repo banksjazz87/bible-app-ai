@@ -12,6 +12,7 @@ import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
+
 type ChargesTableProps = {
 	charges: Promise<APIResult<Stripe.Charge[]>>;
 };
@@ -22,7 +23,7 @@ export default function ChargesTable({ charges }: ChargesTableProps): JSX.Elemen
 	console.log(chargesData);
 
 	return (
-		<section className="mt-4">
+		<section className="mt-4 pb-32">
 			<h2 className="font-bold text-2xl">Billing Table</h2>
 			{!chargesData.success && <p>No Data Found</p>}
 			{chargesData.success && (
@@ -72,6 +73,8 @@ export default function ChargesTable({ charges }: ChargesTableProps): JSX.Elemen
 				</Table>
             )}
             <Button>Load More</Button>
+
+		
 		</section>
 	);
 }
