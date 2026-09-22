@@ -7,14 +7,9 @@ import { getCustomerInvoices, listCustomerCharges } from "@/app/actions/stripe";
 import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 
-export default async function SubscriptionPage({ searchParams }: {
-	searchParams: Promise<{ billCount?: string }>
-}) {
-
-	const { billCount } = await searchParams;
-	const requestedNumberOfCharges = Number(billCount) || 10;
+export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
-	const customerCharges = listCustomerCharges(requestedNumberOfCharges);
+	const customerCharges = listCustomerCharges();
 
     return (
 			<main>
@@ -28,7 +23,6 @@ export default async function SubscriptionPage({ searchParams }: {
 				<Suspense fallback={<ChargesSkeleton />}>
 					<ChargesTable
 						charges={customerCharges}
-						count={requestedNumberOfCharges}
 					/>
 				</Suspense>
 			</main>

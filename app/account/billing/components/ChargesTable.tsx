@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, use } from "react";
+import { JSX, use, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,14 @@ import useSWR from 'swr'
 
 type ChargesTableProps = {
     charges: Promise<APIResult<Stripe.Charge[]>>;
-    count: number;
 };
 
-export default function ChargesTable({ charges, count }: ChargesTableProps): JSX.Element {
+export default function ChargesTable({ charges }: ChargesTableProps): JSX.Element {
 	const chargesData = use(charges);
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
-	const router = useRouter();
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
 	console.log("//CHARGES DATA FOLLOWS//");
 	console.log(chargesData);
 
@@ -32,7 +32,10 @@ export default function ChargesTable({ charges, count }: ChargesTableProps): JSX
 		const params = new URLSearchParams(searchParams.toString());
 		params.set("billCount", newCount.toString());
 
-        router.push(`${pathname}?${params.toString()}`, { scroll: true });
+        // router.push(`${pathname}?${params.toString()}`, { scroll: true });
+        window.history.pushState(null, "", `?${params.toString()}`);
+        router.refresh();
+
 	}
 
 	return (
@@ -85,7 +88,7 @@ export default function ChargesTable({ charges, count }: ChargesTableProps): JSX
 					</TableBody>
 				</Table>
 			)}
-			<Button onClick={() => loadMoreHandler()}>Load More</Button>
+			<Button onClick={loadMoreHandler}>Load More</Button>
 		</section>
 	);
 }
