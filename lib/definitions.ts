@@ -3,6 +3,7 @@
 import { Stripe } from "stripe";
 import { SubmitHandler, FieldValues } from "react-hook-form";
 import { JSX } from "react";
+import { NextResponse } from "next/server";
 
 export type BookAndChapters = {
 	text: string;
@@ -196,3 +197,15 @@ export type APIResult<T> =
 		message: string;
 		success: false;
 	}
+
+export type ChargesNextResponse =
+	| NextResponse<{
+			status: 200;
+			success: boolean;
+			data: APIResult<Stripe.Charge[]>;
+	  }>
+	| NextResponse<{
+			status: number;
+			success: boolean;
+			message: string;
+	  }>;

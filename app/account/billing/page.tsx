@@ -9,7 +9,7 @@ import ChargesTable from "./components/ChargesTable";
 
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
-	const customerCharges = listCustomerCharges();
+	// const customerCharges = listCustomerCharges();
 
     return (
 			<main>
@@ -22,7 +22,7 @@ export default async function SubscriptionPage() {
 
 				<Suspense fallback={<ChargesSkeleton />}>
 					<ChargesTable
-						charges={customerCharges}
+						
 					/>
 				</Suspense>
 			</main>

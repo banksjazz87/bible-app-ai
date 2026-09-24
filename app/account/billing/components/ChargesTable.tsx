@@ -1,6 +1,6 @@
 "use client";
 
-import { JSX, use, useTransition } from "react";
+import { JSX, use, useTransition, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -10,38 +10,31 @@ import { Stripe } from "stripe";
 import { getDate, getNextBillingDate, formatAmountForDisplay } from "@/utils/stripe-helpers";
 import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useSWR from 'swr'
+import { listCustomerCharges } from "@/app/actions/stripe";
 
 
 
-type ChargesTableProps = {
-    charges: Promise<APIResult<Stripe.Charge[]>>;
-};
 
-export default function ChargesTable({ charges }: ChargesTableProps): JSX.Element {
-	const chargesData = use(charges);
-	const searchParams = useSearchParams();
-	const pathname = usePathname();
-    const router = useRouter();
-    const [isPending, startTransition] = useTransition();
+
+// const fetchBillingDetailsAction = (count: number = 10)  => fetch(`/api/billing-details?count=${count}`);
+
+export default function ChargesTable(): JSX.Element {
+    const [count, setCount] = useState<number>(10);
+    // const [chargesPromise, setChargesPromise] = useState(() => fetchBillingDetailsAction(count));
+    const chargesData = use(chargesPromise);
+
 	console.log("//CHARGES DATA FOLLOWS//");
 	console.log(chargesData);
 
-	function loadMoreHandler(): void {
-		const newCount = count + 10;
-		const params = new URLSearchParams(searchParams.toString());
-		params.set("billCount", newCount.toString());
-
-        // router.push(`${pathname}?${params.toString()}`, { scroll: true });
-        window.history.pushState(null, "", `?${params.toString()}`);
-        router.refresh();
+    function loadMoreHandler(): void {
+    
 
 	}
 
 	return (
 		<section className="mt-4 pb-32">
 			<h2 className="font-bold text-2xl">Billing Table</h2>
-			{!chargesData.success && <p>No Data Found</p>}
+			{/* {!chargesData.success && <p>No Data Found</p>}
 			{chargesData.success && (
 				<Table className="mt-4">
 					<TableCaption>A list of your most recent transactions.</TableCaption>
@@ -87,8 +80,8 @@ export default function ChargesTable({ charges }: ChargesTableProps): JSX.Elemen
 						))}
 					</TableBody>
 				</Table>
-			)}
-			<Button onClick={loadMoreHandler}>Load More</Button>
+			)} */}
+			<Button onClick={loadMoreHandler}>{isPending ? 'Loading' : 'Load More'}</Button>
 		</section>
 	);
 }

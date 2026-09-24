@@ -393,7 +393,7 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 	}
 }
 
-export async function listCustomerCharges(limit: number): Promise<APIResult<Stripe.Charge[]>> {
+export async function listCustomerCharges(limit: number = 10): Promise<APIResult<Stripe.Charge[]>> {
 	const customer = await getCustomerDetails();
 
 	if (!customer.success) {
