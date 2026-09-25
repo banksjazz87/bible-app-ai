@@ -201,11 +201,23 @@ export type APIResult<T> =
 export type ChargesNextResponse =
 	| NextResponse<{
 			status: 200;
-			success: boolean;
-			data: APIResult<Stripe.Charge[]>;
+			success: true;
+			billingDetails: APIResult<Stripe.Charge[]>;
 	  }>
 	| NextResponse<{
 			status: number;
-			success: boolean;
+			success: false;
 			message: string;
-	  }>;
+	}>;
+	  
+export type ChargesResponse = 
+	| {
+		status: 200;
+		success: true;
+		billingDetails: APIResult<Stripe.Charge[]>;
+	}
+	| {
+		status: number;
+		success: false;
+		message: string;
+	}

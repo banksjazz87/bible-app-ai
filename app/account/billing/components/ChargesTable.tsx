@@ -1,11 +1,11 @@
 "use client";
 
-import { JSX, use, useTransition, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { APIResult } from "@/lib/definitions";
+import { ChargesNextResponse, ChargesResponse } from "@/lib/definitions";
 import { Stripe } from "stripe";
 import { getDate, getNextBillingDate, formatAmountForDisplay } from "@/utils/stripe-helpers";
 import { faReceipt } from "@fortawesome/free-solid-svg-icons";
@@ -18,24 +18,43 @@ import { listCustomerCharges } from "@/app/actions/stripe";
 
 // const fetchBillingDetailsAction = (count: number = 10)  => fetch(`/api/billing-details?count=${count}`);
 
+async function fetchPastCharges(currentCount: number): Promise<ChargesResponse> {
+    const fetchCharges = await fetch(`/api/billing-details?count=${currentCount}`);
+    const charges = await fetchCharges.json();
+    return charges;
+}
+
 export default function ChargesTable(): JSX.Element {
     const [count, setCount] = useState<number>(10);
-    // const [chargesPromise, setChargesPromise] = useState(() => fetchBillingDetailsAction(count));
-    const chargesData = use(chargesPromise);
+    const [isPending, setIsPending] = useState<boolean>(false);
+    const [chargesData, setChargesData] = useState<[] | Stripe.Charge[]>([]);
+
+    useEffect((): void => {
+        fetchPastCharges(count).then((data) => {
+            if (data.success && data?.billingDetails) {
+                const billingData = data.billingDetails;
+                if (billingData.success) setChargesData(billingData.data);
+            } 
+        });
+    }, []);
 
 	console.log("//CHARGES DATA FOLLOWS//");
 	console.log(chargesData);
 
-    function loadMoreHandler(): void {
-    
-
-	}
+    function loadMoreHandler() {
+        setIsPending(true);
+        const newCount = count + 10;
+        setCount(newCount);
+        
+        setTimeout(() => setIsPending(false), 500);
+    }
+   
 
 	return (
 		<section className="mt-4 pb-32">
 			<h2 className="font-bold text-2xl">Billing Table</h2>
-			{/* {!chargesData.success && <p>No Data Found</p>}
-			{chargesData.success && (
+			{chargesData.length === 0 && <p>No Data Found</p>}
+			{chargesData.length > 0 && (
 				<Table className="mt-4">
 					<TableCaption>A list of your most recent transactions.</TableCaption>
 					<TableHeader>
@@ -49,7 +68,7 @@ export default function ChargesTable(): JSX.Element {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{chargesData.data.map((data: Stripe.Charge, y: number) => (
+						{chargesData.map((data: Stripe.Charge, y: number) => (
 							<TableRow key={`row_num_${y}`}>
 								<TableCell>{getDate(data.created)}</TableCell>
 								<TableCell>{data.description}</TableCell>
@@ -80,7 +99,7 @@ export default function ChargesTable(): JSX.Element {
 						))}
 					</TableBody>
 				</Table>
-			)} */}
+			)}
 			<Button onClick={loadMoreHandler}>{isPending ? 'Loading' : 'Load More'}</Button>
 		</section>
 	);
