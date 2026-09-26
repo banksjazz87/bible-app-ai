@@ -5,7 +5,7 @@ import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { failureResponse, successResponse } from "@/lib/utils";
 import { stripe } from "@/lib/stripe";
-import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse, APIResult } from "@/lib/definitions";
+import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse, APIResult, ChargeData } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
 import { User } from "@supabase/supabase-js";
 
@@ -393,7 +393,7 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 	}
 }
 
-export async function listCustomerCharges(limit: number = 10): Promise<APIResult<Stripe.Charge[]>> {
+export async function listCustomerCharges(limit: number = 10): Promise<APIResult<ChargeData>> {
 	const customer = await getCustomerDetails();
 
 	if (!customer.success) {
@@ -405,7 +405,14 @@ export async function listCustomerCharges(limit: number = 10): Promise<APIResult
 			query: `customer:"${customer.data[0].id}"`,
 			limit: limit
 		});
-		return successResponse(charge.data);
+		console.log('Customer charge data hereeeeeeeeee: ', charge); 
+		const chargeData = {
+			has_more: charge.has_more,
+			next_page: charge.next_page,
+			data: charge.data
+		}
+		return successResponse(chargeData);
+		
 	} catch (e: unknown) {
 		return failureResponse(404, `The following error occurred in retrieving the charge ${e instanceof Error && e.message}`);
 	}

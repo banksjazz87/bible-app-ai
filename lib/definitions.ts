@@ -186,38 +186,44 @@ export type UserSubscriptionResponse = {
 	data: Stripe.Subscription[] | null;
 };
 
-export type APIResult<T> = 
+export type APIResult<T> =
 	| {
-		status: 200; 
-		data: T;
-		success: true;
-	}
+			status: 200;
+			data: T;
+			success: true;
+	  }
 	| {
-		status: number;
-		message: string;
-		success: false;
-	}
+			status: number;
+			message: string;
+			success: false;
+	  };
 
 export type ChargesNextResponse =
 	| NextResponse<{
 			status: 200;
 			success: true;
-			billingDetails: APIResult<Stripe.Charge[]>;
+			billingDetails: APIResult<ChargeData>;
 	  }>
 	| NextResponse<{
 			status: number;
 			success: false;
 			message: string;
-	}>;
-	  
-export type ChargesResponse = 
+	  }>;
+
+export type ChargeData = {
+	has_more: boolean;
+	next_page: string | null;
+	data: Stripe.Charge[];
+};
+
+export type ChargesResponse =
 	| {
-		status: 200;
-		success: true;
-		billingDetails: APIResult<Stripe.Charge[]>;
-	}
+			status: 200;
+			success: true;
+			billingDetails: APIResult<ChargeData>;
+	  }
 	| {
-		status: number;
-		success: false;
-		message: string;
-	}
+			status: number;
+			success: false;
+			message: string;
+	  };

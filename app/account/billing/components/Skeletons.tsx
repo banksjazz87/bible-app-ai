@@ -70,3 +70,26 @@ export function ChargesSkeleton(): JSX.Element {
 		</Skeleton>
 	);
 }
+
+export function ChargesPartialSkeleton(): JSX.Element {
+	return (
+		<Skeleton>
+			<Table>
+				<TableBody>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+					<TableRow className="h-8"></TableRow>
+				</TableBody>
+			</Table>
+		</Skeleton>
+	);
+}
+
+
