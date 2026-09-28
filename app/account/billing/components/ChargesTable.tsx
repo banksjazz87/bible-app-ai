@@ -12,27 +12,26 @@ import { faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Spinner } from "@/components/ui/spinner";
 
-async function fetchPastCharges(currentCount: number): Promise<ChargesResponse> {
-	const fetchCharges = await fetch(`/api/billing-details?count=${currentCount}`);
+async function fetchPastCharges(nextItem: string | null): Promise<ChargesResponse> {
+	const fetchCharges = await fetch(`/api/billing-details?nextItem=${nextItem}`);
 	const charges = await fetchCharges.json();
 	return charges;
 }
 
 export default function ChargesTable(): JSX.Element {
-	const [count, setCount] = useState<number>(10);
+    const [nextItem, setNextItem] = useState<string | null>(null);
 	const [isPending, setIsPending] = useState<boolean>(false);
 	const [chargesData, setChargesData] = useState<null | Stripe.Charge[]>(null);
 	const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
 
 	const updatePendingState = useEffectEvent((): void => setIsPending(!isPending));
-	const updateLoadStatus = useEffectEvent((): void => setIsFirstLoad(false));
-	const setInitCount = useEffectEvent((value: number): void => setCount(value));
+    const updateLoadStatus = useEffectEvent((): void => setIsFirstLoad(false));
+    const updateNextItem = useEffectEvent((next: string) => setNextItem(next));
 
-	useEffect(() => setInitCount(10), []);
 
 	useEffect((): void => {
 		updatePendingState();
-		fetchPastCharges(count)
+		fetchPastCharges(nextItem)
 			.then((data) => {
 				if (data.success && data?.billingDetails) {
                     const billingData = data.billingDetails;
@@ -48,14 +47,15 @@ export default function ChargesTable(): JSX.Element {
 				updatePendingState();
 				updateLoadStatus();
 			});
-	}, [count]);
+	}, []);
 
 	console.log("//CHARGES DATA FOLLOWS//");
 	console.log(chargesData);
 
 	function loadMoreHandler() {
-		const newCount = count + 10;
-		setCount(newCount);
+		// const nextItem = ;
+        // setCount(newCount);
+        console.log('clicked');
 	}
 
 	return (

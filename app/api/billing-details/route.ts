@@ -7,9 +7,9 @@ export async function GET(request: NextRequest): Promise<ChargesNextResponse> {
     try {
         
         const reqParams = request.nextUrl.searchParams;
-        const count = reqParams.get('count');
+        const nextLineItem = reqParams.get('nextItem');
         console.log(reqParams);
-		const billingResults: APIResult<ChargeData> = await listCustomerCharges(Number(count));
+		const billingResults: APIResult<ChargeData> = await listCustomerCharges(nextLineItem);
 
 		return NextResponse.json({ status: 200, success: true, billingDetails: billingResults});
 	} catch (e: unknown) {
