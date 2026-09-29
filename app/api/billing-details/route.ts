@@ -7,7 +7,7 @@ export async function GET(request: NextRequest): Promise<ChargesNextResponse> {
     try {
         
         const reqParams = request.nextUrl.searchParams;
-        const nextLineItem = reqParams.get('nextItem');
+        const nextLineItem = reqParams.get('nextItem') as string;
         console.log(reqParams);
 		const billingResults: APIResult<ChargeData> = await listCustomerCharges(nextLineItem);
 

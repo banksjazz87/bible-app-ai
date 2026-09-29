@@ -393,7 +393,9 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 	}
 }
 
-export async function listCustomerCharges(nextLineItem: string | null): Promise<APIResult<ChargeData>> {
+
+//Used to get the initial list of customer charges.
+export async function listCustomerCharges(nextLineItem: string): Promise<APIResult<ChargeData>> {
 	const customer = await getCustomerDetails();
 
 	if (!customer.success) {
@@ -401,30 +403,30 @@ export async function listCustomerCharges(nextLineItem: string | null): Promise<
 	}
 
 	try {
-		let charge;
-		console.log('NEXT LINE ITEM IS: ', nextLineItem);
-		if (nextLineItem === null) {
-			charge = await stripe.charges.search({
-				query: `customer:"${customer.data[0].id}"`,
-				limit: 1,
-			});
-		} else {
-			charge = await stripe.charges.search({
-				query: `customer:"${customer.data[0].id}"`,
-				limit: 1,
-				page: nextLineItem
-			});
-		}
+		const query: {
+			query: string;
+			limit: number;
+			page?: string;
+		} = {
+			query: `customer:"${customer.data[0].id}"`,
+			limit: 10,
+		};
 
-		// console.log('Customer charge data hereeeeeeeeee: ', charge); 
+		if (nextLineItem.length !== 0) {
+			query.page = nextLineItem;
+		}
+		const charge = await stripe.charges.search(query);
+
+		// console.log('Customer charge data hereeeeeeeeee: ', charge);
 		const chargeData = {
 			has_more: charge.has_more,
 			next_page: charge.next_page,
-			data: charge.data
-		}
+			data: charge.data,
+		};
 		return successResponse(chargeData);
-
 	} catch (e: unknown) {
 		return failureResponse(404, `The following error occurred in retrieving the charge ${e instanceof Error && e.message}`);
 	}
 }
+
+

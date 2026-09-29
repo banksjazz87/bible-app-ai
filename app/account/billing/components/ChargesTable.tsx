@@ -19,14 +19,21 @@ async function fetchPastCharges(nextItem: string | null): Promise<ChargesRespons
 }
 
 export default function ChargesTable(): JSX.Element {
-    const [nextItem, setNextItem] = useState<string | null>(null);
+    const [nextItem, setNextItem] = useState<string>('');
+    const [hasMore, setHasMore] = useState<boolean>(false);
 	const [isPending, setIsPending] = useState<boolean>(false);
 	const [chargesData, setChargesData] = useState<null | Stripe.Charge[]>(null);
-	const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+    const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+
 
 	const updatePendingState = useEffectEvent((): void => setIsPending(!isPending));
     const updateLoadStatus = useEffectEvent((): void => setIsFirstLoad(false));
-    const updateNextItem = useEffectEvent((next: string) => setNextItem(next));
+    const updatePaginationStatus = useEffectEvent((nextPage: string | null, hasMore: boolean): void => {
+        setHasMore(hasMore);
+        if (hasMore && nextPage) {
+            setNextItem(nextPage);
+        }
+    });
 
 
 	useEffect((): void => {
@@ -40,6 +47,7 @@ export default function ChargesTable(): JSX.Element {
 					if (billingData.success && billingData.data.data) {
 						//If the charges data is not null, we will append the new data.  Otherwise
                         setChargesData(chargesData ? [...chargesData, ...billingData.data.data] : billingData.data.data);
+                        updatePaginationStatus(billingData.data.next_page, billingData.data.has_more);
 					}
 				}
 			})
@@ -47,7 +55,9 @@ export default function ChargesTable(): JSX.Element {
 				updatePendingState();
 				updateLoadStatus();
 			});
-	}, []);
+    }, []);
+    
+
 
 	console.log("//CHARGES DATA FOLLOWS//");
 	console.log(chargesData);
@@ -61,7 +71,7 @@ export default function ChargesTable(): JSX.Element {
 	return (
 		<section className="mt-4 pb-32">
 			<h2 className="font-bold text-2xl">Billing Table</h2>
-			{chargesData && chargesData.length > 0 && !isFirstLoad && <p>No Data Found</p>}
+			{chargesData && chargesData.length === 0 && !isFirstLoad && <p>No Data Found</p>}
 			{chargesData && isFirstLoad && <ChargesSkeleton />}
 			{chargesData && chargesData.length > 0 && (
 				<Table className="mt-4">
