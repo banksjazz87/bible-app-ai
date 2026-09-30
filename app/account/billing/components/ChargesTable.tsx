@@ -21,13 +21,16 @@ async function fetchPastCharges(nextItem: string | null): Promise<ChargesRespons
 export default function ChargesTable(): JSX.Element {
     const [nextItem, setNextItem] = useState<string>('');
     const [hasMore, setHasMore] = useState<boolean>(false);
+    const [loadMore, setLoadMore] = useState<boolean>(true);
 	const [isPending, setIsPending] = useState<boolean>(false);
 	const [chargesData, setChargesData] = useState<null | Stripe.Charge[]>(null);
     const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
+    
 
 
 	const updatePendingState = useEffectEvent((): void => setIsPending(!isPending));
     const updateLoadStatus = useEffectEvent((): void => setIsFirstLoad(false));
+    const updateLoadMore = useEffectEvent((value: boolean): void => setLoadMore(value));
     const updatePaginationStatus = useEffectEvent((nextPage: string | null, hasMore: boolean): void => {
         setHasMore(hasMore);
         if (hasMore && nextPage) {
@@ -36,7 +39,9 @@ export default function ChargesTable(): JSX.Element {
     });
 
 
-	useEffect((): void => {
+    useEffect((): void => {
+        if (!loadMore) return;
+
 		updatePendingState();
 		fetchPastCharges(nextItem)
 			.then((data) => {
@@ -45,28 +50,19 @@ export default function ChargesTable(): JSX.Element {
                     console.log("FULL BILLING DETAILS FOLLOW");
                     console.log(billingData);
 					if (billingData.success && billingData.data.data) {
-						//If the charges data is not null, we will append the new data.  Otherwise
                         setChargesData(chargesData ? [...chargesData, ...billingData.data.data] : billingData.data.data);
+
                         updatePaginationStatus(billingData.data.next_page, billingData.data.has_more);
 					}
 				}
 			})
 			.finally(() => {
 				updatePendingState();
-				updateLoadStatus();
+                updateLoadStatus();
+                updateLoadMore(false);
 			});
-    }, []);
+    }, [loadMore]);
     
-
-
-	console.log("//CHARGES DATA FOLLOWS//");
-	console.log(chargesData);
-
-	function loadMoreHandler() {
-		// const nextItem = ;
-        // setCount(newCount);
-        console.log('clicked');
-	}
 
 	return (
 		<section className="mt-4 pb-32">
@@ -75,7 +71,7 @@ export default function ChargesTable(): JSX.Element {
 			{chargesData && isFirstLoad && <ChargesSkeleton />}
 			{chargesData && chargesData.length > 0 && (
 				<Table className="mt-4">
-					{!isPending && <TableCaption>A list of your most recent transactions.</TableCaption>}
+					{!isPending && !hasMore && chargesData && <TableCaption>{`Displaying all ${chargesData.length} charges`} </TableCaption>}
 					<TableHeader>
 						<TableRow>
 							<TableHead className="font-bold">Date</TableHead>
@@ -120,12 +116,14 @@ export default function ChargesTable(): JSX.Element {
 				</Table>
 			)}
 			{isPending && chargesData && chargesData.length > 0 && <ChargesPartialSkeleton />}
-			<Button
-				onClick={loadMoreHandler}
-				disabled={isPending}
-			>
-				Load More{isPending && <Spinner data-icon="inline-end" />}
-			</Button>
+			{hasMore && (
+				<Button
+					onClick={(): void => setLoadMore(true)}
+					disabled={isPending || !hasMore}
+				>
+					Load More{isPending && <Spinner data-icon="inline-end" />}
+				</Button>
+			)}
 		</section>
 	);
 }

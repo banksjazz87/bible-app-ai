@@ -393,8 +393,6 @@ export async function getCustomerInvoices(): Promise<APIResult<Stripe.Invoice[]>
 	}
 }
 
-
-//Used to get the initial list of customer charges.
 export async function listCustomerCharges(nextLineItem: string): Promise<APIResult<ChargeData>> {
 	const customer = await getCustomerDetails();
 
@@ -417,7 +415,7 @@ export async function listCustomerCharges(nextLineItem: string): Promise<APIResu
 		}
 		const charge = await stripe.charges.search(query);
 
-		// console.log('Customer charge data hereeeeeeeeee: ', charge);
+		//Construct our charge data
 		const chargeData = {
 			has_more: charge.has_more,
 			next_page: charge.next_page,
