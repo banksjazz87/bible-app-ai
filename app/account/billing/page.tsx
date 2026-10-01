@@ -8,6 +8,8 @@ import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
@@ -24,39 +26,48 @@ export default async function SubscriptionPage() {
 				<Card>
 					<CardHeader className="flex flex-row content-center justify-between">
 						<CardTitle className="text-sm">Current Plan</CardTitle>
-						<Badge variant="outline" className="bg-green-200">Active</Badge>
+						<Badge
+							variant="outline"
+							className="bg-green-200"
+						>
+							Active
+						</Badge>
 					</CardHeader>
 					<CardContent>
 						<p className="text-3xl font-bold">Pro Plan</p>
 					</CardContent>
 					<CardFooter>
-						<p>$5.00</p>
+						<p className="text-md">$5.00</p>
 					</CardFooter>
 				</Card>
 				<Card>
-					<CardHeader>
-						<CardTitle>Current Plan</CardTitle>
-						<CardDescription>Card Description</CardDescription>
-						<CardAction>Card Action</CardAction>
+					<CardHeader className="flex flex-row content-center justify-between">
+						<CardTitle className="text-sm flex self-center">Next Billing Date</CardTitle>
+						<FontAwesomeIcon
+							className="text-gray-800 p-1  bg-gray-100 rounded-sm"
+							icon={faCalendar}
+						/>
 					</CardHeader>
 					<CardContent>
-						<p>Card Content</p>
+						<p className="text-3xl font-bold">DATE HERE</p>
 					</CardContent>
 					<CardFooter>
-						<p>Card Footer</p>
+						<p className="text-md">Billed Monthly</p>
 					</CardFooter>
 				</Card>
 				<Card>
-					<CardHeader>
-						<CardTitle>Current Plan</CardTitle>
-						<CardDescription>Card Description</CardDescription>
-						<CardAction>Card Action</CardAction>
+					<CardHeader className="flex flex-row content-center justify-between">
+						<CardTitle className="text-sm flex self-center">Monthly Cost</CardTitle>
+						<FontAwesomeIcon
+							className="text-gray-800 p-1  bg-gray-100 rounded-sm"
+							icon={faCalendar}
+						/>
 					</CardHeader>
 					<CardContent>
-						<p>Card Content</p>
+						<p className="text-3xl font-bold">$Cost</p>
 					</CardContent>
 					<CardFooter>
-						<p>Card Footer</p>
+						<p className="text-md">Next invoice: INVOICE DATE HERE</p>
 					</CardFooter>
 				</Card>
 			</div>
