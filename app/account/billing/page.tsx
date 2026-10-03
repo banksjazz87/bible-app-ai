@@ -8,10 +8,12 @@ import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { faCalendar, faCheck, faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+import SmallInfoCard from "./components/SmallInfoCard";
 
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
@@ -25,53 +27,41 @@ export default async function SubscriptionPage() {
 				<p className="text-gray-600 text-md">Manage your subscription, payment method, and view your invoices.</p>
 			</section>
 			<section className="grid grid-cols-3 gap-12">
-				<Card>
-					<CardHeader className="flex flex-row content-center justify-between">
-						<CardTitle className="text-sm">Current Plan</CardTitle>
+				<SmallInfoCard
+					header="Current Plan"
+					badge={
 						<Badge
 							variant="outline"
 							className="bg-green-200"
 						>
 							Active
 						</Badge>
-					</CardHeader>
-					<CardContent>
-						<p className="text-3xl font-bold">Pro Plan</p>
-					</CardContent>
-					<CardFooter>
-						<p className="text-md">$5.00</p>
-					</CardFooter>
-				</Card>
-				<Card>
-					<CardHeader className="flex flex-row content-center justify-between">
-						<CardTitle className="text-sm flex self-center">Next Billing Date</CardTitle>
+					}
+					body="Pro Plan"
+					footer="$5.00"
+				/>
+				<SmallInfoCard
+					header="Next Biling Date"
+					badge={
 						<FontAwesomeIcon
 							className="text-gray-800 p-1  bg-gray-100 rounded-sm"
 							icon={faCalendar}
 						/>
-					</CardHeader>
-					<CardContent>
-						<p className="text-3xl font-bold">DATE HERE</p>
-					</CardContent>
-					<CardFooter>
-						<p className="text-md">Billed Monthly</p>
-					</CardFooter>
-				</Card>
-				<Card>
-					<CardHeader className="flex flex-row content-center justify-between">
-						<CardTitle className="text-sm flex self-center">Monthly Cost</CardTitle>
+					}
+					body="DATE HERE"
+					footer="Billed Monthly"
+				/>
+				<SmallInfoCard
+					header="Monthly Cost"
+					badge={
 						<FontAwesomeIcon
 							className="text-gray-800 p-1  bg-gray-100 rounded-sm"
 							icon={faCalendar}
 						/>
-					</CardHeader>
-					<CardContent>
-						<p className="text-3xl font-bold">$Cost</p>
-					</CardContent>
-					<CardFooter>
-						<p className="text-md">Next invoice: INVOICE DATE HERE</p>
-					</CardFooter>
-				</Card>
+					}
+					body="$COST"
+					footer="Next invoice: INVOICE DATE HERE"
+				/>
 			</section>
 
 			{/** SUBSCRIPTION 2 Card Grid */}
@@ -86,7 +76,7 @@ export default async function SubscriptionPage() {
 							<div className="flex items-center gap-6">
 								<FontAwesomeIcon
 									className="text-blue-600 p-4 text-3xl bg-blue-200 rounded-sm"
-									icon={faCalendar}
+									icon={faReceipt}
 								/>
 								<div>
 									<h3 className="text-lg font-bold">Pro Plan</h3>
@@ -133,7 +123,7 @@ export default async function SubscriptionPage() {
 							<div className="flex items-center gap-6">
 								<FontAwesomeIcon
 									className="text-blue-600 p-4 text-3xl bg-blue-200 rounded-sm"
-									icon={faCalendar}
+									icon={faCreditCard}
 								/>
 								<div>
 									<h3 className="text-lg font-bold">Pro Plan</h3>
@@ -171,7 +161,10 @@ export default async function SubscriptionPage() {
 					</CardContent>
 					<CardFooter>
 						<Alert>
-							<FontAwesomeIcon className="p-1 bg-blue-200 text-blue-600 rounded-full text-[12px]"icon={faInfo} />
+							<FontAwesomeIcon
+								className="p-1 bg-blue-200 text-blue-600 rounded-full text-[12px]"
+								icon={faInfo}
+							/>
 							<AlertTitle>Your payment method will be charged</AlertTitle>
 							<AlertDescription>$ on Date</AlertDescription>
 						</Alert>
