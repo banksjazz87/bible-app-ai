@@ -307,6 +307,22 @@ export async function getProducts(): Promise<ProductResponse> {
 	}
 }
 
+
+/**
+ * 
+ * @param {string} subscriptionID 
+ * @returns {Promise<APIResult<Stripe.Product>>}
+ * @description used to access the details about a particulare product, based on the provided subscription ID.
+ */
+export async function getSubscriptionProductDetails(subscriptionID: string): Promise<APIResult<Stripe.Product>> {
+	try {
+		const product = await stripe.products.retrieve(subscriptionID);
+		return successResponse(product);
+	} catch (e: unknown) {
+		return failureResponse(404, `The following error occurred in accessing the subscription product details ${e instanceof Error && e.message}`);
+	}
+}
+
 export async function getCheckoutSession(sessionId: string): Promise<Stripe.Response<Stripe.Checkout.Session>> {
 	const session: Stripe.Response<Stripe.Checkout.Session> = await stripe.checkout.sessions.retrieve(sessionId);
 	console.log("The session has been retrieved and the returned value is ", session);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { makeStore, AppStore } from "@/lib/store";
 import { APIDataResponse, UserRoles } from "@/lib/definitions";

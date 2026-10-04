@@ -1,23 +1,33 @@
 "use server";
 
 // import { getCurrentUserSubscriptionDetails } from "@/app/actions/stripe";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import { InvoiceSkeleton, ChargesSkeleton } from "./components/Skeletons";
 import { getCustomerInvoices, listCustomerCharges } from "@/app/actions/stripe";
 import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails } from "@/app/actions/stripe";
 
 import SmallInfoCard from "./components/SmallInfoCard";
 
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
+	const userSubscriptions = await getCurrentUserSubscriptionDetails();
+	
+	// if (userSubscriptions.status === 200 && userSubscriptions.data) {
+	// 	const data = userSubscriptions.data[0];
+	// 	const subscriptionInfo = await getSubscriptionProductDetails(data.metadata.productID);
+	// 	console.log(`SUB DATA HERE: ${subscriptionInfo}`);
+	// }
+
+	console.log("SUBSCRIPTION DETAILS HERE", userSubscriptions);
 
 	return (
 		<main className="flex flex-col gap-6">
@@ -26,7 +36,7 @@ export default async function SubscriptionPage() {
 				<h2 className="font-bold text-2xl">Billing Details</h2>
 				<p className="text-gray-600 text-md">Manage your subscription, payment method, and view your invoices.</p>
 			</section>
-			<section className="grid grid-cols-3 gap-12">
+			<section className="grid grid-cols-3 gap-6">
 				<SmallInfoCard
 					header="Current Plan"
 					badge={
@@ -65,9 +75,9 @@ export default async function SubscriptionPage() {
 			</section>
 
 			{/** SUBSCRIPTION 2 Card Grid */}
-			<section className="grid grid-cols-2 gap-12">
+			<section className="grid grid-cols-2 gap-6">
 				<Card>
-					<CardHeader className="flex flex-row content-center justify-between">
+					<CardHeader>
 						<CardTitle className="text-2xl font-bold">Subscription</CardTitle>
 						<p className="text-sm flex self-center">Your current plan and usage.</p>
 					</CardHeader>
@@ -114,7 +124,7 @@ export default async function SubscriptionPage() {
 					</CardContent>
 				</Card>
 				<Card>
-					<CardHeader className="flex flex-row content-center justify-between">
+					<CardHeader>
 						<CardTitle className="text-2xl font-bold">Payment Method</CardTitle>
 						<p className="text-sm flex self-center">Your default payment method.</p>
 					</CardHeader>
@@ -128,38 +138,19 @@ export default async function SubscriptionPage() {
 								<div>
 									<h3 className="text-lg font-bold">Pro Plan</h3>
 									<p className="text-sm">$/month</p>
-									<p className="text-sm">Features summary here</p>
 								</div>
 							</div>
 							<Button variant="outline">Change plan</Button>
 						</div>
-						<hr></hr>
-						<div>
-							<h4 className="text-md font-bold">Plan features:</h4>
-							<div className="flex flex-row gap-2 items-center">
-								<FontAwesomeIcon
-									icon={faCheck}
-									className="text-green-600"
-								/>
-								<p>Feature 1</p>
-							</div>
-							<div className="flex flex-row gap-2 items-center">
-								<FontAwesomeIcon
-									icon={faCheck}
-									className="text-green-600"
-								/>
-								<p>Feature 2</p>
-							</div>
-							<div className="flex flex-row gap-2 items-center">
-								<FontAwesomeIcon
-									icon={faCheck}
-									className="text-green-600"
-								/>
-								<p>Feature 3</p>
-							</div>
-						</div>
 					</CardContent>
-					<CardFooter>
+					<CardFooter className="flex-col gap-6">
+						<Button className="w-full py-6" variant="outline">
+							<FontAwesomeIcon
+								className="text-gray-600"
+								icon={faPlus}
+							/>
+							Add payment method
+						</Button>
 						<Alert>
 							<FontAwesomeIcon
 								className="p-1 bg-blue-200 text-blue-600 rounded-full text-[12px]"
