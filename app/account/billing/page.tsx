@@ -20,14 +20,20 @@ export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
+	let subscriptionInfo;
 	
-	// if (userSubscriptions.status === 200 && userSubscriptions.data) {
-	// 	const data = userSubscriptions.data[0];
-	// 	const subscriptionInfo = await getSubscriptionProductDetails(data.metadata.productID);
-	// 	console.log(`SUB DATA HERE: ${subscriptionInfo}`);
-	// }
+	if (userSubscriptions.status === 200 && userSubscriptions.data) {
+		const data = userSubscriptions.data[0];
+		subscriptionInfo = await getSubscriptionProductDetails(data.metadata.productID);
+	}
 
-	console.log("SUBSCRIPTION DETAILS HERE", userSubscriptions);
+	if (subscriptionInfo && !subscriptionInfo.success) {
+		console.error("The following error occurred, ", subscriptionInfo.message);
+	}
+
+	if (subscriptionInfo && subscriptionInfo.success) {
+		console.log("Subscription data here::::: ", subscriptionInfo.data);
+	} 
 
 	return (
 		<main className="flex flex-col gap-6">
