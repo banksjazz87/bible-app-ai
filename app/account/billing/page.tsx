@@ -4,6 +4,8 @@
 import { Suspense, use } from "react";
 import { InvoiceSkeleton, ChargesSkeleton } from "./components/Skeletons";
 import { getCustomerInvoices, listCustomerCharges } from "@/app/actions/stripe";
+import Stripe from "stripe";
+import { APIResult } from "@/lib/definitions";
 import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,24 +18,38 @@ import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails } from
 
 import SmallInfoCard from "./components/SmallInfoCard";
 
+
+async function getBillingData(): Promise<APIResult<Stripe.Product>> {
+	const userSubscriptions = await getCurrentUserSubscriptionDetails();
+
+	if (userSubscriptions.status === 200 && userSubscriptions.data) {
+		const data = userSubscriptions.data[0];
+		const subscriptionInfo = await getSubscriptionProductDetails(data.metadata.productID);
+		return subscriptionInfo;
+	} else {
+		return {
+			status: 400,
+			message: `The following error occurred within retrieving the userSubscriptions, ${userSubscriptions.message}`,
+			success: false,
+		};
+	}
+}
+
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
-	const userSubscriptions = await getCurrentUserSubscriptionDetails();
-	let subscriptionInfo;
+	const userSubscriptions = await getBillingData();
+
+	if (!userSubscriptions.success) {
+		throw new Error('Failed to fetch billing details'); 
+	}
+
+	console.log('USER DETAILS HERE:  ', userSubscriptions);
 	
-	if (userSubscriptions.status === 200 && userSubscriptions.data) {
-		const data = userSubscriptions.data[0];
-		subscriptionInfo = await getSubscriptionProductDetails(data.metadata.productID);
-	}
 
-	if (subscriptionInfo && !subscriptionInfo.success) {
-		console.error("The following error occurred, ", subscriptionInfo.message);
-	}
+	const userPlan = userSubscriptions.data.name;
+	// const billingAmount =  userSubscriptions.data.
 
-	if (subscriptionInfo && subscriptionInfo.success) {
-		console.log("Subscription data here::::: ", subscriptionInfo.data);
-	} 
 
 	return (
 		<main className="flex flex-col gap-6">
@@ -53,7 +69,7 @@ export default async function SubscriptionPage() {
 							Active
 						</Badge>
 					}
-					body="Pro Plan"
+					body={userPlan}
 					footer="$5.00"
 				/>
 				<SmallInfoCard

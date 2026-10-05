@@ -316,7 +316,9 @@ export async function getProducts(): Promise<ProductResponse> {
  */
 export async function getSubscriptionProductDetails(subscriptionID: string): Promise<APIResult<Stripe.Product>> {
 	try {
-		const product = await stripe.products.retrieve(subscriptionID);
+		const product = await stripe.products.retrieve(subscriptionID, {
+			expand: ['default_price']
+		});
 		return successResponse(product);
 	} catch (e: unknown) {
 		return failureResponse(404, `The following error occurred in accessing the subscription product details ${e instanceof Error && e.message}`);
