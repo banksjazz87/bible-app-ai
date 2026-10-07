@@ -5,7 +5,7 @@ import { Suspense, use } from "react";
 import { InvoiceSkeleton, ChargesSkeleton } from "./components/Skeletons";
 import { getCustomerInvoices, listCustomerCharges } from "@/app/actions/stripe";
 import Stripe from "stripe";
-import { APIResult } from "@/lib/definitions";
+import { APIResult, UserSubscriptionResponse } from "@/lib/definitions";
 import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,13 +15,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails } from "@/app/actions/stripe";
+import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 
 import SmallInfoCard from "./components/SmallInfoCard";
 
 
-async function getBillingData(): Promise<APIResult<Stripe.Product>> {
+/**
+ * 
+ * @returns {Promise<APIResult<Stripe.Product>>}
+ * @description Used to pull in the user's current billing details.
+ */
+async function getProductData(): Promise<APIResult<Stripe.Product & {default_price: Stripe.Price}>> {
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
 
+	console.log("SUBSCRIPTION DETAILS: ", userSubscriptions);
+
+	//Verify the user has subscription details
 	if (userSubscriptions.status === 200 && userSubscriptions.data) {
 		const data = userSubscriptions.data[0];
 		const subscriptionInfo = await getSubscriptionProductDetails(data.metadata.productID);
@@ -38,17 +47,19 @@ async function getBillingData(): Promise<APIResult<Stripe.Product>> {
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
-	const userSubscriptions = await getBillingData();
+	const productData = await getProductData();
+	const userSubscriptions = await getCurrentUserSubscriptionDetails();
 
-	if (!userSubscriptions.success) {
+	if (!productData.success) {
 		throw new Error('Failed to fetch billing details'); 
 	}
 
 	console.log('USER DETAILS HERE:  ', userSubscriptions);
 	
 
-	const userPlan = userSubscriptions.data.name;
-	// const billingAmount =  userSubscriptions.data.
+	const userPlan = productData.data.name;
+	const billingAmount = formatAmountForDisplay(productData.data.default_price.unit_amount!, "USD");
+
 
 
 	return (
@@ -70,7 +81,7 @@ export default async function SubscriptionPage() {
 						</Badge>
 					}
 					body={userPlan}
-					footer="$5.00"
+					footer={billingAmount}
 				/>
 				<SmallInfoCard
 					header="Next Biling Date"
