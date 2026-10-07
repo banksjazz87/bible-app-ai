@@ -44,6 +44,15 @@ async function getProductData(): Promise<APIResult<Stripe.Product & {default_pri
 	}
 }
 
+function getNextBillingPaymentDate(endDate: number | null): string {
+	if (!endDate) {
+		return "";
+	}
+
+	const nextBillingDate = new Date(endDate * 1000);
+	return nextBillingDate.toLocaleDateString();
+}
+
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
@@ -54,11 +63,17 @@ export default async function SubscriptionPage() {
 		throw new Error('Failed to fetch billing details'); 
 	}
 
+	if (userSubscriptions.status !== 200 || !userSubscriptions.data) {
+		throw new Error('Failed to fetch subscription data');
+	}
+
 	console.log('USER DETAILS HERE:  ', userSubscriptions);
 	
 
 	const userPlan = productData.data.name;
 	const billingAmount = formatAmountForDisplay(productData.data.default_price.unit_amount!, "USD");
+	const nextBillingDate = getNextBillingPaymentDate(userSubscriptions.data[0].items.data[0].current_period_end);
+	const billingInterval = userSubscriptions.data[0].items.data[0].plan.interval;
 
 
 
@@ -91,8 +106,8 @@ export default async function SubscriptionPage() {
 							icon={faCalendar}
 						/>
 					}
-					body="DATE HERE"
-					footer="Billed Monthly"
+					body={nextBillingDate}
+					footer={`Billed ${billingInterval}ly`}
 				/>
 				<SmallInfoCard
 					header="Monthly Cost"
