@@ -7,7 +7,7 @@ type SmallInfoCard = {
 	header: string;
 	badge: JSX.Element;
 	body: string;
-	footer: string;
+	footer: JSX.Element | string;
 };
 
 export default async function SmallInfoCard({ header, badge, body, footer }: SmallInfoCard) {
@@ -21,7 +21,11 @@ export default async function SmallInfoCard({ header, badge, body, footer }: Sma
 				<p className="text-3xl font-bold">{body}</p>
 			</CardContent>
 			<CardFooter>
+				{ typeof footer === "string" ? 
 				<p className="text-md">{footer}</p>
+				:
+				footer
+			}
 			</CardFooter>
 		</Card>
 	);

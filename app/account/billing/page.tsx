@@ -2,6 +2,7 @@
 
 // import { getCurrentUserSubscriptionDetails } from "@/app/actions/stripe";
 import { Suspense, use } from "react";
+import Link from "next/link";
 import { InvoiceSkeleton, ChargesSkeleton } from "./components/Skeletons";
 import { getCustomerInvoices, listCustomerCharges } from "@/app/actions/stripe";
 import Stripe from "stripe";
@@ -19,13 +20,12 @@ import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 
 import SmallInfoCard from "./components/SmallInfoCard";
 
-
 /**
- * 
+ *
  * @returns {Promise<APIResult<Stripe.Product>>}
  * @description Used to pull in the user's current billing details.
  */
-async function getProductData(): Promise<APIResult<Stripe.Product & {default_price: Stripe.Price}>> {
+async function getProductData(): Promise<APIResult<Stripe.Product & { default_price: Stripe.Price }>> {
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
 
 	console.log("SUBSCRIPTION DETAILS: ", userSubscriptions);
@@ -56,26 +56,32 @@ function getNextBillingPaymentDate(endDate: number | null): string {
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
+	const invoices = await getCustomerInvoices();
 	const productData = await getProductData();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
 
-	if (!productData.success) {
-		throw new Error('Failed to fetch billing details'); 
+	let userPlan: string = "";
+	let billingAmount: string = "";
+	let billingInterval: string = "";
+	let isActive: boolean = false;
+	let nextBillingDate: string = "";
+	let marketingFeatures = null;
+	const currentInvoice = invoices.success ? invoices.data[0].hosted_invoice_url : null;
+
+	console.log("PRODUCT DATA FOLLOWS HERE ", productData);
+
+	if (productData.success) {
+		userPlan = productData.data.name;
+		billingAmount = formatAmountForDisplay(productData.data.default_price.unit_amount!, "USD");
+		marketingFeatures = productData.data.marketing_features;
 	}
 
-	if (userSubscriptions.status !== 200 || !userSubscriptions.data) {
-		throw new Error('Failed to fetch subscription data');
+	if (userSubscriptions.status === 200 && userSubscriptions.data) {
+		const planDetails = userSubscriptions.data[0].items.data[0].plan;
+		nextBillingDate = getNextBillingPaymentDate(userSubscriptions.data[0].items.data[0].current_period_end);
+		billingInterval = planDetails.interval;
+		isActive = planDetails.active;
 	}
-
-	console.log('USER DETAILS HERE:  ', userSubscriptions);
-	
-
-	const userPlan = productData.data.name;
-	const billingAmount = formatAmountForDisplay(productData.data.default_price.unit_amount!, "USD");
-	const nextBillingDate = getNextBillingPaymentDate(userSubscriptions.data[0].items.data[0].current_period_end);
-	const billingInterval = userSubscriptions.data[0].items.data[0].plan.interval;
-
-
 
 	return (
 		<main className="flex flex-col gap-6">
@@ -90,9 +96,9 @@ export default async function SubscriptionPage() {
 					badge={
 						<Badge
 							variant="outline"
-							className="bg-green-200"
+							className={isActive ? "bg-green-200" : "text-white bg-red-500"}
 						>
-							Active
+							{isActive ? "Active" : "Expired"}
 						</Badge>
 					}
 					body={userPlan}
@@ -117,8 +123,21 @@ export default async function SubscriptionPage() {
 							icon={faCalendar}
 						/>
 					}
-					body="$COST"
-					footer="Next invoice: INVOICE DATE HERE"
+					body={billingAmount}
+					footer={
+						currentInvoice ? (
+							<Button variant="secondary">
+								<Link
+									href={currentInvoice}
+									target="_blank"
+								>
+									Most Recent Invoice
+								</Link>
+							</Button>
+						) : (
+							""
+						)
+					}
 				/>
 			</section>
 
@@ -137,37 +156,33 @@ export default async function SubscriptionPage() {
 									icon={faReceipt}
 								/>
 								<div>
-									<h3 className="text-lg font-bold">Pro Plan</h3>
-									<p className="text-sm">$/month</p>
+									<h3 className="text-lg font-bold">{userPlan}</h3>
+									<p className="text-sm">{`${billingAmount}/${billingInterval}`}</p>
 									<p className="text-sm">Features summary here</p>
 								</div>
 							</div>
-							<Button variant="outline">Change plan</Button>
+							<Button variant="outline">
+								<Link href="/pricing">Change plan</Link>
+							</Button>
 						</div>
 						<hr></hr>
 						<div>
 							<h4 className="text-md font-bold">Plan features:</h4>
-							<div className="flex flex-row gap-2 items-center">
-								<FontAwesomeIcon
-									icon={faCheck}
-									className="text-green-600"
-								/>
-								<p>Feature 1</p>
-							</div>
-							<div className="flex flex-row gap-2 items-center">
-								<FontAwesomeIcon
-									icon={faCheck}
-									className="text-green-600"
-								/>
-								<p>Feature 2</p>
-							</div>
-							<div className="flex flex-row gap-2 items-center">
-								<FontAwesomeIcon
-									icon={faCheck}
-									className="text-green-600"
-								/>
-								<p>Feature 3</p>
-							</div>
+							{marketingFeatures &&
+								marketingFeatures.map((x: Stripe.Product.MarketingFeature, y: number) => {
+									return (
+										<div
+											key={`feature_item_${y}`}
+											className="flex flex-row gap-2 items-center"
+										>
+											<FontAwesomeIcon
+												icon={faCheck}
+												className="text-green-600"
+											/>
+											<p>{x.name}</p>
+										</div>
+									);
+								})}
 						</div>
 					</CardContent>
 				</Card>
@@ -192,7 +207,10 @@ export default async function SubscriptionPage() {
 						</div>
 					</CardContent>
 					<CardFooter className="flex-col gap-6">
-						<Button className="w-full py-6" variant="outline">
+						<Button
+							className="w-full py-6"
+							variant="outline"
+						>
 							<FontAwesomeIcon
 								className="text-gray-600"
 								icon={faPlus}
