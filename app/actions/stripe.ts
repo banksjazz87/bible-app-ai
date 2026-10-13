@@ -307,19 +307,18 @@ export async function getProducts(): Promise<ProductResponse> {
 	}
 }
 
-
 /**
- * 
- * @param {string} subscriptionID 
+ *
+ * @param {string} subscriptionID
  * @returns {Promise<APIResult<Stripe.Product>>}
  * @description used to access the details about a particulare product, based on the provided subscription ID.
  */
-export async function getSubscriptionProductDetails(subscriptionID: string): Promise<APIResult<Stripe.Product & {default_price: Stripe.Price}>> {
+export async function getSubscriptionProductDetails(subscriptionID: string): Promise<APIResult<Stripe.Product & { default_price: Stripe.Price }>> {
 	try {
 		const product = await stripe.products.retrieve(subscriptionID, {
-			expand: ['default_price']
+			expand: ["default_price"],
 		});
-		return successResponse(product as Stripe.Product & {default_price: Stripe.Price});
+		return successResponse(product as Stripe.Product & { default_price: Stripe.Price });
 	} catch (e: unknown) {
 		return failureResponse(404, `The following error occurred in accessing the subscription product details ${e instanceof Error && e.message}`);
 	}
@@ -445,4 +444,22 @@ export async function listCustomerCharges(nextLineItem: string): Promise<APIResu
 	}
 }
 
+export async function getPaymentMethods() {
+	const customerDetails = await getCustomerDetails();
 
+	if (!customerDetails.success) {
+		return failureResponse(404, `The following error occurred in retrieving the customer details: ${customerDetails.message}`);
+	}
+
+	const customerID = customerDetails.data[0].id;
+
+	try {
+		const paymentMethods = await stripe.customers.listPaymentMethods(customerID, {
+			limit: 5,
+		});
+
+		return successResponse(paymentMethods.data);
+	} catch (e: unknown) {
+		return failureResponse(404, `The following error occurred in retrieiving the user's payment methods: ${e instanceof Error && e.message}`);
+	}
+}

@@ -199,7 +199,7 @@ export default async function SubscriptionPage() {
 									icon={faCreditCard}
 								/>
 								<div>
-									<h3 className="text-lg font-bold">Pro Plan</h3>
+									<h3 className="text-lg font-bold">{`${userPlan} Plan` }</h3>
 									<p className="text-sm">$/month</p>
 								</div>
 							</div>
