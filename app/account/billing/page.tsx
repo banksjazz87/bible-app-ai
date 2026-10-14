@@ -15,8 +15,9 @@ import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt, faPlus } from "@f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails } from "@/app/actions/stripe";
+import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, getPaymentMethods } from "@/app/actions/stripe";
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
+import PaymentDetails from "./components/PaymentDetails";
 
 import SmallInfoCard from "./components/SmallInfoCard";
 
@@ -59,6 +60,7 @@ export default async function SubscriptionPage() {
 	const invoices = await getCustomerInvoices();
 	const productData = await getProductData();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
+	const paymentMethods = await getPaymentMethods();
 
 	let userPlan: string = "";
 	let billingAmount: string = "";
@@ -67,6 +69,8 @@ export default async function SubscriptionPage() {
 	let nextBillingDate: string = "";
 	let marketingFeatures = null;
 	const currentInvoice = invoices.success ? invoices.data[0].hosted_invoice_url : null;
+
+	console.log("PAYMENT METHODS HERE: ", paymentMethods);
 
 	console.log("PRODUCT DATA FOLLOWS HERE ", productData);
 
@@ -205,6 +209,7 @@ export default async function SubscriptionPage() {
 							</div>
 							<Button variant="outline">Change plan</Button>
 						</div>
+						<PaymentDetails />
 					</CardContent>
 					<CardFooter className="flex-col gap-6">
 						<Button
@@ -223,7 +228,7 @@ export default async function SubscriptionPage() {
 								icon={faInfo}
 							/>
 							<AlertTitle>Your payment method will be charged</AlertTitle>
-							<AlertDescription>$ on Date</AlertDescription>
+							<AlertDescription>{`${billingAmount} on ${nextBillingDate}`}</AlertDescription>
 						</Alert>
 					</CardFooter>
 				</Card>

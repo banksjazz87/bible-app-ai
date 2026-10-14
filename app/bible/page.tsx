@@ -116,7 +116,6 @@ function PageContent() {
 			try {
 				const response = await fetch('/api/user-roles');
 				const data = await response.json();
-				console.log('USER ROLES: ', data);
 			
 				if (data.status === 200 && data.data) {
 					const userData = data.data[0];
@@ -152,15 +151,12 @@ function PageContent() {
 		}
 	});
 
-	//ADD USE EFFECT HERE TO UPDATE THE ALERT TITLE
+	
 	useEffect((): void => {
 		updateAlertTitle(requestStatus);
 	}, [requestStatus]);
 
 
-
-
-	//ADD CODE ABOVE 
 	const resetLLMData = (): void => {
 		const clearedData = LLMReqAndOutput.map((x: LLMReqObject) => {
 			const currentObj = {

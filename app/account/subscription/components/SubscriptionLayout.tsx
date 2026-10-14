@@ -31,8 +31,6 @@ export default function SubscriptionLayout({ subscriptionData }: SubscriptionLay
     const [alertItemID, setAlertItemID] = useState<string>('');
 
 
-    console.log('User subscription data here!!!!! ', userData);
-
     function cancelRequestHandler(id: string): void {
         setIsCancelling(true);
         setCancelID(id);

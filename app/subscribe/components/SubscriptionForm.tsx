@@ -197,7 +197,6 @@ export default function SubscriptionForm(): JSX.Element {
 		if (customerId) {
 			const data = form.getValues();
 			const checkoutSession = await createCheckoutSession(data, customerId);
-			console.log("this is the checkout session ", checkoutSession);
 			return checkoutSession.client_secret as string;
 		} else {
 			return "";
