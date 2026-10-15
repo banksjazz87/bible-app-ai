@@ -463,3 +463,25 @@ export async function getPaymentMethods() {
 		return failureResponse(404, `The following error occurred in retrieiving the user's payment methods: ${e instanceof Error && e.message}`);
 	}
 }
+
+export async function paymentMethods(customerId: string) {
+	const customerSession = await stripe.customerSessions.create({
+		customer: "cus_12345",
+		components: {
+			payment_element: {
+				enabled: true,
+				features: {
+					// Essential flag: Allows the user to delete cards right inside the component
+					payment_method_remove: 'enabled',
+					payment_method_save: 'enabled',
+				},
+			},
+		},
+	});
+
+	// Create a SetupIntent to handle the addition of NEW cards
+	const setupIntent = await stripe.setupIntents.create({
+		customer: "cus_12345",
+		payment_method_types: ["card"],
+	});
+}
