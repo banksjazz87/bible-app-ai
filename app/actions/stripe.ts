@@ -444,44 +444,36 @@ export async function listCustomerCharges(nextLineItem: string): Promise<APIResu
 	}
 }
 
-export async function getPaymentMethods() {
-	const customerDetails = await getCustomerDetails();
 
-	if (!customerDetails.success) {
-		return failureResponse(404, `The following error occurred in retrieving the customer details: ${customerDetails.message}`);
-	}
-
-	const customerID = customerDetails.data[0].id;
+export async function getPaymentMethods(customerId: string) {
 
 	try {
-		const paymentMethods = await stripe.customers.listPaymentMethods(customerID, {
-			limit: 5,
-		});
-
-		return successResponse(paymentMethods.data);
-	} catch (e: unknown) {
-		return failureResponse(404, `The following error occurred in retrieiving the user's payment methods: ${e instanceof Error && e.message}`);
-	}
-}
-
-export async function paymentMethods(customerId: string) {
-	const customerSession = await stripe.customerSessions.create({
-		customer: "cus_12345",
-		components: {
-			payment_element: {
-				enabled: true,
-				features: {
-					// Essential flag: Allows the user to delete cards right inside the component
-					payment_method_remove: 'enabled',
-					payment_method_save: 'enabled',
+		const customerSession = await stripe.customerSessions.create({
+			customer: customerId,
+			components: {
+				payment_element: {
+					enabled: true,
+					features: {
+						// Essential flag: Allows the user to delete cards right inside the component
+						payment_method_remove: "enabled",
+						payment_method_save: "enabled",
+					},
 				},
 			},
-		},
-	});
+		});
 
-	// Create a SetupIntent to handle the addition of NEW cards
-	const setupIntent = await stripe.setupIntents.create({
-		customer: "cus_12345",
-		payment_method_types: ["card"],
-	});
+		// Create a SetupIntent to handle the addition of NEW cards
+		const setupIntent = await stripe.setupIntents.create({
+			customer: customerId,
+			payment_method_types: ["card"],
+		});
+
+		const data = {
+			customerSessionClientSecret: customerSession.client_secret,
+			clientSecret: setupIntent.client_secret,
+		};
+		return successResponse(data);
+	} catch (e: unknown) {
+		return failureResponse(404, `The following error occurred in creating the payment element: ${e instanceof Error && e.message}`)
+	}
 }

@@ -15,9 +15,10 @@ import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt, faPlus } from "@f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, getPaymentMethods } from "@/app/actions/stripe";
+import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, getPaymentMethods, getCustomerDetails } from "@/app/actions/stripe";
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
-import PaymentDetails from "./components/PaymentDetails";
+import PaymentDetails from "./components/PaymentMethods";
+import { createClient } from "@/utils/supabase/server";
 
 import SmallInfoCard from "./components/SmallInfoCard";
 
@@ -54,13 +55,38 @@ function getNextBillingPaymentDate(endDate: number | null): string {
 	return nextBillingDate.toLocaleDateString();
 }
 
+async function fetchClientSecret(): Promise<
+	| {
+			customerSessionClientSecret: string;
+			clientSecret: string | null;
+	  }
+	| undefined
+> {
+	const customerDetails = await getCustomerDetails();
+
+	if (!customerDetails.success) {
+		console.error("Unable to access the customer details");
+		return;
+	}
+
+	const customerId = customerDetails.data[0].id;
+	const payments = await getPaymentMethods(customerId);
+
+	if (!payments.success) {
+		console.error(`Unable to retrieve payment methods due to: ${payments.message}`);
+		return;
+	}
+
+	return payments.data;
+}
+
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
 	const invoices = await getCustomerInvoices();
 	const productData = await getProductData();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
-	const paymentMethods = await getPaymentMethods();
+	const paymentMethods = await fetchClientSecret();
 
 	let userPlan: string = "";
 	let billingAmount: string = "";
@@ -209,7 +235,10 @@ export default async function SubscriptionPage() {
 							</div>
 							<Button variant="outline">Change plan</Button>
 						</div>
-						<PaymentDetails />
+						<PaymentDetails
+							fetchClientSecret={paymentMethods}
+						
+						/>
 					</CardContent>
 					<CardFooter className="flex-col gap-6">
 						<Button
