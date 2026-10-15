@@ -1,12 +1,12 @@
 "use server";
 
 // import { getCurrentUserSubscriptionDetails } from "@/app/actions/stripe";
-import { Suspense, use } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { InvoiceSkeleton, ChargesSkeleton } from "./components/Skeletons";
-import { getCustomerInvoices, listCustomerCharges } from "@/app/actions/stripe";
+import { getCustomerInvoices } from "@/app/actions/stripe";
 import Stripe from "stripe";
-import { APIResult, UserSubscriptionResponse } from "@/lib/definitions";
+import { APIResult } from "@/lib/definitions";
 import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,12 +15,10 @@ import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt, faPlus } from "@f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, getPaymentMethods, getCustomerDetails } from "@/app/actions/stripe";
+import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails } from "@/app/actions/stripe";
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
-import PaymentDetails from "./components/PaymentMethods";
-import { createClient } from "@/utils/supabase/server";
-
 import SmallInfoCard from "./components/SmallInfoCard";
+import PaymentMethods from "./components/PaymentMethods";
 
 /**
  *
@@ -55,38 +53,12 @@ function getNextBillingPaymentDate(endDate: number | null): string {
 	return nextBillingDate.toLocaleDateString();
 }
 
-async function fetchClientSecret(): Promise<
-	| {
-			customerSessionClientSecret: string;
-			clientSecret: string | null;
-	  }
-	| undefined
-> {
-	const customerDetails = await getCustomerDetails();
-
-	if (!customerDetails.success) {
-		console.error("Unable to access the customer details");
-		return;
-	}
-
-	const customerId = customerDetails.data[0].id;
-	const payments = await getPaymentMethods(customerId);
-
-	if (!payments.success) {
-		console.error(`Unable to retrieve payment methods due to: ${payments.message}`);
-		return;
-	}
-
-	return payments.data;
-}
-
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
 	const invoices = await getCustomerInvoices();
 	const productData = await getProductData();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
-	const paymentMethods = await fetchClientSecret();
 
 	let userPlan: string = "";
 	let billingAmount: string = "";
@@ -95,8 +67,6 @@ export default async function SubscriptionPage() {
 	let nextBillingDate: string = "";
 	let marketingFeatures = null;
 	const currentInvoice = invoices.success ? invoices.data[0].hosted_invoice_url : null;
-
-	console.log("PAYMENT METHODS HERE: ", paymentMethods);
 
 	console.log("PRODUCT DATA FOLLOWS HERE ", productData);
 
@@ -222,23 +192,7 @@ export default async function SubscriptionPage() {
 						<p className="text-sm flex self-center">Your default payment method.</p>
 					</CardHeader>
 					<CardContent className="flex flex-col gap-4">
-						<div className="flex justify-between items-center">
-							<div className="flex items-center gap-6">
-								<FontAwesomeIcon
-									className="text-blue-600 p-4 text-3xl bg-blue-200 rounded-sm"
-									icon={faCreditCard}
-								/>
-								<div>
-									<h3 className="text-lg font-bold">{`${userPlan} Plan` }</h3>
-									<p className="text-sm">$/month</p>
-								</div>
-							</div>
-							<Button variant="outline">Change plan</Button>
-						</div>
-						<PaymentDetails
-							fetchClientSecret={paymentMethods}
-						
-						/>
+						<PaymentMethods />
 					</CardContent>
 					<CardFooter className="flex-col gap-6">
 						<Button

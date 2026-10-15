@@ -227,3 +227,8 @@ export type ChargesResponse =
 			success: false;
 			message: string;
 	  };
+
+export type StripeSessionData = {
+	customerSessionClientSecret: string;
+	clientSecret: string;
+};

@@ -5,7 +5,7 @@ import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { failureResponse, successResponse } from "@/lib/utils";
 import { stripe } from "@/lib/stripe";
-import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse, APIResult, ChargeData } from "@/lib/definitions";
+import { SubscribeFormSchema, SubscriptionResponse, ProductResponse, UserSubscriptionResponse, APIResult, ChargeData, StripeSessionData } from "@/lib/definitions";
 import { createClient } from "@/utils/supabase/server";
 import { User } from "@supabase/supabase-js";
 
@@ -445,8 +445,7 @@ export async function listCustomerCharges(nextLineItem: string): Promise<APIResu
 }
 
 
-export async function getPaymentMethods(customerId: string) {
-
+export async function getPaymentMethods(customerId: string): Promise<APIResult<StripeSessionData>>{
 	try {
 		const customerSession = await stripe.customerSessions.create({
 			customer: customerId,
@@ -457,6 +456,8 @@ export async function getPaymentMethods(customerId: string) {
 						// Essential flag: Allows the user to delete cards right inside the component
 						payment_method_remove: "enabled",
 						payment_method_save: "enabled",
+						payment_method_redisplay: "enabled",
+						payment_method_redisplay_limit: 10,
 					},
 				},
 			},
@@ -469,11 +470,11 @@ export async function getPaymentMethods(customerId: string) {
 		});
 
 		const data = {
-			customerSessionClientSecret: customerSession.client_secret,
-			clientSecret: setupIntent.client_secret,
+			customerSessionClientSecret: customerSession.client_secret as string,
+			clientSecret: setupIntent.client_secret as string,
 		};
 		return successResponse(data);
 	} catch (e: unknown) {
-		return failureResponse(404, `The following error occurred in creating the payment element: ${e instanceof Error && e.message}`)
+		return failureResponse(404, `The following error occurred in creating the payment element: ${e instanceof Error && e.message}`);
 	}
 }
