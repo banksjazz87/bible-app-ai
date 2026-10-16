@@ -23,7 +23,7 @@ export default function CardManagerForm() {
 		const { error } = await stripe.confirmSetup({
 			elements,
 			confirmParams: {
-				return_url: `${window.location.origin}/wallet/success`,
+				return_url: `${window.location.origin}/account/billing`,
 			},
 		});
 
