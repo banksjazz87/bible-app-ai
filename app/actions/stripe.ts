@@ -478,3 +478,24 @@ export async function getPaymentMethods(customerId: string): Promise<APIResult<S
 		return failureResponse(404, `The following error occurred in creating the payment element: ${e instanceof Error && e.message}`);
 	}
 }
+
+export async function listPaymentMethods() {
+	try {
+		const customerDetails = await getCustomerDetails();
+
+		if (!customerDetails.success) {
+			return failureResponse(404, customerDetails.message);
+		}
+
+		const customerID = customerDetails.data[0].id;
+		const paymentMethods = await stripe.paymentMethods.list({
+			type: 'card',
+			limit: 10,
+			customer: customerID
+		});
+
+		return successResponse(paymentMethods.data);
+	} catch (e: unknown) {
+		console.error(`The following error occcurred while loading the wallet: ${e instanceof Error && e.message}`);
+	}
+}
