@@ -19,6 +19,7 @@ import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, listP
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 import SmallInfoCard from "./components/SmallInfoCard";
 import PaymentMethods from "./components/PaymentMethods";
+import PaymentMethodsList from "./components/PaymentMethodList";
 
 /**
  *
@@ -59,7 +60,7 @@ export default async function SubscriptionPage() {
 	const invoices = await getCustomerInvoices();
 	const productData = await getProductData();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
-	const paymentMethods = await listPaymentMethods();
+	const paymentMethods =  listPaymentMethods();
 
 	console.log("Payment methods follow here: ", paymentMethods);
 
@@ -195,6 +196,9 @@ export default async function SubscriptionPage() {
 						<p className="text-sm flex self-center">Your default payment method.</p>
 					</CardHeader>
 					<CardContent className="flex flex-col gap-4">
+						<Suspense fallback="<p>Loading...</p>">
+							<PaymentMethodsList paymentList={listPaymentMethods()} />
+							</Suspense>
 						<PaymentMethods />
 					</CardContent>
 					<CardFooter className="flex-col gap-6">

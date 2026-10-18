@@ -479,7 +479,7 @@ export async function getPaymentMethods(customerId: string): Promise<APIResult<S
 	}
 }
 
-export async function listPaymentMethods() {
+export async function listPaymentMethods(): Promise<APIResult<Stripe.PaymentMethod[]>> {
 	try {
 		const customerDetails = await getCustomerDetails();
 
@@ -496,6 +496,6 @@ export async function listPaymentMethods() {
 
 		return successResponse(paymentMethods.data);
 	} catch (e: unknown) {
-		console.error(`The following error occcurred while loading the wallet: ${e instanceof Error && e.message}`);
+		return failureResponse(404, `The following error occcurred while loading the wallet: ${e instanceof Error && e.message}`);
 	}
 }
