@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import { PaymentIcon } from "react-svg-credit-card-payment-icons";
 import Stripe from "stripe";
 import { APIResult } from "@/lib/definitions";
@@ -22,9 +22,11 @@ const brandMap: Record<string, CardBrand> = {
 };
 
 export default function PaymentMethodsList({ paymentList }: PaymentMethodsListProps) {
-	const list = use(paymentList);
-
-	if (!list.success) return <></>;
+    const list = use(paymentList);
+    
+    if (!list.success) return <></>;
+    
+    console.log("List here: ", list);
 
 	return list.data.map((item: Stripe.PaymentMethod, y: number) => {
 		if (item.card) {

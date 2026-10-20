@@ -15,7 +15,7 @@ import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt, faPlus } from "@f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, listPaymentMethods } from "@/app/actions/stripe";
+import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, listPaymentMethods, getCustomerDetails } from "@/app/actions/stripe";
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 import SmallInfoCard from "./components/SmallInfoCard";
 import PaymentMethods from "./components/PaymentMethods";
@@ -60,9 +60,11 @@ export default async function SubscriptionPage() {
 	const invoices = await getCustomerInvoices();
 	const productData = await getProductData();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
-	const paymentMethods =  listPaymentMethods();
+	const paymentMethods = listPaymentMethods();
 
 	console.log("Payment methods follow here: ", paymentMethods);
+
+	console.log("Customer SUBSCRIPTION DETAILS: ", userSubscriptions);
 
 	let userPlan: string = "";
 	let billingAmount: string = "";

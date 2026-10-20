@@ -499,3 +499,13 @@ export async function listPaymentMethods(): Promise<APIResult<Stripe.PaymentMeth
 		return failureResponse(404, `The following error occcurred while loading the wallet: ${e instanceof Error && e.message}`);
 	}
 }
+
+export async function getPaymentMethod(id: string) {
+	try 
+	{
+		const paymentMethod = await stripe.paymentMethods.retrieve(id);
+		return successResponse(paymentMethod);
+	} catch (e: unknown) {
+		return failureResponse(404, `The following error occurred in retrieving the payment method: ${e instanceof Error && e.message}`);
+	}
+}
