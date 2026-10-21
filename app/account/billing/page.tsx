@@ -15,7 +15,7 @@ import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt, faPlus } from "@f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, listPaymentMethods, getCustomerDetails } from "@/app/actions/stripe";
+import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, listPaymentMethods, getCustomerDetails, getPaymentMethod } from "@/app/actions/stripe";
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 import SmallInfoCard from "./components/SmallInfoCard";
 import PaymentMethods from "./components/PaymentMethods";
@@ -54,6 +54,11 @@ function getNextBillingPaymentDate(endDate: number | null): string {
 	return nextBillingDate.toLocaleDateString();
 }
 
+async function getDefaultPayment(paymentID: string) {
+	const defaultPayment = await getPaymentMethod(paymentID);
+	return defaultPayment;
+}
+
 export default async function SubscriptionPage() {
 	const customerInvoices = getCustomerInvoices();
 	// const customerCharges = listCustomerCharges();
@@ -72,6 +77,7 @@ export default async function SubscriptionPage() {
 	let isActive: boolean = false;
 	let nextBillingDate: string = "";
 	let marketingFeatures = null;
+	let defaultPayment: APIResult<Stripe.PaymentMethod> | null = null;
 	const currentInvoice = invoices.success ? invoices.data[0].hosted_invoice_url : null;
 
 	console.log("PRODUCT DATA FOLLOWS HERE ", productData);
@@ -87,7 +93,12 @@ export default async function SubscriptionPage() {
 		nextBillingDate = getNextBillingPaymentDate(userSubscriptions.data[0].items.data[0].current_period_end);
 		billingInterval = planDetails.interval;
 		isActive = planDetails.active;
+		defaultPayment = await getDefaultPayment(typeof userSubscriptions.data[0].default_payment_method === 'string' ? userSubscriptions.data[0].default_payment_method : '');
+
+		console.log("DEFAULT PAYMENT METHOD: ", defaultPayment);
 	}
+
+
 
 	return (
 		<main className="flex flex-col gap-6">

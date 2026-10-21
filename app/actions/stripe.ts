@@ -500,7 +500,7 @@ export async function listPaymentMethods(): Promise<APIResult<Stripe.PaymentMeth
 	}
 }
 
-export async function getPaymentMethod(id: string) {
+export async function getPaymentMethod(id: string): Promise<APIResult<Stripe.PaymentMethod>> {
 	try 
 	{
 		const paymentMethod = await stripe.paymentMethods.retrieve(id);
