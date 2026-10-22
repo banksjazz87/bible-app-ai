@@ -20,6 +20,7 @@ import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 import SmallInfoCard from "./components/SmallInfoCard";
 import PaymentMethods from "./components/PaymentMethods";
 import PaymentMethodsList from "./components/PaymentMethodList";
+import PaymentCard from "./components/PaymentCard";
 
 /**
  *
@@ -209,10 +210,9 @@ export default async function SubscriptionPage() {
 						<p className="text-sm flex self-center">Your default payment method.</p>
 					</CardHeader>
 					<CardContent className="flex flex-col gap-4">
-						<Suspense fallback="<p>Loading...</p>">
-							<PaymentMethodsList paymentList={listPaymentMethods()} />
-							</Suspense>
-						<PaymentMethods />
+						{!defaultPayment && <p>Loading...</p>}
+						{defaultPayment && !defaultPayment.success && <p>No default payment set.</p>}
+						{defaultPayment && defaultPayment.success && <PaymentCard paymentMethod={defaultPayment} />}
 					</CardContent>
 					<CardFooter className="flex-col gap-6">
 						<Button
