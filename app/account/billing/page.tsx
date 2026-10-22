@@ -210,9 +210,7 @@ export default async function SubscriptionPage() {
 						<p className="text-sm flex self-center">Your default payment method.</p>
 					</CardHeader>
 					<CardContent className="flex flex-col gap-4">
-						{!defaultPayment && <p>Loading...</p>}
-						{defaultPayment && !defaultPayment.success && <p>No default payment set.</p>}
-						{defaultPayment && defaultPayment.success && <PaymentCard paymentMethod={defaultPayment} />}
+						<PaymentCard paymentMethod={defaultPayment} />
 					</CardContent>
 					<CardFooter className="flex-col gap-6">
 						<Button
@@ -230,7 +228,7 @@ export default async function SubscriptionPage() {
 								className="p-1 bg-blue-200 text-blue-600 rounded-full text-[12px]"
 								icon={faInfo}
 							/>
-							<AlertTitle>Your payment method will be charged</AlertTitle>
+							<AlertTitle>Your default payment method will be charged.</AlertTitle>
 							<AlertDescription>{`${billingAmount} on ${nextBillingDate}`}</AlertDescription>
 						</Alert>
 					</CardFooter>

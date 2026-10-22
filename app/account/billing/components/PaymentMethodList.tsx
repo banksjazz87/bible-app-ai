@@ -1,10 +1,9 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { use } from "react";
 import { PaymentIcon } from "react-svg-credit-card-payment-icons";
 import Stripe from "stripe";
 import { APIResult } from "@/lib/definitions";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type PaymentMethodsListProps = {
 	paymentList: Promise<APIResult<Stripe.PaymentMethod[]>>;
