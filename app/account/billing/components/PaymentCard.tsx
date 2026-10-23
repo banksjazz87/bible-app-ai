@@ -26,7 +26,8 @@ export default async function PaymentCard({ paymentMethod }: PaymentCardProps) {
 	if (!paymentMethod.success) return <p>No default payment method found.</p>;
 
 	if (paymentMethod.data.card) {
-		const card = paymentMethod.data.card;
+        const card = paymentMethod.data.card;
+        const billingDetails = paymentMethod.data.billing_details;
 		return (
 			<div className="flex flex-row gap-4 items-center justify-between shadow-2xs border rounded-2xl p-4">
 				<div className="flex flex-row gap-4 items-center">
@@ -40,7 +41,13 @@ export default async function PaymentCard({ paymentMethod }: PaymentCardProps) {
 						<small>{`Expires: ${card.exp_month}/${card.exp_year}`}</small>
 					</div>
 				</div>
-				<Button variant="outline">Edit</Button>
+				<Button
+					variant="outline"
+				>
+					<a href={`https://billing.stripe.com/p/login/test_8x24gBdwWgBX2eeePsebu00?prefilled_email=${billingDetails.email}`} target="_blank" rel="noreferrer">
+                        Edit
+                    </a>
+				</Button>
 			</div>
 		);
 	}

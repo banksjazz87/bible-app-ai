@@ -18,8 +18,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, listPaymentMethods, getCustomerDetails, getPaymentMethod } from "@/app/actions/stripe";
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 import SmallInfoCard from "./components/SmallInfoCard";
-import PaymentMethods from "./components/PaymentMethods";
-import PaymentMethodsList from "./components/PaymentMethodList";
 import PaymentCard from "./components/PaymentCard";
 
 /**
