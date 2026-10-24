@@ -5,25 +5,22 @@ import { Suspense, JSX } from "react";
 import { getProducts } from "../actions/stripe";
 
 
-
-
+/**
+ * 
+ * @returns {Promise<JSX.Element>}
+ * @description displays our pricing page.
+ */
 export default async function Pricing(): Promise<JSX.Element> {
 	return <Suspense fallback={pageFallBack()}>{pageContent()}</Suspense>;
 }
 
 const pageContent = async (): Promise<JSX.Element> => {
 	const products = await getProducts();
-	console.log("PRODUCTS LIST HERE ", products);
-	const pricingDetails = new Map([
-		["Free", ["Limit of 5 AI queries per day", "Email notifications of all future updates"]],
-		["Basic", ["Limit of 20 AI queries per day", "Save Data for up to 2 Weeks", "Print PDF of notes", "Email notifications of all future updates"]],
-		["Premiere", ["Limit of 50 AI queries per day", "Save data for life", "Print PDF of notes", "Email notifications of all future updates"]],
-	]);
 
 	const displayPriceCards = products.data?.map((x, y) => {
 		if (x.product.active) {
-			// const details = pricingDetails.get(x.product.name);
 			const details = x.product.marketing_features;
+
 			return (
 				<PriceCard
 					key={`price_card_${y}`}
