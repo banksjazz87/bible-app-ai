@@ -13,6 +13,7 @@ export default async function Pricing(): Promise<JSX.Element> {
 
 const pageContent = async (): Promise<JSX.Element> => {
 	const products = await getProducts();
+	console.log("PRODUCTS LIST HERE ", products);
 	const pricingDetails = new Map([
 		["Free", ["Limit of 5 AI queries per day", "Email notifications of all future updates"]],
 		["Basic", ["Limit of 20 AI queries per day", "Save Data for up to 2 Weeks", "Print PDF of notes", "Email notifications of all future updates"]],
@@ -21,12 +22,13 @@ const pageContent = async (): Promise<JSX.Element> => {
 
 	const displayPriceCards = products.data?.map((x, y) => {
 		if (x.product.active) {
-			const details = pricingDetails.get(x.product.name);
+			// const details = pricingDetails.get(x.product.name);
+			const details = x.product.marketing_features;
 			return (
 				<PriceCard
 					key={`price_card_${y}`}
 					title={x.product.name}
-					details={details ? details : []}
+					details={details}
 					value={x.unit_amount ? x.unit_amount / 100 : 0}
 					optionValue={`${x.product.default_price as string}`}
 				/>

@@ -1,6 +1,7 @@
 "use client";
 
 import { JSX } from "react";
+import Stripe from "stripe";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +10,7 @@ import { useAppSelector } from "@/lib/store/hooks";
 
 type PriceCardProps = {
 	title: string;
-	details: string[];
+	details: Stripe.Product.MarketingFeature[];
 	value: number;
 	optionValue: string;
 };
@@ -21,25 +22,24 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 	const hrefLink = `${targetPage}?option=${optionValue}`;
 	const isUserTier = userRole === title.toLowerCase();
 
-	const listItems: JSX.Element[] = details.map((x: string, y: number):JSX.Element => {
+	const listItems: JSX.Element[] = details.map((x: Stripe.Product.MarketingFeature, y: number): JSX.Element => {
 		return (
 			<li
 				key={`list_item_${y}`}
 				className="flex flex-row gap-2 align-middle"
 			>
-				<div className="rounded-full h-7 w-7 flex items-center bg-neutral-900 justify-center">
-					<FontAwesomeIcon
-						icon={faCheck}
-						className="size-4 text-white"
-					/>
-				</div>
-				{x}
+				<FontAwesomeIcon
+					icon={faCheck}
+					className="text-green-600"
+				/>
+
+				{x.name}
 			</li>
 		);
 	});
 
 	return (
-		<div className={`grid-cols-1 border border-slate-800 rounded-md flex flex-col align-middle justify-between gap-10 p-12 ${isUserTier ? "bg-slate-200 opacity-95 border-slate-300 dark:bg-slate-400" : "bg-white}"}`}>
+		<div className={`grid-cols-1 border border-slate-800 rounded-md flex flex-col align-middle justify-between gap-10 p-12 ${isUserTier ? "bg-slate-100 opacity-90 border-slate-300 dark:bg-slate-400" : "bg-white}"}`}>
 			<div className="flex flex-col gap-10">
 				<div className="flex flex-col gap-1">
 					<p className="text-1xl font-semibold">{title}</p>
@@ -68,7 +68,7 @@ export default function PriceCard({ title, details, value, optionValue }: PriceC
 					href={isUserTier ? "" : hrefLink}
 					className="flex flex-col"
 				>
-					<Button>Signup</Button>
+					<Button variant="default">Signup</Button>
 				</Link>
 			)}
 		</div>

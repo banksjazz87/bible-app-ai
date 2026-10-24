@@ -1,6 +1,6 @@
 "use server";
 
-// import { getCurrentUserSubscriptionDetails } from "@/app/actions/stripe";
+import { JSX } from "react";
 import { Suspense } from "react";
 import Link from "next/link";
 import { InvoiceSkeleton, ChargesSkeleton } from "./components/Skeletons";
@@ -11,11 +11,11 @@ import InvoiceTable from "./components/InvoiceTable";
 import ChargesTable from "./components/ChargesTable";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { faCalendar, faCheck, faInfo, faCreditCard, faReceipt, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faCheck, faInfo, faReceipt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, listPaymentMethods, getCustomerDetails, getPaymentMethod } from "@/app/actions/stripe";
+import { getCurrentUserSubscriptionDetails, getSubscriptionProductDetails, getPaymentMethod } from "@/app/actions/stripe";
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 import SmallInfoCard from "./components/SmallInfoCard";
 import PaymentCard from "./components/PaymentCard";
@@ -27,8 +27,6 @@ import PaymentCard from "./components/PaymentCard";
  */
 async function getProductData(): Promise<APIResult<Stripe.Product & { default_price: Stripe.Price }>> {
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
-
-	console.log("SUBSCRIPTION DETAILS: ", userSubscriptions);
 
 	//Verify the user has subscription details
 	if (userSubscriptions.status === 200 && userSubscriptions.data) {
@@ -44,6 +42,13 @@ async function getProductData(): Promise<APIResult<Stripe.Product & { default_pr
 	}
 }
 
+
+/**
+ * 
+ * @param endDate {number | null}
+ * @returns {string}
+ * @description used to get the next builling payment date.
+ */
 function getNextBillingPaymentDate(endDate: number | null): string {
 	if (!endDate) {
 		return "";
@@ -53,22 +58,28 @@ function getNextBillingPaymentDate(endDate: number | null): string {
 	return nextBillingDate.toLocaleDateString();
 }
 
-async function getDefaultPayment(paymentID: string) {
+
+/**
+ * 
+ * @param paymentID {string}
+ * @returns {Promise<APIResult<Stripe.PaymentMethod>>}
+ * @description used to get the default payment details.
+ */
+async function getDefaultPayment(paymentID: string): Promise<APIResult<Stripe.PaymentMethod>> {
 	const defaultPayment = await getPaymentMethod(paymentID);
 	return defaultPayment;
 }
 
-export default async function SubscriptionPage() {
+
+/**
+ * 
+ * @returns {Promise<JSX.Element>}
+ */
+export default async function SubscriptionPage(): Promise<JSX.Element> {
 	const customerInvoices = getCustomerInvoices();
-	// const customerCharges = listCustomerCharges();
 	const invoices = await getCustomerInvoices();
 	const productData = await getProductData();
 	const userSubscriptions = await getCurrentUserSubscriptionDetails();
-	const paymentMethods = listPaymentMethods();
-
-	console.log("Payment methods follow here: ", paymentMethods);
-
-	console.log("Customer SUBSCRIPTION DETAILS: ", userSubscriptions);
 
 	let userPlan: string = "";
 	let billingAmount: string = "";
@@ -78,8 +89,6 @@ export default async function SubscriptionPage() {
 	let marketingFeatures = null;
 	let defaultPayment: APIResult<Stripe.PaymentMethod> | null = null;
 	const currentInvoice = invoices.success ? invoices.data[0].hosted_invoice_url : null;
-
-	console.log("PRODUCT DATA FOLLOWS HERE ", productData);
 
 	if (productData.success) {
 		userPlan = productData.data.name;
@@ -93,11 +102,7 @@ export default async function SubscriptionPage() {
 		billingInterval = planDetails.interval;
 		isActive = planDetails.active;
 		defaultPayment = await getDefaultPayment(typeof userSubscriptions.data[0].default_payment_method === 'string' ? userSubscriptions.data[0].default_payment_method : '');
-
-		console.log("DEFAULT PAYMENT METHOD: ", defaultPayment);
 	}
-
-
 
 	return (
 		<main className="flex flex-col gap-6">
@@ -211,16 +216,6 @@ export default async function SubscriptionPage() {
 						<PaymentCard paymentMethod={defaultPayment} />
 					</CardContent>
 					<CardFooter className="flex-col gap-6">
-						<Button
-							className="w-full py-6"
-							variant="outline"
-						>
-							<FontAwesomeIcon
-								className="text-gray-600"
-								icon={faPlus}
-							/>
-							Add payment method
-						</Button>
 						<Alert>
 							<FontAwesomeIcon
 								className="p-1 bg-blue-200 text-blue-600 rounded-full text-[12px]"
