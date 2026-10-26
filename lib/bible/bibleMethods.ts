@@ -1,20 +1,19 @@
 //Methods used to access bible data.
 import { BookAndChapters, ChapterResponse, Verses, SelectFields } from "@/lib/definitions";
-import { unique } from "next/dist/build/utils";
 
 //Get the chapters according to the book and testament that are currently selected.
-export function getChapters(bible: BookAndChapters[], book: string, updateChapters: Function) {
-	const numberOfChapters: BookAndChapters[] = bible.filter((x: BookAndChapters, y: number) => {
+export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
+	const numberOfChapters: BookAndChapters[] = bible.filter((x: BookAndChapters) => {
 		if (x.value === book) {
 			return x;
 		}
 	});
 
 	if (numberOfChapters.length > 0) {
-		let allChapters = [];
+		const allChapters = [];
 		for (let i = 0; i < numberOfChapters[0].chapters; i++) {
-			let currentValue = i + 1;
-			let currentObj = {
+			const currentValue = i + 1;
+			const currentObj = {
 				value: currentValue.toString(),
 				text: currentValue.toString(),
 			};
@@ -32,14 +31,14 @@ export async function retrieveBibleChapter(version: string, book: string, chapte
 		const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
         const verseJSON: ChapterResponse = await verses.json();
 		return verseJSON;
-	} catch (e: any) {
+	} catch (e: unknown) {
 		console.warn("The following error occurred ", e);
 	}
 }
 
-export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: Function, updateChapter: Function): void {
-	const convertedOptionData: SelectFields[] = verseJSON.map((x: Verses, y: number): SelectFields => {
-		let newObj = {
+export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: (fields: SelectFields[]) => void, updateChapter: (verses: Verses[]) => void): void {
+	const convertedOptionData: SelectFields[] = verseJSON.map((x: Verses): SelectFields => {
+		const newObj = {
 			text: x.verse,
 			value: x.verse,
 		};
@@ -47,7 +46,7 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: Fun
 	});
 
 	//Adding a check here for duplicate verses, a few of the API responses contain duplicate verses.
-	let uniqueVerses = [{text: '', value: ''}];
+	const uniqueVerses = [{text: '', value: ''}];
 	for (let i = 0; i < convertedOptionData.length; i++) {
 		if (convertedOptionData[i].value === "1" && i > 0) {
 			break;
@@ -56,7 +55,7 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: Fun
 	}
 
 	//Get unique verseJSON values.
-	let uniqueVerseJSON: Verses[] = [{ book: '', chapter: '', verse: '', text: '' }];
+	const uniqueVerseJSON: Verses[] = [{ book: '', chapter: '', verse: '', text: '' }];
 	for (let i = 0; i < verseJSON.length; i++) {
 		if (verseJSON[i].verse === "1" && i > 0) {
 			break;
@@ -69,7 +68,7 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: Fun
 }
 
 export function bookFilter(books: BookAndChapters[], value: string): string {
-	const book = books.filter((x: BookAndChapters, y: number): BookAndChapters | undefined => {
+	const book = books.filter((x: BookAndChapters): BookAndChapters | undefined => {
 		if (x.value === value) {
 			return x;
 		}
@@ -77,7 +76,7 @@ export function bookFilter(books: BookAndChapters[], value: string): string {
 	return book[0].value;
 }
 
-export function getSelectTextValue(key: string, selectValues: SelectFields[], searchParamsGetter: Function): string {
+export function getSelectTextValue(key: string, selectValues: SelectFields[], searchParamsGetter: (key: string) => string): string {
 	const paramValue = searchParamsGetter(key);
 	if (paramValue.length > 0) {
 		const getTextValue: SelectFields[] = selectValues.filter((x: SelectFields): SelectFields | undefined => {
