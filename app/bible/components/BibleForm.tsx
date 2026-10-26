@@ -4,11 +4,12 @@ import { useState, useEffect, JSX, useEffectEvent } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
-import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps } from "@/lib/definitions";
+import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible } from "@/lib/definitions";
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue } from "@/lib/bible/bibleMethods";
+import { BibleVersions } from "@/lib/bible/bibleVersions";
 import { getUserData } from "@/lib/store/features/account/loginSlice";
 import { useAppSelector } from "@/lib/store/hooks";
 
@@ -81,6 +82,12 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 	}, []);
 
+	const bibleList = BibleVersions.map((x: Bible) => {
+		return {
+			value: x.id,
+			text: x.name,
+		};
+	});
 
 	//Change handler for our select elements
 	const selectChangeHandler = (key: string, value: string): void => {
@@ -98,10 +105,10 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 					onSubmit={form.handleSubmit(submitHandler)}
 				>
 					<div className="flex flex-col gap-4">
-						<p>{`Max requests: ${loggedInDetails.maxRequests}` }</p>
+						<p>{`Max requests: ${loggedInDetails.maxRequests}`}</p>
 						<h2 className="font-bold text-xl">Select your options:</h2>
 						<Options
-							options={EnglishBibleVersions}
+							options={bibleList}
 							sectionTitle="Select a Bible Version"
 							optionsID="version"
 							changeHandler={(value: string): void => selectChangeHandler("version", value)}

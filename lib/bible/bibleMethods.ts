@@ -1,5 +1,6 @@
 //Methods used to access bible data.
-import { BookAndChapters, ChapterResponse, Verses, SelectFields } from "@/lib/definitions";
+import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible } from "@/lib/definitions";
+
 
 //Get the chapters according to the book and testament that are currently selected.
 export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
@@ -22,6 +23,24 @@ export function getChapters(bible: BookAndChapters[], book: string, updateChapte
 		updateChapters(allChapters);
 	} else {
 		updateChapters([]);
+	}
+}
+
+export async function getBibles(): Promise<BibleResponse<Bible[]> | undefined> {
+	try {
+		const response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}bibles?language=eng`, {
+			headers: {
+				"api-key": `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`
+			}
+		});
+
+		if (!response.ok) throw new Error(`Response status: ${response.status}`);
+		
+		const data: BibleResponse<Bible[]> = await response.json();
+		return data;
+
+	} catch (e: unknown) {
+		console.error(`${e instanceof Error && e.message} `)
 	}
 }
 

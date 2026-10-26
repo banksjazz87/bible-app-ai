@@ -232,3 +232,48 @@ export type StripeSessionData = {
 	customerSessionClientSecret: string;
 	clientSecret: string;
 };
+
+/**
+ * BIBLE API Definitions
+ */
+
+export interface BibleResponse<T> {
+	data: T
+}
+
+export interface Bible {
+	id: string;
+	dblId: string;
+	relatedDbl: string | null;
+	name: string;
+	nameLocal: string;
+	abbreviation: string;
+	abbreviationLocal: string;
+	description: string | null;
+	descriptionLocal: string | null;
+	language: BibleLanguage;
+	countries: BibleCountry[];
+	type: "text" | "audio";
+	updatedAt: string;
+	audioBibles: BibleAudio[];
+}
+
+export interface BibleLanguage {
+	id: string;
+	name: string;
+	nameLocal: string;
+	script: string;
+	scriptDirection: "LTR" | "RTL";
+}
+
+export interface BibleCountry {
+	id: string;
+	name: string;
+	nameLocal: string;
+}
+
+export interface BibleAudio {
+	id: string;
+	name?: string;
+	[key: string]: unknown;
+}
