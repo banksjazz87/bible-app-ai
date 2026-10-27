@@ -5,11 +5,10 @@ import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
 import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible } from "@/lib/definitions";
-import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData } from "@/lib/bible/bibleData";
+import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue } from "@/lib/bible/bibleMethods";
-import { BibleVersions } from "@/lib/bible/bibleVersions";
+import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue, getBibles } from "@/lib/bible/bibleMethods";
 import { getUserData } from "@/lib/store/features/account/loginSlice";
 import { useAppSelector } from "@/lib/store/hooks";
 
@@ -20,6 +19,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 
 	//Use state definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
+	const [bibleVersions, setBibleVersions] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
 
@@ -82,12 +82,29 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 	}, []);
 
-	const bibleList = BibleVersions.map((x: Bible) => {
-		return {
-			value: x.id,
-			text: x.name,
-		};
-	});
+	useEffect(() => {
+		async function getBibleVersionData() {
+			const bibleList = await getBibles();
+			const selectBibles = BibleVersions;
+			if (bibleList) {
+				const list: SelectFields[] = [{ value: "", text: "" }];
+				const keys: string[] = [];
+				bibleList.data.forEach((x: Bible) => {
+					if (selectBibles.indexOf(x.abbreviation) > -1 && keys.indexOf(x.abbreviation) === -1) {
+						list.push({
+							value: x.id,
+							text: x.name,
+						});
+						keys.push(x.abbreviation);
+					}
+				});
+				list.shift();
+				console.log('LIST HEREEEEE ', list);
+				setBibleVersions(list);
+			}
+		}
+		getBibleVersionData();
+	}, []);
 
 	//Change handler for our select elements
 	const selectChangeHandler = (key: string, value: string): void => {
@@ -108,7 +125,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						<p>{`Max requests: ${loggedInDetails.maxRequests}`}</p>
 						<h2 className="font-bold text-xl">Select your options:</h2>
 						<Options
-							options={bibleList}
+							options={bibleVersions}
 							sectionTitle="Select a Bible Version"
 							optionsID="version"
 							changeHandler={(value: string): void => selectChangeHandler("version", value)}

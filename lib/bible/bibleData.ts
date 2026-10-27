@@ -1,5 +1,5 @@
 //This file will contain all of the bible data that doesn't need to be pulled from an API or database.
-import { BookAndChapters, BibleVersions, SelectFields } from "@/lib/definitions";
+import { BookAndChapters, SelectFields } from "@/lib/definitions";
 
 export const TestamentOptions: SelectFields[] = [
 	{ value: "old", text: "Old" },
@@ -32,6 +32,7 @@ export const EnglishBibleVersions: SelectFields[] = [
 	{ value: "en-wmbbe", text: "World Messianic Bible British Edition" },
 ];
 
+export const BibleVersions: string[] = ["BSB", "engLXXup", "engKJVCPB", "engDRA", "FBV", "enggnv", "engKJV", "LSV", "NIV11", "NKJV", "NLT", "engRV", "engOKE", "engF35", "ASV", "TOJB2011", "TCENT", "T4T", "WEB", "WMB"];
 
 export const BooksOfTheBible: BookAndChapters[] = [
 	{ text: "Genesis", chapters: 50, value: "genesis" },
