@@ -277,3 +277,15 @@ export interface BibleAudio {
 	name?: string;
 	[key: string]: unknown;
 }
+
+export interface Books {
+	id: string;
+	bibleId: string;
+	abbreviation: string;
+	name: string;
+	nameLong: string;
+}
+
+export interface BookDataResponse {
+	data: Books[];
+}

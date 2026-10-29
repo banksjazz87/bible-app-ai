@@ -1,6 +1,5 @@
 //Methods used to access bible data.
-import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible } from "@/lib/definitions";
-
+import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BookDataResponse } from "@/lib/definitions";
 
 //Get the chapters according to the book and testament that are currently selected.
 export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
@@ -28,30 +27,47 @@ export function getChapters(bible: BookAndChapters[], book: string, updateChapte
 
 export async function getBibles(): Promise<BibleResponse<Bible[]> | undefined> {
 	try {
-		const response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}bibles?language=eng`, {
+		const response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles?language=eng`, {
 			headers: {
-				"api-key": `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`
-			}
+				"api-key": `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`,
+			},
 		});
 
 		if (!response.ok) throw new Error(`Response status: ${response.status}`);
-		
+
 		const data: BibleResponse<Bible[]> = await response.json();
 		return data;
-
 	} catch (e: unknown) {
-		console.error(`${e instanceof Error && e.message} `)
+		console.error(`${e instanceof Error && e.message} `);
 	}
 }
 
 export async function retrieveBibleChapter(version: string, book: string, chapter: string): Promise<ChapterResponse | undefined> {
 	const bookToLower = book.toLowerCase();
 	try {
-		const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
-        const verseJSON: ChapterResponse = await verses.json();
+		// const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
+		const verses: Response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
+		const verseJSON: ChapterResponse = await verses.json();
 		return verseJSON;
 	} catch (e: unknown) {
 		console.warn("The following error occurred ", e);
+	}
+}
+
+export async function getBooks(bibleID: string): Promise<BookDataResponse | undefined> {
+	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}/books`;
+
+	try {
+		const response: Response = await fetch(url, {
+			headers: {
+				"api-key": `${process.env.NEXT_PUBLIC_API_KEY}`,
+			},
+		});
+		const data: BookDataResponse = await response.json();
+		return data;
+
+	} catch (e: unknown) {
+		console.warn(e instanceof Error && e.message);
 	}
 }
 
@@ -65,7 +81,7 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: (fi
 	});
 
 	//Adding a check here for duplicate verses, a few of the API responses contain duplicate verses.
-	const uniqueVerses = [{text: '', value: ''}];
+	const uniqueVerses = [{ text: "", value: "" }];
 	for (let i = 0; i < convertedOptionData.length; i++) {
 		if (convertedOptionData[i].value === "1" && i > 0) {
 			break;
@@ -74,7 +90,7 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: (fi
 	}
 
 	//Get unique verseJSON values.
-	const uniqueVerseJSON: Verses[] = [{ book: '', chapter: '', verse: '', text: '' }];
+	const uniqueVerseJSON: Verses[] = [{ book: "", chapter: "", verse: "", text: "" }];
 	for (let i = 0; i < verseJSON.length; i++) {
 		if (verseJSON[i].verse === "1" && i > 0) {
 			break;

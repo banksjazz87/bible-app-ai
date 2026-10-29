@@ -82,6 +82,8 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 	}, []);
 
+
+	//Retrieves the different bible versions
 	useEffect(() => {
 		async function getBibleVersionData() {
 			const bibleList = await getBibles();
@@ -99,7 +101,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 					}
 				});
 				list.shift();
-				console.log('LIST HEREEEEE ', list);
 				setBibleVersions(list);
 			}
 		}

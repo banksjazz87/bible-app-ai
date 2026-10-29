@@ -172,7 +172,6 @@ function PageContent() {
 	};
 
 	const formHandler = (formData: FieldValues) => {
-		console.log('Fired form handler');
 		resetLLMData();
 		setBibleData({
 			...bibleData,
