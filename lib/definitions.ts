@@ -278,7 +278,7 @@ export interface BibleAudio {
 	[key: string]: unknown;
 }
 
-export interface Books {
+export interface BooksObject {
 	id: string;
 	bibleId: string;
 	abbreviation: string;
@@ -286,6 +286,23 @@ export interface Books {
 	nameLong: string;
 }
 
-export interface BookDataResponse {
-	data: Books[];
+export interface BibleAPIDataResponse<T> {
+	data: T[];
+}
+
+export interface BookChapters {
+	bibleId: string;
+	bookId: string;
+	id: string;
+	number: "intro"
+	position: 0
+}
+
+export interface BooksWithChapters {
+	abbreviation: string;
+	bibleId: string;
+	chapters: BookChapters[];
+	id: string;
+	name: string;
+	nameLong: string;
 }

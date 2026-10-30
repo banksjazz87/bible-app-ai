@@ -4,7 +4,7 @@ import { useState, useEffect, JSX, useEffectEvent } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
-import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, BookDataResponse } from "@/lib/definitions";
+import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, BibleAPIDataResponse, BooksObject, BooksWithChapters } from "@/lib/definitions";
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -52,18 +52,25 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		const versionIsPresent = bibleForm.version.length > 0;
 		if (versionIsPresent) {
 			getBooks(bibleForm.version)
-				.then((data: BookDataResponse | undefined) => {
+				.then((data: BibleAPIDataResponse<BooksWithChapters> | undefined) => {
 					console.log('Book data here: ', data);
 
 					//Construct book array here
 					if (data) {
-						
+						const booksData: SelectFields[] = data.data.map((x: BooksWithChapters) => {
+							
+							return {
+								value: x.id,
+								text: x.name
+							}
+						});
+						setBooks(booksData);
 					}
 				})
 				.catch((e: unknown) => console.warn(`Error accessing the book information: ${e instanceof Error && e.message}`))
 				.finally(() => {
 					return;
-				})
+				});
 		}
 
 	}, [bibleForm]);
