@@ -4,11 +4,11 @@ import { useState, useEffect, JSX, useEffectEvent } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
-import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible } from "@/lib/definitions";
+import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, BookDataResponse } from "@/lib/definitions";
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue, getBibles } from "@/lib/bible/bibleMethods";
+import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, bookFilter, getSelectTextValue, getBibles, getBooks } from "@/lib/bible/bibleMethods";
 import { getUserData } from "@/lib/store/features/account/loginSlice";
 import { useAppSelector } from "@/lib/store/hooks";
 
@@ -20,6 +20,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	//Use state definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
 	const [bibleVersions, setBibleVersions] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
+	const [books, setBooks] = useState<SelectFields[]>([{ value: "1", text: '1' }]);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
 
@@ -39,10 +40,32 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				.then((data: ChapterResponse | undefined): void => {
 					if (data !== undefined) {
 						convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
+						return;
 					}
 				})
-				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
+				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e))
+				.finally(() => {
+					return;
+				})
 		}
+
+		const versionIsPresent = bibleForm.version.length > 0;
+		if (versionIsPresent) {
+			getBooks(bibleForm.version)
+				.then((data: BookDataResponse | undefined) => {
+					console.log('Book data here: ', data);
+
+					//Construct book array here
+					if (data) {
+						
+					}
+				})
+				.catch((e: unknown) => console.warn(`Error accessing the book information: ${e instanceof Error && e.message}`))
+				.finally(() => {
+					return;
+				})
+		}
+
 	}, [bibleForm]);
 
 	const returnSearchParamValues = (key: string): string => {

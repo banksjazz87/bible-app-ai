@@ -60,7 +60,7 @@ export async function getBooks(bibleID: string): Promise<BookDataResponse | unde
 	try {
 		const response: Response = await fetch(url, {
 			headers: {
-				"api-key": `${process.env.NEXT_PUBLIC_API_KEY}`,
+				"api-key": `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`,
 			},
 		});
 		const data: BookDataResponse = await response.json();
