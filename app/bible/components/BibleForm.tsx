@@ -4,7 +4,7 @@ import { useState, useEffect, JSX, useEffectEvent } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
-import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, BibleAPIDataResponse, BooksObject, BooksWithChapters } from "@/lib/definitions";
+import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, BibleAPIDataResponse, BooksObject, BooksWithChapters, BookAndChapters } from "@/lib/definitions";
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	//Use state definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
 	const [bibleVersions, setBibleVersions] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
-	const [books, setBooks] = useState<SelectFields[]>([{ value: "1", text: '1' }]);
+	const [books, setBooks] = useState<BookAndChapters[]>([{ value: "1", text: '1', chapters: 1 }]);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
 
@@ -54,18 +54,18 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			getBooks(bibleForm.version)
 				.then((data: BibleAPIDataResponse<BooksWithChapters> | undefined) => {
 					console.log('Book data here: ', data);
-
-					//Construct book array here
-					if (data) {
-						const booksData: SelectFields[] = data.data.map((x: BooksWithChapters) => {
-							
-							return {
-								value: x.id,
-								text: x.name
-							}
-						});
-						setBooks(booksData);
+					if (!data) {
+						console.warn('Unable to retrieve the book data.');
+						return;
 					}
+					const booksData: BookAndChapters[] = data.data.map((x: BooksWithChapters) => {
+						return {
+							value: x.id,
+							text: x.name,
+							chapters: isNaN(Number(x.chapters[0].number)) ? x.chapters.length - 1 : x.chapters.length, //Accounts for intro text that preludes the first chapter in some versions.
+						}
+					});
+					setBooks(booksData);	
 				})
 				.catch((e: unknown) => console.warn(`Error accessing the book information: ${e instanceof Error && e.message}`))
 				.finally(() => {
@@ -165,7 +165,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						/>
 
 						<Books
-							books={BooksOfTheBible}
+							books={books}
 							changeHandler={(value: string): void => {
 								const bookMatch = bookFilter(BooksOfTheBible, value);
 								if (bookMatch.length > 0) {
