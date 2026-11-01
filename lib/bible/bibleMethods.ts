@@ -102,14 +102,14 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: (fi
 	updateChapter(uniqueVerseJSON);
 }
 
-export function bookFilter(books: BookAndChapters[], value: string): string {
-	const book = books.filter((x: BookAndChapters): BookAndChapters | undefined => {
-		if (x.value === value) {
-			return x;
-		}
-	});
-	return book[0].value;
-}
+// export function bookFilter(books: BookAndChapters[], value: string): string {
+// 	const book = books.filter((x: BookAndChapters): BookAndChapters | undefined => {
+// 		if (x.value === value) {
+// 			return x;
+// 		}
+// 	});
+// 	return book[0].value;
+// }
 
 export function getSelectTextValue(key: string, selectValues: SelectFields[], searchParamsGetter: (key: string) => string): string {
 	const paramValue = searchParamsGetter(key);

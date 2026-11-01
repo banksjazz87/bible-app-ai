@@ -20,7 +20,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	//Use state definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
 	const [bibleVersions, setBibleVersions] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
-	const [books, setBooks] = useState<BookAndChapters[]>([{ value: "1", text: '1', chapters: 1 }]);
+	const [books, setBooks] = useState<BookAndChapters[]>([{ value: "1", text: "1", chapters: 1 }]);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
 
@@ -46,34 +46,32 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e))
 				.finally(() => {
 					return;
-				})
-		}
-
-		const versionIsPresent = bibleForm.version.length > 0;
-		if (versionIsPresent) {
-			getBooks(bibleForm.version)
-				.then((data: BibleAPIDataResponse<BooksWithChapters> | undefined) => {
-					console.log('Book data here: ', data);
-					if (!data) {
-						console.warn('Unable to retrieve the book data.');
-						return;
-					}
-					const booksData: BookAndChapters[] = data.data.map((x: BooksWithChapters) => {
-						return {
-							value: x.id,
-							text: x.name,
-							chapters: isNaN(Number(x.chapters[0].number)) ? x.chapters.length - 1 : x.chapters.length, //Accounts for intro text that preludes the first chapter in some versions.
-						}
-					});
-					setBooks(booksData);	
-				})
-				.catch((e: unknown) => console.warn(`Error accessing the book information: ${e instanceof Error && e.message}`))
-				.finally(() => {
-					return;
 				});
 		}
-
 	}, [bibleForm]);
+
+	const fetchBooksAndChapters = (bibleVersion: string): void => {
+		getBooks(bibleVersion)
+			.then((data: BibleAPIDataResponse<BooksWithChapters> | undefined) => {
+				console.log("Book data here: ", data);
+				if (!data) {
+					console.warn("Unable to retrieve the book data.");
+					return;
+				}
+				const booksData: BookAndChapters[] = data.data.map((x: BooksWithChapters) => {
+					return {
+						value: x.id,
+						text: x.name,
+						chapters: isNaN(Number(x.chapters[0].number)) ? x.chapters.length - 1 : x.chapters.length, //Accounts for intro text that preludes the first chapter in some versions.
+					};
+				});
+				setBooks(booksData);
+			})
+			.catch((e: unknown) => console.warn(`Error accessing the book information: ${e instanceof Error && e.message}`))
+			.finally(() => {
+				return;
+			});
+	};
 
 	const returnSearchParamValues = (key: string): string => {
 		if (searchParams.has(key)) {
@@ -111,7 +109,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
 		}
 	}, []);
-
 
 	//Retrieves the different bible versions
 	useEffect(() => {
@@ -159,19 +156,17 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 							options={bibleVersions}
 							sectionTitle="Select a Bible Version"
 							optionsID="version"
-							changeHandler={(value: string): void => selectChangeHandler("version", value)}
+							changeHandler={(value: string): void => {
+								selectChangeHandler("version", value);
+								fetchBooksAndChapters(value);
+							}}
 							placeholderText="Select a Bible Version"
 							selectedValue={getSelectTextValue("version", EnglishBibleVersions, returnSearchParamValues)}
 						/>
 
 						<Books
 							books={books}
-							changeHandler={(value: string): void => {
-								const bookMatch = bookFilter(BooksOfTheBible, value);
-								if (bookMatch.length > 0) {
-									selectChangeHandler("book", bookMatch);
-								}
-							}}
+							changeHandler={(value: string): void => selectChangeHandler("book", value)}
 							sectionTitle="Book"
 							optionsID="book"
 							placeholder="Book"
