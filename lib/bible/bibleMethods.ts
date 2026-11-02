@@ -1,29 +1,29 @@
 //Methods used to access bible data.
-import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters } from "@/lib/definitions";
+import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters, BibleChapterObject } from "@/lib/definitions";
 
 //Get the chapters according to the book and testament that are currently selected.
-export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
-	const numberOfChapters: BookAndChapters[] = bible.filter((x: BookAndChapters) => {
-		if (x.value === book) {
-			return x;
-		}
-	});
+// export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
+// 	const numberOfChapters: BookAndChapters[] = bible.filter((x: BookAndChapters) => {
+// 		if (x.value === book) {
+// 			return x;
+// 		}
+// 	});
 
-	if (numberOfChapters.length > 0) {
-		const allChapters = [];
-		for (let i = 0; i < numberOfChapters[0].chapters; i++) {
-			const currentValue = i + 1;
-			const currentObj = {
-				value: currentValue.toString(),
-				text: currentValue.toString(),
-			};
-			allChapters.push(currentObj);
-		}
-		updateChapters(allChapters);
-	} else {
-		updateChapters([]);
-	}
-}
+// 	if (numberOfChapters.length > 0) {
+// 		const allChapters = [];
+// 		for (let i = 0; i < numberOfChapters[0].chapters; i++) {
+// 			const currentValue = i + 1;
+// 			const currentObj = {
+// 				value: currentValue.toString(),
+// 				text: currentValue.toString(),
+// 			};
+// 			allChapters.push(currentObj);
+// 		}
+// 		updateChapters(allChapters);
+// 	} else {
+// 		updateChapters([]);
+// 	}
+// }
 
 export async function getBibles(): Promise<BibleResponse<Bible[]> | undefined> {
 	try {
@@ -46,7 +46,7 @@ export async function retrieveBibleChapter(version: string, book: string, chapte
 	const bookToLower = book.toLowerCase();
 	try {
 		// const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
-		const verses: Response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
+		const verses: Response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${version}/books/${book}/chapters`);
 		const verseJSON: ChapterResponse = await verses.json();
 		return verseJSON;
 	} catch (e: unknown) {
@@ -55,7 +55,7 @@ export async function retrieveBibleChapter(version: string, book: string, chapte
 }
 
 export async function getBooks(bibleID: string): Promise<BibleAPIDataResponse<BooksWithChapters> | undefined> {
-	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}/books?include-chapters=true`;
+	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}/books`;
 
 	try {
 		const response: Response = await fetch(url, {
@@ -66,6 +66,22 @@ export async function getBooks(bibleID: string): Promise<BibleAPIDataResponse<Bo
 		const data: BibleAPIDataResponse<BooksWithChapters> = await response.json();
 		return data;
 
+	} catch (e: unknown) {
+		console.warn(e instanceof Error && e.message);
+	}
+}
+
+export async function getChapters(bibleID: string, bookID: string): Promise<BibleAPIDataResponse<BibleChapterObject> | undefined> {
+	const url = `${process.env.NEXT_PUBLIC_URL}/bibles/${bibleID}/books/${bookID}/chapters`;
+
+	try {
+		const response: Response = await fetch(url, {
+			headers: {
+				"api-key": `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`,
+			},
+		});
+		const data: BibleAPIDataResponse<BibleChapterObject> = await response.json();
+		return data;
 	} catch (e: unknown) {
 		console.warn(e instanceof Error && e.message);
 	}

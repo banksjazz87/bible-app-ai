@@ -17,7 +17,7 @@ export type BibleVersions = {
 };
 
 export type BooksProps = {
-	books: BookAndChapters[];
+	books: SelectFields[];
 	changeHandler: (value: string) => void;
 	sectionTitle: string;
 	optionsID: string;
@@ -305,4 +305,25 @@ export interface BooksWithChapters {
 	id: string;
 	name: string;
 	nameLong: string;
+}
+
+export interface BibleChapterObject {
+	id: string;
+	bibleId: string;
+	number: string;
+	bookId: string;
+	content: string;
+	reference: string;
+	verseCount: number;
+	next: {
+		id: string;
+		bookId: string;
+		number: string;
+	};
+	previous: {
+		id: string;
+		bookId: string;
+		number: string;
+	};
+	copyright: string;
 }

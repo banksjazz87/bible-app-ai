@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { BooksProps, BookAndChapters } from "@/lib/definitions";
+import { BooksProps, SelectFields } from "@/lib/definitions";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormField, FormItem, FormLabel } from "@/components/ui/form";
@@ -36,7 +36,7 @@ export default function Books({ books, sectionTitle, changeHandler, optionsID, p
 								<SelectValue placeholder={selectedValue.length > 0 ? selectedValue : placeholder} />
 							</SelectTrigger>
 							<SelectContent>
-								{books.map((x: BookAndChapters, y: number) => (
+								{books.map((x: SelectFields, y: number) => (
 									<SelectItem
 										key={`${optionsID}_${y}`}
 										value={x.value}
