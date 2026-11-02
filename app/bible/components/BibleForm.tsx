@@ -30,7 +30,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		if (book.length > 0) {
 			getChapters(BooksOfTheBible, book, setViableChapters);
 		}
-	}, [bibleForm]);
+	}, [bibleForm.book]);
 
 	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
 	useEffect((): void => {
@@ -38,10 +38,10 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		if (allDataPresent) {
 			retrieveBibleChapter(bibleForm.version, bibleForm.book, bibleForm.chapter)
 				.then((data: ChapterResponse | undefined): void => {
-					if (data !== undefined) {
-						convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
+					if (!data) {
 						return;
 					}
+					convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
 				})
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e))
 				.finally(() => {
