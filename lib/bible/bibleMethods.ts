@@ -72,7 +72,8 @@ export async function getBooks(bibleID: string): Promise<BibleAPIDataResponse<Bo
 }
 
 export async function getChapters(bibleID: string, bookID: string): Promise<BibleAPIDataResponse<BibleChapterObject> | undefined> {
-	const url = `${process.env.NEXT_PUBLIC_URL}/bibles/${bibleID}/books/${bookID}/chapters`;
+	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}/books/${bookID}/chapters`;
+	console.log("Chapter request URL: ", url);
 
 	try {
 		const response: Response = await fetch(url, {

@@ -25,12 +25,12 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
 
 	//Update the viable chapters when the testament or book update.
-	useEffect((): void => {
-		const book = bibleForm.book.toLowerCase();
-		if (book.length > 0) {
-			getChapters(BooksOfTheBible, book, setViableChapters);
-		}
-	}, [bibleForm.book]);
+	// useEffect((): void => {
+	// 	const book = bibleForm.book.toLowerCase();
+	// 	if (book.length > 0) {
+	// 		getChapters(BooksOfTheBible, book, setViableChapters);
+	// 	}
+	// }, [bibleForm.book]);
 
 	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
 	useEffect((): void => {
@@ -87,15 +87,21 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						text: x.number,
 					}
 				});
+
+				console.log('Chapter data: ', chapterData);
 				
 				setViableChapters(chapterData);
 
 			})
 			.catch((e: unknown) => console.warn(`Error accessing the chapter data: ${e instanceof Error && e.message}`))
 			.finally(() => {
-				return
+				return;
 			});
 	}
+
+	useEffect((): void => {
+		fetchChapters(bibleForm.version, bibleForm.book);
+	}, [bibleForm.book]);
 
 	const returnSearchParamValues = (key: string): string => {
 		if (searchParams.has(key)) {
@@ -198,11 +204,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						/> */}
 
 						<Options
-							changeHandler={(value: string): void => {
-								selectChangeHandler("book", value);
-								fetchChapters(bibleForm.version, value);
-							}
-							}
+							changeHandler={(value: string): void => selectChangeHandler("book", value)}
 							sectionTitle="Book"
 							options={books}
 							optionsID="book"
