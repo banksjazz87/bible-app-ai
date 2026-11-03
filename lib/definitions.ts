@@ -327,3 +327,12 @@ export interface BibleChapterObject {
 	};
 	copyright: string;
 }
+
+export interface VersesObject {
+	bibleId: string;
+	bookId: string;
+	chapterId: string;
+	id: string;
+	orgId: string;
+	reference: string;
+}

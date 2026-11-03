@@ -1,5 +1,5 @@
 //Methods used to access bible data.
-import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters, BibleChapterObject } from "@/lib/definitions";
+import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters, BibleChapterObject, VersesObject } from "@/lib/definitions";
 
 //Get the chapters according to the book and testament that are currently selected.
 // export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
@@ -42,17 +42,34 @@ export async function getBibles(): Promise<BibleResponse<Bible[]> | undefined> {
 	}
 }
 
-export async function retrieveBibleChapter(version: string, book: string, chapter: string): Promise<ChapterResponse | undefined> {
-	const bookToLower = book.toLowerCase();
+// export async function retrieveBibleChapter(version: string, book: string, chapter: string): Promise<ChapterResponse | undefined> {
+// 	const bookToLower = book.toLowerCase();
+// 	try {
+// 		// const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
+// 		const verses: Response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${version}/books/${book}/chapters`);
+// 		const verseJSON: ChapterResponse = await verses.json();
+// 		return verseJSON;
+// 	} catch (e: unknown) {
+// 		console.warn("The following error occurred ", e);
+// 	}
+// }
+
+export async function retrieveBibleChapter(version: string, book: string, chapterID: string): Promise<BibleAPIDataResponse<VersesObject> | undefined> {
+	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${version}/chapters/${chapterID}/verses`;
 	try {
-		// const verses: Response = await fetch(`https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles/${version}/books/${bookToLower}/chapters/${chapter}.json`);
-		const verses: Response = await fetch(`${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${version}/books/${book}/chapters`);
-		const verseJSON: ChapterResponse = await verses.json();
+		const verses: Response = await fetch(url, {
+			headers: {
+				"api-key": `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`,
+			},
+		});
+		const verseJSON: BibleAPIDataResponse<VersesObject> = await verses.json();
 		return verseJSON;
 	} catch (e: unknown) {
 		console.warn("The following error occurred ", e);
 	}
 }
+
+
 
 export async function getBooks(bibleID: string): Promise<BibleAPIDataResponse<BooksWithChapters> | undefined> {
 	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}/books`;
