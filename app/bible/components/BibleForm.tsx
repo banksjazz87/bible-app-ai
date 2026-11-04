@@ -23,7 +23,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	const [books, setBooks] = useState<SelectFields[]>([{ value: "1", text: "1"}]);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
-	const [startVerse, setStartVerse] = useState<string>("0");
+	const [startVerse, setStartVerse] = useState<number>(0);
 
 	//Update the viable chapters when the testament or book update.
 	// useEffect((): void => {
@@ -44,15 +44,16 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 					}
 
 					console.log("Bible CHAPTER DATA ", data);
+					//Clear the verse map
 					// convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
 					const verses = data.data.map((x: VersesObject, y: number): SelectFields => {
 						const textValue = y + 1;
+		
 						return {
 							value: x.id,
 							text: textValue.toString(),
 						}
 					});
-
 					setVerses(verses);
 				})
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e))
@@ -184,6 +185,19 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		});
 	};
 
+	const getDisplayedValue = (data: SelectFields[], keyValue: string) => {
+		const filter = data.filter((x: SelectFields, y: number) => {
+			if (x.value === keyValue) {
+				return x;
+			}
+		});
+		if (filter.length === 0) {
+			return 0;
+		} else {
+			return filter[0].text;
+		}
+	}
+
 	return (
 		<div className="border-slate-800 border rounded-md p-5">
 			<Form {...form}>
@@ -193,6 +207,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				>
 					<div className="flex flex-col gap-4">
 						<p>{`Max requests: ${loggedInDetails.maxRequests}`}</p>
+						<p>{`Start verse: ${startVerse}`}</p>
 						<h2 className="font-bold text-xl">Select your options:</h2>
 						<Options
 							options={bibleVersions}
@@ -234,7 +249,11 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						/>
 
 						<Options
-							changeHandler={(value: string): void => selectChangeHandler("startVerse", value)}
+							changeHandler={(value: string): void => {
+								selectChangeHandler("startVerse", value);
+								setStartVerse(Number(getDisplayedValue(verses, value)));
+								console.log("VAlue here for verse ", value);
+							}}
 							sectionTitle="Starting Verse"
 							options={verses}
 							optionsID="startVerse"
@@ -245,7 +264,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						<Options
 							changeHandler={(value: string): void => selectChangeHandler("endVerse", value)}
 							sectionTitle="Ending Verse"
-							options={verses.slice(Number(bibleForm.startVerse) - 1)}
+							options={verses.slice(Number(startVerse) - 1)}
 							optionsID="endVerse"
 							placeholderText="Select Ending Verse"
 							selectedValue={bibleForm.endVerse}
