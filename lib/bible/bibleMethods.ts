@@ -163,3 +163,20 @@ export function getSelectTextValue(key: string, selectValues: SelectFields[], se
 		return "";
 	}
 }
+
+
+//This is used for fetching the selected verses
+export async function fetchSelectedPassage(bibleID: string, startVerseID: string, endVerseID: string) {
+	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}/passages/${startVerseID}-${endVerseID}`;
+
+	try {
+		const data = await fetch(url, {
+			headers: {
+				'api-key': `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`
+			}
+		});
+		return data;
+	} catch (e: unknown) {
+		console.warn(e instanceof Error && e.message); 
+	}
+}
