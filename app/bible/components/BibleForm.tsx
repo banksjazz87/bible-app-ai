@@ -8,7 +8,7 @@ import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, Bi
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, getSelectTextValue, getBibles, getBooks } from "@/lib/bible/bibleMethods";
+import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, getSelectTextValue, getBibles, getBooks, fetchSelectedPassage } from "@/lib/bible/bibleMethods";
 import { getUserData } from "@/lib/store/features/account/loginSlice";
 import { useAppSelector } from "@/lib/store/hooks";
 
@@ -186,7 +186,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	};
 
 	const getDisplayedValue = (data: SelectFields[], keyValue: string) => {
-		const filter = data.filter((x: SelectFields, y: number) => {
+		const filter = data.filter((x: SelectFields) => {
 			if (x.value === keyValue) {
 				return x;
 			}
