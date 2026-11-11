@@ -110,6 +110,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			});
 	}
 
+	//Get valid chapters for the selected book, and version.
 	useEffect((): void => {
 		if (bibleForm.version.length > 0 && bibleForm.book.length > 0) {
 			fetchChapters(bibleForm.version, bibleForm.book);

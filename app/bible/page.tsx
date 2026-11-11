@@ -14,6 +14,7 @@ import SaveModalForm from "./components/SaveModalForm";
 import DownloadPDFButton from "../account/profile/thread/[slug]/components/DownloadPDFButton";
 import Alert from "../ui/Alert";
 import { useRouter } from "next/navigation";
+import { fetchSelectedPassage } from "@/lib/bible/bibleMethods";
 
 
 const initLLMReqAndOutput: {
@@ -61,6 +62,8 @@ function PageContent() {
 	const [alertTitle, setAlertTitle] = useState<string>('Error');
 	const [requestStatus, setRequestStatus] = useState<number>(200);
 	const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
+
+	const [biblePassage, setBiblePassage] = useState<string>("");
 
 	const router = useRouter();
 	const setLLMReqInit = useEffectEvent((): void => setLLMReqAndOutput(initLLMReqAndOutput));
@@ -171,6 +174,15 @@ function PageContent() {
 		setLLMReqAndOutput(clearedData);
 	};
 
+	async function getPassage(data: BibleFormData) {
+		const passage = await fetchSelectedPassage(data.version, data.startVerse, data.endVerse);
+		if (!passage) {
+			return;
+		}
+		console.log("Passage data here: ", passage);
+		setBiblePassage(passage.data.content);
+	}
+
 	const formHandler = (formData: FieldValues) => {
 		resetLLMData();
 		setBibleData({
@@ -182,9 +194,8 @@ function PageContent() {
 			endVerse: formData.endVerse,
 		});
 
-		
-
-		setFormSubmitted(true);
+		console.log('Form data test ', formData.version);
+		getPassage(bibleData).then(() => setFormSubmitted(true));
 	};
 
 	const updateLLMOutputData = (output: string, index: number): void => {
