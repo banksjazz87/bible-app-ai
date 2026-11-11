@@ -103,11 +103,29 @@ function PageContent() {
 
 
 	const resetFormStatus = useEffectEvent((): void => setFormSubmitted(!formSubmitted));
+	const getPassage = useEffectEvent((): void => {
+		async function fetchPassage() {
+			const bibleVersion = searchParams.get('version');
+			const startVerse = searchParams.get('startVerse');
+			const endVerse = searchParams.get('endVerse');
+
+			if (!bibleVersion || !startVerse || !endVerse) return;
+			const passage = await fetchSelectedPassage(bibleVersion, startVerse, endVerse);
+			if (!passage) return;
+			console.log("Passage data here: ", passage);
+			setBiblePassage(passage.data.content);
+		}
+		fetchPassage();
+	});
 
 	useEffect((): void => {
 		if (formSubmitted) {
+			console.log('Form submited data follows: ');
+			console.log(bibleData);
 			getBibleRequestData();
 			resetFormStatus();
+			getPassage();
+
 		}
 	}, [formSubmitted]);
 
@@ -174,14 +192,6 @@ function PageContent() {
 		setLLMReqAndOutput(clearedData);
 	};
 
-	async function getPassage(data: BibleFormData) {
-		const passage = await fetchSelectedPassage(data.version, data.startVerse, data.endVerse);
-		if (!passage) {
-			return;
-		}
-		console.log("Passage data here: ", passage);
-		setBiblePassage(passage.data.content);
-	}
 
 	const formHandler = (formData: FieldValues) => {
 		resetLLMData();
@@ -194,8 +204,7 @@ function PageContent() {
 			endVerse: formData.endVerse,
 		});
 
-		console.log('Form data test ', formData.version);
-		getPassage(bibleData).then(() => setFormSubmitted(true));
+		setFormSubmitted(true);
 	};
 
 	const updateLLMOutputData = (output: string, index: number): void => {
@@ -293,6 +302,7 @@ function PageContent() {
 							versesArray={currentChapterText}
 							startVerse={bibleData.startVerse}
 							endVerse={bibleData.endVerse}
+							passageContent={biblePassage}
 						/>
 						<AIOutput
 							LLMData={LLMReqAndOutput}

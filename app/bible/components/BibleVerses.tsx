@@ -6,9 +6,10 @@ type BibleVersesProps = {
 	startVerse: string;
 	endVerse: string;
 	versesArray: Verses[];
+	passageContent: string;
 };
 
-export default function BibleVerses({ versesArray, startVerse, endVerse }: BibleVersesProps): JSX.Element {
+export default function BibleVerses({ versesArray, startVerse, endVerse, passageContent }: BibleVersesProps): JSX.Element {
 	const numOfStart: number = Number(startVerse) - 1;
 	const numOfEnd: number = Number(endVerse);
 	const neededVerses: Verses[] = versesArray.slice(numOfStart, numOfEnd);
@@ -33,7 +34,8 @@ export default function BibleVerses({ versesArray, startVerse, endVerse }: Bible
 
 	return (
 		<>
-			<p>{verseConstruct}</p>
+			{/* <p>{verseConstruct}</p> */}
+			{passageContent}
 		</>
 	);
 }
