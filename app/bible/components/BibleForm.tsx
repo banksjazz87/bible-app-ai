@@ -4,7 +4,7 @@ import { useState, useEffect, JSX, useEffectEvent } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
-import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, BibleAPIDataResponse, BooksObject, BookAndChapters, BibleChapterObject, VersesObject } from "@/lib/definitions";
+import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, BibleAPIDataResponse, BooksObject, BookAndChapters, BibleChapterObject, VersesObject, BiblePassageWithMeta } from "@/lib/definitions";
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -136,23 +136,34 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		});
 	});
 
-	// useEffect((): void => {
-	// 	const book = returnSearchParamValues("book");
-	// 	const version = returnSearchParamValues("version");
-	// 	const chapter = returnSearchParamValues("chapter");
+	useEffect((): void => {
+		const book = returnSearchParamValues("book");
+		const version = returnSearchParamValues("version");
+		const chapter = returnSearchParamValues("chapter");
+		const startVerse = returnSearchParamValues("startVerse");
+		const endVerse = returnSearchParamValues("endVerse");
 
-	// 	const allDataPresent = version.length > 0 && book.length > 0 && chapter.length > 0;
-	// 	if (allDataPresent) {
-	// 		updateBibleData();
-	// 		retrieveBibleChapter(version, book, chapter)
-	// 			.then((data: ChapterResponse | undefined): void => {
-	// 				if (data !== undefined) {
-	// 					convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
-	// 				}
-	// 			})
-	// 			.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
-	// 	}
-	// }, []);
+		let allDataPresent = true;
+		const params = [book, version, chapter, startVerse, endVerse];
+
+		for (let i = 0; i < params.length; i++) {
+			if (params.length === 0) {
+				allDataPresent = false;
+				return;
+			}
+		}
+
+		if (allDataPresent) {
+			updateBibleData();
+			fetchSelectedPassage(version, startVerse, endVerse)
+				.then((data: BiblePassageWithMeta | void): void => {
+					if (data) {
+						convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
+					}
+				})
+				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
+		}
+	}, []);
 
 	//Retrieves the different bible versions
 	useEffect(() => {
