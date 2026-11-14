@@ -175,4 +175,9 @@ li {
   filter: invert(1);
 }
 
+span.v {
+  margin-right: 6px;
+  font-weight: 600;
+}
+
 

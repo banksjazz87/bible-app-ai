@@ -1,6 +1,7 @@
 "use client";
 import { JSX } from "react";
 import { Verses } from "@/lib/definitions";
+import DOMPurify from "dompurify";
 
 type BibleVersesProps = {
 	startVerse: string;
@@ -13,6 +14,7 @@ export default function BibleVerses({ versesArray, startVerse, endVerse, passage
 	const numOfStart: number = Number(startVerse) - 1;
 	const numOfEnd: number = Number(endVerse);
 	const neededVerses: Verses[] = versesArray.slice(numOfStart, numOfEnd);
+	const cleanPassageContent = DOMPurify.sanitize(passageContent);
 
 	const verseConstruct = neededVerses.map((x: Verses, y: number) => {
 		if (y === 0) {
@@ -33,9 +35,8 @@ export default function BibleVerses({ versesArray, startVerse, endVerse, passage
 	});
 
 	return (
-		<>
-			{/* <p>{verseConstruct}</p> */}
-			{passageContent}
-		</>
+		<div className="bible_html_content" dangerouslySetInnerHTML={{__html: cleanPassageContent}}>
+			
+		</div>
 	);
 }
