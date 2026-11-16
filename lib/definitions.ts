@@ -355,3 +355,42 @@ export interface BiblePassageWithMeta {
 		fumsToken: string;
 	}
 }
+
+export interface SingleBibleVersion {
+	id: string,
+    dblId: string,
+    abbreviation: string,
+    abbreviationLocal: string,
+    copyright: string,
+    language: {
+      id: string,
+      name: string,
+      nameLocal: string,
+      script: string,
+      scriptDirection: "LTR" | "RTL"
+    },
+    countries: [
+      {
+        id: string,
+        name: string,
+        nameLocal: string
+      }
+    ],
+    name: string,
+    nameLocal: string,
+    description: string,
+    descriptionLocal: string,
+    info: string,
+    type: Text,
+    updatedAt: string,
+    relatedDbl: string,
+    audioBibles: [
+      {
+        id: string,
+        name: string,
+        nameLocal: string,
+        description: string,
+        descriptionLocal: string
+      }
+    ]
+  }

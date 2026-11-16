@@ -8,7 +8,7 @@ import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, Bi
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, getSelectTextValue, getBibles, getBooks, fetchSelectedPassage } from "@/lib/bible/bibleMethods";
+import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, getSelectTextValue, getBibles, getBooks, fetchSelectedPassage, fetchBibleVersionById } from "@/lib/bible/bibleMethods";
 import { getUserData } from "@/lib/store/features/account/loginSlice";
 import { useAppSelector } from "@/lib/store/hooks";
 
@@ -155,12 +155,18 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 
 		if (allDataPresent) {
 			updateBibleData();
-			fetchSelectedPassage(version, startVerse, endVerse)
-				.then((data: BiblePassageWithMeta | void): void => {
-					if (data) {
-						convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
-					}
+
+			fetchBibleVersionById(version)
+				.then((data) => {
+					console.log(data);
 				})
+			// fetchSelectedPassage(version, startVerse, endVerse)
+			// 	.then((data: BiblePassageWithMeta | void): void => {
+			// 		if (data) {
+			// 			convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
+
+			// 		}
+			// 	})
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
 		}
 	}, []);

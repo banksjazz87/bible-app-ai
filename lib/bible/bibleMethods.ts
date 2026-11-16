@@ -1,5 +1,5 @@
 //Methods used to access bible data.
-import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters, BibleChapterObject, VersesObject, BiblePassageWithMeta } from "@/lib/definitions";
+import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters, BibleChapterObject, VersesObject, BiblePassageWithMeta, SingleBibleVersion } from "@/lib/definitions";
 
 //Get the chapters according to the book and testament that are currently selected.
 // export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
@@ -165,8 +165,6 @@ export function getSelectTextValue(key: string, selectValues: SelectFields[], se
 export async function fetchSelectedPassage(bibleID: string, startVerseID: string, endVerseID: string): Promise<BiblePassageWithMeta | void> {
 	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}/passages/${startVerseID}-${endVerseID}`;
 
-	console.log('Fetch URL HEREEEE: ', url);
-
 	try {
 		const res: Response = await fetch(url, {
 			headers: {
@@ -175,10 +173,27 @@ export async function fetchSelectedPassage(bibleID: string, startVerseID: string
 		});
 
 		const data: BiblePassageWithMeta = await res.json();
-		console.log('Passage server data here: ', data);
 		return data;
 
 	} catch (e: unknown) {
 		console.warn(e instanceof Error && e.message);
 	}
+}
+
+export async function fetchBibleVersionById(bibleID: string): Promise<BibleAPIDataResponse<SingleBibleVersion> | void> {
+	const url = `${process.env.NEXT_PUBLIC_BIBLE_URL}/bibles/${bibleID}`;
+
+	try {
+		const res: Response = await fetch(url, {
+			headers: {
+				"api-key": `${process.env.NEXT_PUBLIC_BIBLE_API_KEY}`,
+			},
+		});
+
+		const data: BibleAPIDataResponse<SingleBibleVersion> = await res.json();
+		return data;
+	} catch (e: unknown) {
+		console.warn(e instanceof Error && e.message);
+	}
+
 }
