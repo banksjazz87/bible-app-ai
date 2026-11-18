@@ -20,7 +20,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	//Use state definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
 	const [bibleVersions, setBibleVersions] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
-	const [books, setBooks] = useState<SelectFields[]>([{ value: "1", text: "1"}]);
+	const [books, setBooks] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [viableChapters, setViableChapters] = useState<SelectFields[]>([{ value: "1", text: "1" }]);
 	const [verses, setVerses] = useState<SelectFields[]>([{ text: "1", value: "1" }]);
 	const [startVerse, setStartVerse] = useState<number>(0);
@@ -48,11 +48,11 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 					// convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
 					const verses = data.data.map((x: VersesObject, y: number): SelectFields => {
 						const textValue = y + 1;
-		
+
 						return {
 							value: x.id,
 							text: textValue.toString(),
-						}
+						};
 					});
 					setVerses(verses);
 				})
@@ -96,19 +96,18 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 					return {
 						value: x.id,
 						text: x.number,
-					}
+					};
 				});
 
-				console.log('Chapter data: ', chapterData);
-				
-				setViableChapters(chapterData);
+				console.log("Chapter data: ", chapterData);
 
+				setViableChapters(chapterData);
 			})
 			.catch((e: unknown) => console.warn(`Error accessing the chapter data: ${e instanceof Error && e.message}`))
 			.finally(() => {
 				return;
 			});
-	}
+	};
 
 	//Get valid chapters for the selected book, and version.
 	useEffect((): void => {
@@ -136,6 +135,27 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		});
 	});
 
+	//Change handler for our select elements
+	const selectChangeHandler = (key: string, value: string): void => {
+		setBibleForm({
+			...bibleForm,
+			[key as keyof BibleFormData]: value,
+		});
+	};
+
+	const getDisplayedValue = (data: SelectFields[], keyValue: string) => {
+		const filter = data.filter((x: SelectFields) => {
+			if (x.value === keyValue) {
+				return x;
+			}
+		});
+		if (filter.length === 0) {
+			return 0;
+		} else {
+			return filter[0].text;
+		}
+	};
+
 	useEffect((): void => {
 		const book = returnSearchParamValues("book");
 		const version = returnSearchParamValues("version");
@@ -160,13 +180,13 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				.then((data) => {
 					console.log(data);
 				})
-			// fetchSelectedPassage(version, startVerse, endVerse)
-			// 	.then((data: BiblePassageWithMeta | void): void => {
-			// 		if (data) {
-			// 			convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
+				// fetchSelectedPassage(version, startVerse, endVerse)
+				// 	.then((data: BiblePassageWithMeta | void): void => {
+				// 		if (data) {
+				// 			convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
 
-			// 		}
-			// 	})
+				// 		}
+				// 	})
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
 		}
 	}, []);
@@ -179,6 +199,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			if (bibleList) {
 				const list: SelectFields[] = [{ value: "", text: "" }];
 				const keys: string[] = [];
+				const currentVersion = searchParams.get("version");
 				bibleList.data.forEach((x: Bible) => {
 					if (selectBibles.indexOf(x.abbreviation) > -1 && keys.indexOf(x.abbreviation) === -1) {
 						list.push({
@@ -186,6 +207,10 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 							text: x.name,
 						});
 						keys.push(x.abbreviation);
+					}
+
+					if (currentVersion && currentVersion === x.id) {
+						selectChangeHandler("version", x.id);
 					}
 				});
 				list.shift();
@@ -195,26 +220,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		getBibleVersionData();
 	}, []);
 
-	//Change handler for our select elements
-	const selectChangeHandler = (key: string, value: string): void => {
-		setBibleForm({
-			...bibleForm,
-			[key as keyof BibleFormData]: value,
-		});
-	};
-
-	const getDisplayedValue = (data: SelectFields[], keyValue: string) => {
-		const filter = data.filter((x: SelectFields) => {
-			if (x.value === keyValue) {
-				return x;
-			}
-		});
-		if (filter.length === 0) {
-			return 0;
-		} else {
-			return filter[0].text;
-		}
-	}
 
 	return (
 		<div className="border-slate-800 border rounded-md p-5">
@@ -236,7 +241,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 								fetchBooks(value);
 							}}
 							placeholderText="Select a Bible Version"
-							selectedValue={getSelectTextValue("version", EnglishBibleVersions, returnSearchParamValues)}
+							selectedValue={getSelectTextValue("version", bibleVersions, returnSearchParamValues)}
 						/>
 
 						{/* <Books
