@@ -188,6 +188,8 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				// 		}
 				// 	})
 				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
+
+			fetchBooks(version);
 		}
 	}, []);
 
@@ -259,7 +261,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 							options={books}
 							optionsID="book"
 							placeholderText="Book"
-							selectedValue={getSelectTextValue("book", BooksOfTheBible, returnSearchParamValues)}
+							selectedValue={getSelectTextValue("book", books, returnSearchParamValues)}
 						/>
 
 						<Options
