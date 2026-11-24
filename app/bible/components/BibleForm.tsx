@@ -33,35 +33,34 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 	// 	}
 	// }, [bibleForm.book]);
 
-	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
-	useEffect((): void => {
-		const allDataPresent = bibleForm.chapter.length > 0 && bibleForm.book.length > 0 && bibleForm.version.length > 0;
-		if (allDataPresent) {
-			retrieveBibleChapter(bibleForm.version, bibleForm.book, bibleForm.chapter)
-				.then((data: BibleAPIDataResponse<VersesObject> | undefined): void => {
-					if (!data) {
-						return;
-					}
+	const fetchVerses = (version: string, book: string, chapter: string): void => {
+		retrieveBibleChapter(version, book, chapter)
+			.then((data: BibleAPIDataResponse<VersesObject> | undefined): void => {
+				if (!data) return;
+				const verses = data.data.map((x: VersesObject, y: number): SelectFields => {
+					const textValue = y + 1;
 
-					console.log("Bible CHAPTER DATA ", data);
-					//Clear the verse map
-					// convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
-					const verses = data.data.map((x: VersesObject, y: number): SelectFields => {
-						const textValue = y + 1;
-
-						return {
-							value: x.id,
-							text: textValue.toString(),
-						};
-					});
-					setVerses(verses);
-				})
-				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e))
-				.finally(() => {
-					return;
+					return {
+						value: x.id,
+						text: textValue.toString(),
+					};
 				});
-		}
-	}, [bibleForm]);
+				console.log('verses here ', verses);
+				setVerses(verses);
+			})
+			.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e))
+			.finally(() => {
+				return;
+			});
+	};
+
+	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
+	// useEffect((): void => {
+	// 	const allDataPresent = bibleForm.chapter.length > 0 && bibleForm.book.length > 0 && bibleForm.version.length > 0;
+	// 	if (allDataPresent) {
+	// 		fetchVerses(bibleForm.version, bibleForm.book, bibleForm.chapter);
+	// 	}
+	// }, [bibleForm]);
 
 	const fetchBooks = (bibleVersion: string): void => {
 		getBooks(bibleVersion)
@@ -124,14 +123,22 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 	};
 
+	//Used to get the chapter, start and end verse values.
+	const getNumFromParam = (paramValue: string): string => {
+		if (!paramValue) return "1";
+		const arrayOfString = paramValue.split(".");
+		const last = arrayOfString.length - 1;
+		return arrayOfString[last];
+	};
+
 	const updateBibleData = useEffectEvent((): void => {
 		setBibleForm({
 			...bibleForm,
 			version: returnSearchParamValues("bible-version"),
 			book: returnSearchParamValues("book"),
-			chapter: returnSearchParamValues("chapter"),
-			startVerse: returnSearchParamValues("startVerse"),
-			endVerse: returnSearchParamValues("endVerse"),
+			chapter: getNumFromParam(returnSearchParamValues("chapter")),
+			// startVerse: getNumFromParam(returnSearchParamValues("startVerse")),
+			// endVerse: getNumFromParam(returnSearchParamValues("endVerse")),
 		});
 	});
 
@@ -176,20 +183,10 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		if (allDataPresent) {
 			updateBibleData();
 
-			fetchBibleVersionById(version)
-				.then((data) => {
-					console.log(data);
-				})
-				// fetchSelectedPassage(version, startVerse, endVerse)
-				// 	.then((data: BiblePassageWithMeta | void): void => {
-				// 		if (data) {
-				// 			convertVerseDataToOptions(data.data, setVerses, updateNeededChapter);
-
-				// 		}
-				// 	})
-				.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e));
-
+			fetchBibleVersionById(version);
 			fetchBooks(version);
+			fetchChapters(version, book);
+			fetchVerses(version, book, chapter);
 		}
 	}, []);
 
@@ -221,7 +218,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 		getBibleVersionData();
 	}, []);
-
 
 	return (
 		<div className="border-slate-800 border rounded-md p-5">
@@ -283,7 +279,8 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 							options={verses}
 							optionsID="startVerse"
 							placeholderText="Select Starting Verse"
-							selectedValue={bibleForm.startVerse}
+							// selectedValue={bibleForm.startVerse}
+							selectedValue={getSelectTextValue("startVerse", verses, returnSearchParamValues)}
 						/>
 
 						<Options
@@ -292,7 +289,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 							options={verses.slice(Number(startVerse) - 1)}
 							optionsID="endVerse"
 							placeholderText="Select Ending Verse"
-							selectedValue={bibleForm.endVerse}
+							selectedValue={getSelectTextValue("endVerse", verses, returnSearchParamValues)}
 						/>
 					</div>
 					<input
