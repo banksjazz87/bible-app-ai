@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, JSX, Suspense, useEffectEvent } from "react";
+import { useState, useEffect, JSX, Suspense, useEffectEvent, useRef } from "react";
 import { FieldValues } from "react-hook-form";
 import BibleForm from "./components/BibleForm";
 import { useSearchParams } from "next/navigation";
@@ -14,7 +14,7 @@ import SaveModalForm from "./components/SaveModalForm";
 import DownloadPDFButton from "../account/profile/thread/[slug]/components/DownloadPDFButton";
 import Alert from "../ui/Alert";
 import { useRouter } from "next/navigation";
-import { fetchSelectedPassage } from "@/lib/bible/bibleMethods";
+import { fetchSelectedPassage, getLastFromParam } from "@/lib/bible/bibleMethods";
 
 
 const initLLMReqAndOutput: {
@@ -62,8 +62,8 @@ function PageContent() {
 	const [alertTitle, setAlertTitle] = useState<string>('Error');
 	const [requestStatus, setRequestStatus] = useState<number>(200);
 	const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
-
 	const [biblePassage, setBiblePassage] = useState<string>("");
+	const [bookFullName, setBookFullName] = useState<string>("");
 
 	const router = useRouter();
 	const setLLMReqInit = useEffectEvent((): void => setLLMReqAndOutput(initLLMReqAndOutput));
@@ -232,6 +232,7 @@ function PageContent() {
 				<BibleForm
 					submitHandler={formHandler}
 					updateNeededChapter={(data: Verses[]) => setCurrentChapterText(data)}
+					updateBookName={(bookName: string) => setBookFullName(bookName)}
 				/>
 
 				{showChapterText && (
@@ -269,7 +270,7 @@ function PageContent() {
 					/>
 
 					<div className="flex flex-col gap-4">
-						<h2 className="uppercase font-extrabold text-3xl">{`${bibleData.book} ${bibleData.chapter}:${bibleData.startVerse} - ${bibleData.endVerse}`}</h2>
+						<h2 className="uppercase font-extrabold text-3xl">{`${bookFullName} ${bibleData.book} ${getLastFromParam(bibleData.chapter)}:${getLastFromParam(bibleData.startVerse)} - ${getLastFromParam(bibleData.endVerse)}`}</h2>
 
 						<div className="flex flex-row flex-start gap-2" data-html2canvas-ignore>
 							<Button

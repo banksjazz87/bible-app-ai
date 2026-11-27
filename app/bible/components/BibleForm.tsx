@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, JSX, useEffectEvent } from "react";
+import { useState, useEffect, JSX, useEffectEvent, useRef } from "react";
 import Books from "@/app/bible/components/Books";
 import { useSearchParams } from "next/navigation";
 import Options from "@/app/ui/Options";
@@ -8,14 +8,15 @@ import { SelectFields, BibleFormData, ChapterResponse, BibleFormProps, Bible, Bi
 import { BooksOfTheBible, EnglishBibleVersions, DefaultBibleFormData, BibleVersions } from "@/lib/bible/bibleData";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, getSelectTextValue, getBibles, getBooks, fetchSelectedPassage, fetchBibleVersionById } from "@/lib/bible/bibleMethods";
+import { getChapters, retrieveBibleChapter, convertVerseDataToOptions, getSelectTextValue, getBibles, getBooks, fetchSelectedPassage, fetchBibleVersionById, getLastFromParam, getBookFullName } from "@/lib/bible/bibleMethods";
 import { getUserData } from "@/lib/store/features/account/loginSlice";
 import { useAppSelector } from "@/lib/store/hooks";
 
-export default function BibleForm({ updateNeededChapter, submitHandler }: BibleFormProps): JSX.Element {
+export default function BibleForm({ updateNeededChapter, submitHandler, updateBookName }: BibleFormProps): JSX.Element {
 	const searchParams = useSearchParams();
 	const form = useForm();
 	const loggedInDetails = useAppSelector(getUserData);
+	const formRef = useRef<HTMLFormElement | null>(null);
 
 	//Use state definitions
 	const [bibleForm, setBibleForm] = useState<BibleFormData>(DefaultBibleFormData);
@@ -45,7 +46,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						text: textValue.toString(),
 					};
 				});
-				console.log('verses here ', verses);
+				console.log("verses here ", verses);
 				setVerses(verses);
 			})
 			.catch((e: unknown) => console.warn("The following error occurred while updating the verse data ", e))
@@ -53,14 +54,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 				return;
 			});
 	};
-
-	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
-	// useEffect((): void => {
-	// 	const allDataPresent = bibleForm.chapter.length > 0 && bibleForm.book.length > 0 && bibleForm.version.length > 0;
-	// 	if (allDataPresent) {
-	// 		fetchVerses(bibleForm.version, bibleForm.book, bibleForm.chapter);
-	// 	}
-	// }, [bibleForm]);
 
 	const fetchBooks = (bibleVersion: string): void => {
 		getBooks(bibleVersion)
@@ -76,6 +69,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 						text: x.name,
 					};
 				});
+
 				setBooks(booksData);
 			})
 			.catch((e: unknown) => console.warn(`Error accessing the book information: ${e instanceof Error && e.message}`))
@@ -108,13 +102,6 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			});
 	};
 
-	//Get valid chapters for the selected book, and version.
-	useEffect((): void => {
-		if (bibleForm.version.length > 0 && bibleForm.book.length > 0) {
-			fetchChapters(bibleForm.version, bibleForm.book);
-		}
-	}, [bibleForm.book]);
-
 	const returnSearchParamValues = (key: string): string => {
 		if (searchParams.has(key)) {
 			return searchParams.get(key) as string;
@@ -123,22 +110,14 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 		}
 	};
 
-	//Used to get the chapter, start and end verse values.
-	const getNumFromParam = (paramValue: string): string => {
-		if (!paramValue) return "1";
-		const arrayOfString = paramValue.split(".");
-		const last = arrayOfString.length - 1;
-		return arrayOfString[last];
-	};
-
 	const updateBibleData = useEffectEvent((): void => {
 		setBibleForm({
 			...bibleForm,
 			version: returnSearchParamValues("bible-version"),
 			book: returnSearchParamValues("book"),
-			chapter: getNumFromParam(returnSearchParamValues("chapter")),
-			// startVerse: getNumFromParam(returnSearchParamValues("startVerse")),
-			// endVerse: getNumFromParam(returnSearchParamValues("endVerse")),
+			chapter: getLastFromParam(returnSearchParamValues("chapter")),
+			startVerse: getLastFromParam(returnSearchParamValues("startVerse")),
+			endVerse: getLastFromParam(returnSearchParamValues("endVerse")),
 		});
 	});
 
@@ -180,15 +159,36 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			}
 		}
 
-		if (allDataPresent) {
+		if (allDataPresent && formRef.current) {
 			updateBibleData();
-
 			fetchBibleVersionById(version);
 			fetchBooks(version);
 			fetchChapters(version, book);
 			fetchVerses(version, book, chapter);
+			formRef.current.requestSubmit();
 		}
 	}, []);
+
+	//Retrieve the selected chapter, we're getting the full chapter to determine the verses that can be selected.
+	useEffect((): void => {
+		const allDataPresent = bibleForm.chapter.length > 0 && bibleForm.book.length > 0 && bibleForm.version.length > 0;
+		if (allDataPresent) {
+			fetchVerses(bibleForm.version, bibleForm.book, bibleForm.chapter);
+			fetchBibleVersionById(bibleForm.version);
+			fetchBooks(bibleForm.version);
+			fetchChapters(bibleForm.version, bibleForm.book);
+			fetchVerses(bibleForm.version, bibleForm.book, bibleForm.chapter);
+			const selectedBook = getBookFullName(books, bibleForm.book);
+			updateBookName(selectedBook ? selectedBook : bibleForm.book);
+		}
+	}, [bibleForm]);
+
+	//Get valid chapters for the selected book, and version.
+	useEffect((): void => {
+		if (bibleForm.version.length > 0 && bibleForm.book.length > 0) {
+			fetchChapters(bibleForm.version, bibleForm.book);
+		}
+	}, [bibleForm.book]);
 
 	//Retrieves the different bible versions
 	useEffect(() => {
@@ -209,7 +209,8 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 					}
 
 					if (currentVersion && currentVersion === x.id) {
-						selectChangeHandler("version", x.id);
+						// selectChangeHandler("version", x.id);
+						setBibleForm({ ...bibleForm, version: x.id });
 					}
 				});
 				list.shift();
@@ -224,6 +225,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 			<Form {...form}>
 				<form
 					id="bible-form"
+					ref={formRef}
 					onSubmit={form.handleSubmit(submitHandler)}
 				>
 					<div className="flex flex-col gap-4">
@@ -279,8 +281,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 							options={verses}
 							optionsID="startVerse"
 							placeholderText="Select Starting Verse"
-							// selectedValue={bibleForm.startVerse}
-							selectedValue={getSelectTextValue("startVerse", verses, returnSearchParamValues)}
+							selectedValue={getLastFromParam(returnSearchParamValues("startVerse"))}
 						/>
 
 						<Options
@@ -289,7 +290,7 @@ export default function BibleForm({ updateNeededChapter, submitHandler }: BibleF
 							options={verses.slice(Number(startVerse) - 1)}
 							optionsID="endVerse"
 							placeholderText="Select Ending Verse"
-							selectedValue={getSelectTextValue("endVerse", verses, returnSearchParamValues)}
+							selectedValue={getLastFromParam(returnSearchParamValues("endVerse"))}
 						/>
 					</div>
 					<input

@@ -1,5 +1,5 @@
 //Methods used to access bible data.
-import { BookAndChapters, ChapterResponse, Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters, BibleChapterObject, VersesObject, BiblePassageWithMeta, SingleBibleVersion } from "@/lib/definitions";
+import { Verses, SelectFields, BibleResponse, Bible, BibleAPIDataResponse, BooksWithChapters, BibleChapterObject, VersesObject, BiblePassageWithMeta, SingleBibleVersion, BooksObject } from "@/lib/definitions";
 
 //Get the chapters according to the book and testament that are currently selected.
 // export function getChapters(bible: BookAndChapters[], book: string, updateChapters: (fields: SelectFields[]) => void) {
@@ -142,6 +142,16 @@ export function convertVerseDataToOptions(verseJSON: Verses[], updateVerses: (fi
 // 	return book[0].value;
 // }
 
+export function getBookFullName(data: SelectFields[], bookID: string) {
+	const match = data.filter((x: SelectFields) => {
+		if (x.value === bookID) {
+			return x;
+		}
+	});
+	if (!match) return;
+	return match[0].text;
+}
+
 export function getSelectTextValue(key: string, selectValues: SelectFields[], searchParamsGetter: (key: string) => string): string {
 	const paramValue = searchParamsGetter(key);
 	if (paramValue.length > 0) {
@@ -197,3 +207,11 @@ export async function fetchBibleVersionById(bibleID: string): Promise<BibleAPIDa
 	}
 
 }
+
+//Used to get the last value from a parameter, this is used for the bible API endpoint that typically appends the chapter and verse data at the end of the string.
+export function getLastFromParam(paramValue: string): string {
+		if (!paramValue) return "1";
+		const arrayOfString = paramValue.split(".");
+		const last = arrayOfString.length - 1;
+		return arrayOfString[last];
+	};

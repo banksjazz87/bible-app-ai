@@ -37,7 +37,9 @@ export default function Options({ changeHandler, sectionTitle, optionsID, option
 									router.push(path + "?" + queryHandler(value));
 								}}
 							>
-								<SelectTrigger className="rounded-none border-slate-600">
+								<SelectTrigger
+									className="rounded-none border-slate-600"
+								>
 									<SelectValue placeholder={selectedValue.length > 0 ? selectedValue : placeholderText} />
 								</SelectTrigger>
 								<SelectContent>
